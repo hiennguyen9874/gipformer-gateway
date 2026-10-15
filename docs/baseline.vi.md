@@ -67,6 +67,19 @@ WER thô so với transcript FLEURS, chỉ để phát hiện model hỏng. Outp
 text giống chạy riêng; online = offline. Có sàn ~50 ms mỗi lời gọi, chi phối với utterance ngắn. Gateway chỉ dùng
 chế độ full-context.
 
+**Nguồn gốc sàn ~50 ms** (tái kiểm tại `8cffbe7`, cùng máy; số liệu ở trên vẫn khớp). Mỗi lời gọi bị giới hạn bởi
+kernel launch, không bởi compute GPU:
+
+| Đo `_forward` (A100, cu126, bf16, median 10 lần) | Giá trị |
+|---|---:|
+| 1 s / 8.9 s / 30 s audio, batch 1 | 51.7 / 50.4 / 52.5 ms |
+| Batch 8 × 8.9 s, một lời gọi | 60.5 ms |
+| Kernel launch mỗi lời gọi | ~2,440 |
+| Thời gian kernel trên GPU (torch profiler, 8.9 s) | ~14 ms |
+
+Trên gateway, REST còn cộng thêm decode FFmpeg (~69 ms/request trung bình, `quan_decode_seconds`), nên REST
+8.88 s ≈ 125 ms trong khi Realtime commit → completed ≈ 57 ms. Hệ quả cho tải: [roadmap.md](roadmap.md) §1, §4.
+
 ## 5. Giới hạn frontend và clip ngắn
 
 | Số mẫu 16 kHz | Gọi model trực tiếp |

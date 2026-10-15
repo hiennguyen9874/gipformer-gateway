@@ -36,6 +36,22 @@ uv run --extra cu128 scripts/benchmark.py --engine gpu --hardware '<gpu>-exclusi
 
 A benchmark report (exit 0) is not a capacity claim; client counts are closed-loop, not microphone sessions.
 
+**Diagnostic run (not gate evidence).** One run per level at `8cffbe7` on a shared host (A100-PCIE-40GB, cu126,
+local server, no proxy), `--workload short|long`, 30 requests/client, 0 errors/overloads. WS, SSE and mixed workloads, ≥ 3 runs
+and soak were not done.
+
+| Clients | Short 8.88 s: audio s/s · p50 · p95 | Long 106.62 s: audio s/s · p50 · p95 |
+|---:|---|---|
+| 1 | 71 · 0.12 s · 0.13 s | 279 · 0.39 s · 0.40 s |
+| 2 | 128 · 0.13 s · 0.16 s | 412 · 0.50 s · 0.62 s |
+| 4 | 137 · 0.25 s · 0.28 s | 421 · 1.00 s · 1.14 s |
+| 8 | 132 · 0.52 s · 0.62 s | 426 · 1.99 s · 2.08 s |
+| 16 | 136 · 1.03 s · 1.16 s | 413 · 4.10 s · 4.36 s |
+
+Throughput saturates at ~2 clients; beyond that latency grows linearly with queue wait. At saturation the GPU was
+~38 % utilized while the server process used ~470 % CPU: the single model thread is launch-bound (~50 ms per call
+regardless of chunk length, see [baseline.vi.md](baseline.vi.md) §4), so §4 optimizations raise this ceiling.
+
 ### 2. Word timestamps (R2b)
 
 `timestamp_granularities[]=word` returns 400 until this gate passes (`WORD_TIMESTAMPS = False` in
@@ -57,7 +73,10 @@ A benchmark report (exit 0) is not a capacity claim; client counts are closed-lo
 ### 4. Scale and performance
 
 - [ ] Multiple GPUs: one container per GPU behind a load balancer with sticky WebSocket routing.
-- [ ] REST micro-batching of chunks from different requests.
+- [ ] REST micro-batching of chunks from different requests. Measured basis: one call with 8 × 8.9 s chunks takes
+  60.5 ms vs ~50 ms for one chunk (≈ 6× throughput headroom on A100); requires parity and per-request deadlines.
+- [ ] Cut per-call launch overhead (~2,440 kernel launches, ~14 ms GPU time out of ~50 ms): CUDA graphs or
+  `torch.compile` with fixed chunk shapes; gate on identical text vs `docs/baseline/offline.json`.
 - [ ] Optional KenLM decoding for final transcripts (opt-in, measured first; timestamps need forced alignment).
 
 ### 5. Smaller items

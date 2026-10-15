@@ -42,3 +42,16 @@ per-client rate limits belong to the operator's infrastructure in front of it.
 - references/QUAN-Transcribe
 - references/QUAN-Transcribe-1.0
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues, via the `gh` CLI (no git remote is configured yet; add one before using it). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `GLOSSARY.md` + `docs/adr/`, created lazily. See `docs/agents/domain.md`.

@@ -43,6 +43,8 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - Auth, model and capacity checks happen before `accept`.
 - One LIVE lane per session; committed items run FIFO through the same `split` / `run_chunks` / `Joiner` as REST.
 - The JS realtime SDK connects only over `wss:`; tests use a self-signed cert via `serve(tls_dir=...)`.
+- After changing realtime, chunking, the engine, sherpa-onnx or the model pin, rerun the R3a gate
+  (`tests/model/test_realtime.py`) and commit `docs/baseline/r3a_gate.json`.
 
 ## API contract (`transcription.py`, `realtime.py`, `errors.py`)
 

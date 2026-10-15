@@ -1,0 +1,72 @@
+{
+  "commit": "a7adc1cf408fce2b988dcd9716644b88049b58b6-dirty",
+  "sherpa_onnx": "1.13.8",
+  "settings": "fp32, modified_beam_search, beam 4, 4 threads",
+  "max_chunk_seconds": 20.0,
+  "packet_ms": 20,
+  "turns": {
+    "vi_a.wav": {
+      "audio_s": 8.88,
+      "chunks": 1,
+      "empty": false,
+      "wer": 0.0,
+      "rest_wer": 0.0
+    },
+    "vi_b.wav": {
+      "audio_s": 8.46,
+      "chunks": 1,
+      "empty": false,
+      "wer": 0.04,
+      "rest_wer": 0.04
+    },
+    "silence_2s.wav": {
+      "audio_s": 2.0,
+      "chunks": 1,
+      "empty": false
+    },
+    "short_200ms.wav": {
+      "audio_s": 0.2,
+      "chunks": 1,
+      "empty": false
+    }
+  },
+  "fifo": {
+    "items": [
+      {
+        "case": "vi_a",
+        "audio_s": 8.88,
+        "committed_samples": 142080,
+        "chunks": 1
+      },
+      {
+        "case": "at_floor",
+        "audio_s": 0.1,
+        "committed_samples": 1600,
+        "chunks": 0
+      },
+      {
+        "case": "vi_b",
+        "audio_s": 8.46,
+        "committed_samples": 135360,
+        "chunks": 1
+      },
+      {
+        "case": "above_floor",
+        "audio_s": 0.105,
+        "committed_samples": 1680,
+        "chunks": 1
+      }
+    ],
+    "floor_samples": 1600,
+    "model_calls": 3,
+    "floor_turn_empty": true
+  },
+  "concurrent": {
+    "sessions": 4,
+    "items_per_session": 2
+  },
+  "long": {
+    "audio_s": 37.68,
+    "chunks": 2
+  }
+}

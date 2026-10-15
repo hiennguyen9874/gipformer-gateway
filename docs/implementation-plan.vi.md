@@ -10,7 +10,7 @@ Pre-release: tag `v0.1.0-rc.1`.
 | R1 — REST/SSE | models, transcription `json`/`text`, SSE, auth, lỗi OpenAI, giới hạn, Docker một GPU | **Xong** |
 | R2a — Rich output | `verbose_json` (không `segments`), `srt`, `vtt` với timestamps từ thời điểm phát token | **Xong** (gate Gipformer: `docs/baseline/r2a_gate.json`) |
 | R2b — Word timestamps | `timestamp_granularities[]=word` | Chưa: chờ bộ annotate tay |
-| R3a — Realtime explicit commit | WS `/v1/realtime`, PCM16 24 kHz, append/commit/clear | **Xong** |
+| R3a — Realtime explicit commit | WS `/v1/realtime`, PCM16 24 kHz, append/commit/clear | **Xong** (gate Gipformer: `docs/baseline/r3a_gate.json`) |
 | R3b — Server VAD / partial | acoustic VAD, partial trước commit | Chưa làm |
 | R4 — Capacity | giới hạn production đo trên GPU riêng, scale nhiều GPU | Tooling có, chưa đo |
 
@@ -23,7 +23,7 @@ Pre-release: tag `v0.1.0-rc.1`.
 | M2 — Audio ingress | Giới hạn body trước parser, spool có budget, FFmpeg sandbox, chunking tại điểm yên lặng, policy clip ngắn | `tests/audio/`, `tests/unit/test_chunking.py`, `tests/gpu/test_audio_pipeline.py` |
 | M3 — REST/SSE + image | Endpoint, joiner, disconnect/send timeout, Dockerfile/compose | `tests/unit/test_transcription_*`, `tests/contract/test_server_sdk.py`, `tests/gpu/test_server.py`, [container-gate.vi.md](container-gate.vi.md) |
 | M4 (R2a) — Rich output | Alignment token emission time → cue, serializers; probe + cue gate trên Gipformer | `tests/unit/test_alignment.py`, `tests/model/test_server.py`, `docs/baseline/alignment_probe.json`, `docs/baseline/r2a_gate.json` |
-| M5 — Realtime | Handshake trước accept, session.update, turn buffer + soxr stream, item FIFO, giới hạn session | `tests/unit/test_realtime_*.py`, `tests/gpu/test_realtime.py` |
+| M5 — Realtime | Handshake trước accept, session.update, turn buffer + soxr stream, item FIFO, giới hạn session | `tests/unit/test_realtime_*.py`, `tests/model/test_realtime.py`, `docs/baseline/r3a_gate.json` |
 | M7 (một phần) — Hardening | `scripts/benchmark.py`, OOM/hang/recovery giả lập, soak CPU có giới hạn, redaction log | `tests/unit/test_benchmark.py`, `tests/unit/test_capacity_hardening.py` |
 
 ## 3. Bằng chứng hiện có

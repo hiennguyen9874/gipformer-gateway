@@ -28,7 +28,7 @@ tài liệu OpenAI, không phải traffic quan sát được. Mã lỗi `code` b
 | `response_format=verbose_json\|srt\|vtt` (không stream) | Hỗ trợ; cue gate qua trên model thật (`docs/baseline/r2a_gate.json`) | R2a |
 | `timestamp_granularities[]=segment` | 400 `unsupported_parameter`: `TranscriptionSegment` cần field chỉ Whisper có; segment chỉ có qua `srt`/`vtt` | — |
 | `timestamp_granularities[]=word` | 400 `unsupported_parameter` cho tới khi qua alignment gate ([roadmap](roadmap.md)) | R2b |
-| WS `/v1/realtime` transcription, `turn_detection: null`, append/commit/clear | Hỗ trợ | R3a |
+| WS `/v1/realtime` transcription, `turn_detection: null`, append/commit/clear | Hỗ trợ; realtime gate qua trên model thật (`docs/baseline/r3a_gate.json`) | R3a |
 | `server_vad` | 400 `unsupported_turn_detection` | R3b |
 | `semantic_vad`, `noise_reduction`, `audio/pcmu`, `audio/pcma` | Từ chối | — |
 | `prompt` không rỗng, `keywords`, `include[]=logprobs`, `diarized_json`, `known_speaker_*`, `chunking_strategy` | Từ chối 400 | — |

@@ -163,7 +163,22 @@ khoảng lặng giữa): không cue nào phủ qua khoảng lặng chứa điể
 Giới hạn: cue có thể bắt đầu trước lời nói (tới ~1 s) và phủ qua khoảng lặng nằm trong cùng một chunk. Không có mốc
 thời gian từng từ do người annotate, nên độ chính xác từng từ chưa được đo (R2b, [roadmap.md](roadmap.md) §2).
 
-## 7. Tái tạo
+## 7. Realtime trên model thật — gipformer1.5-68M-rnnt (CPU)
+
+**R3a realtime gate** (`tests/model/test_realtime.py`, server thật trên model thật, fp32, beam 4, 4 thread; report chỉ
+metadata [`baseline/r3a_gate.json`](baseline/r3a_gate.json)). Fixture 16 kHz resample lên PCM16 24 kHz (soxr HQ), gửi
+từng packet 20 ms như client live:
+
+- Mỗi turn (`vi_a`, `vi_b`, `silence_2s`, `short_200ms`, nhiều commit trên một socket) có transcript bằng REST trên
+  đúng waveform 16 kHz đã commit, một delta mỗi chunk; WER `vi_a` 0%, `vi_b` 4%, bằng REST trên file gốc (ngưỡng:
+  REST + 2 điểm). Digital silence cho text của chính model (như REST, không ép `""`).
+- Bốn item commit liền nhau không chờ kết quả (speech, turn 100 ms, speech, turn 105 ms): `committed` nối
+  `previous_item_id` đúng, delta/`completed` theo thứ tự commit, text bằng REST; turn 100 ms (1,600 mẫu 16 kHz) →
+  `""` không gọi model, turn 105 ms → đúng một lời gọi model (tổng 3 lời gọi cho 4 item).
+- Bốn session đồng thời, mỗi session hai item (`vi_a`/`vi_b`): không lẫn kết quả.
+- Turn 37.7 s (> `GIPFORMER_MAX_CHUNK_SECONDS` 20 s): một item, 2 delta, bằng REST.
+
+## 8. Tái tạo
 
 ```bash
 uv sync --extra cu126
@@ -190,7 +205,13 @@ uv run scripts/probe_alignment.py --out docs/baseline/alignment_probe.json
 uv run pytest tests/model/test_server.py
 ```
 
-## 8. Reports trong `docs/baseline/`
+Gate §7 (Gipformer, CPU, ~20 s; cần model đã stage); ghi `r3a_gate.json` khi mọi test gate pass:
+
+```bash
+uv run pytest tests/model/test_realtime.py
+```
+
+## 9. Reports trong `docs/baseline/`
 
 | File | Nội dung |
 |---|---|
@@ -199,6 +220,7 @@ uv run pytest tests/model/test_server.py
 | `server-container-cu128.json` | Smoke trong GPU container gate (chỉ metadata) |
 | `alignment_probe.json` | Gipformer: độ phân giải, dịch audio và độ trễ của thời điểm phát token; cue (§6) |
 | `r2a_gate.json` | Gipformer: R2a cue gate trên server với model thật, chỉ metadata (§6) |
+| `r3a_gate.json` | Gipformer: R3a realtime gate trên server với model thật, chỉ metadata (§7) |
 | `limits_probe.json` | Gipformer: input ngắn nhất, speech ngắn, latency/RSS/WER theo độ dài chunk (§5) |
 
 Chưa đo: LM/KenLM, Python 3.11, cold load khi page cache lạnh, tải đồng thời (xem [roadmap.md](roadmap.md)).

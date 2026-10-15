@@ -52,7 +52,7 @@ subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py an
 | `scheduler/` | CPU | scheduler/worker gate with the fake engine: serialization, bounds, fairness, cancel |
 | `audio/` | CPU + ffmpeg | formats, hostile inputs, decode bounds, multipart limits, temp cleanup |
 | `contract/` | CPU (+ Node for `js/`) | `examples/` parsed by the pinned Python SDK (`test_python_sdk.py`) and JS SDK (`js/contract.test.ts`); `test_server_sdk.py` runs a real server against both SDKs (REST over http, Realtime over wss with a self-signed cert, JS via `js/server.test.ts`) |
-| `model/` | CPU + staged models | real engine text vs the reference `infer_onnx.py` (`test_engine.py`, fp32/int8 x beam/greedy, token times), worker + lanes, `test_server.py` (json/text/SSE and the R2a cue gate on the real model, writes `docs/baseline/r2a_gate.json`). Marked `model`; skipped when the model is not staged |
+| `model/` | CPU + staged models | real engine text vs the reference `infer_onnx.py` (`test_engine.py`, fp32/int8 x beam/greedy, token times), worker + lanes, `test_server.py` (json/text/SSE and the R2a cue gate on the real model, writes `docs/baseline/r2a_gate.json`), `test_realtime.py` (R3a realtime gate: turns vs REST, FIFO, short turns, concurrent sessions, long turn; writes `docs/baseline/r3a_gate.json`). Marked `model`; skipped when the model is not staged |
 | `container/` | docker + staged models | image gate; skips without docker |
 
 Shared helpers:
@@ -67,6 +67,6 @@ Shared helpers:
 - `assets/manifest.json`: single source of model pins (repo id, commit, size + SHA256 per file).
 - `Dockerfile`, `.dockerignore`, `compose.yaml`: the image and how it runs.
 - `docs/baseline/*.json`: saved reports (offline baseline, server smoke, container gate, alignment probe, R2a gate,
-  limits probe).
+  R3a gate, limits probe).
 - `models/`, `fixtures-large/`: staged assets and large fixtures (gitignored).
 - `references/`: read-only upstream sources (git submodules).

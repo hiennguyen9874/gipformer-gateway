@@ -37,6 +37,8 @@ benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metada
 demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
                       (audio/, results.json, static index.html with WER, word diff, clickable SRT cues)
 probe_limits.py     short-audio floor + latency/peak RSS/WER vs chunk length on the real recognizer -> JSON
+probe_alignment.py  token emission times: resolution, shift, delay at known silences, cues -> JSON; checks the
+                      app/alignment.py constants
 eval_alignment.py   R2b gate: words vs hand annotations in tests/fixtures/alignment/ (none exist yet)
 scoring.py          dependency-free WER, shared by both smoke scripts
 subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py and tests/live_server.py
@@ -50,7 +52,7 @@ subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py an
 | `scheduler/` | CPU | scheduler/worker gate with the fake engine: serialization, bounds, fairness, cancel |
 | `audio/` | CPU + ffmpeg | formats, hostile inputs, decode bounds, multipart limits, temp cleanup |
 | `contract/` | CPU (+ Node for `js/`) | `examples/` parsed by the pinned Python SDK (`test_python_sdk.py`) and JS SDK (`js/contract.test.ts`); `test_server_sdk.py` runs a real server against both SDKs (REST over http, Realtime over wss with a self-signed cert, JS via `js/server.test.ts`) |
-| `model/` | CPU + staged models | real engine text vs the reference `infer_onnx.py` (`test_engine.py`, fp32/int8 x beam/greedy, token times), worker + lanes, `test_server.py` (json/text/SSE on the real model). Marked `model`; skipped when the model is not staged |
+| `model/` | CPU + staged models | real engine text vs the reference `infer_onnx.py` (`test_engine.py`, fp32/int8 x beam/greedy, token times), worker + lanes, `test_server.py` (json/text/SSE and the R2a cue gate on the real model, writes `docs/baseline/r2a_gate.json`). Marked `model`; skipped when the model is not staged |
 | `container/` | docker + staged models | image gate; skips without docker |
 
 Shared helpers:
@@ -64,6 +66,7 @@ Shared helpers:
 
 - `assets/manifest.json`: single source of model pins (repo id, commit, size + SHA256 per file).
 - `Dockerfile`, `.dockerignore`, `compose.yaml`: the image and how it runs.
-- `docs/baseline/*.json`: saved reports (offline baseline, server smoke, container gate, alignment probe, limits probe).
+- `docs/baseline/*.json`: saved reports (offline baseline, server smoke, container gate, alignment probe, R2a gate,
+  limits probe).
 - `models/`, `fixtures-large/`: staged assets and large fixtures (gitignored).
 - `references/`: read-only upstream sources (git submodules).

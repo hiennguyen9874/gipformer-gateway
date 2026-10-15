@@ -7,7 +7,7 @@ Current release: `v0.1.0-rc.1` (pre-release). Details of what ships: [implementa
 | Release | Scope |
 |---|---|
 | R1 | `/v1/models`, `POST /v1/audio/transcriptions` (`json`, `text`, SSE), auth, OpenAI errors, limits, Docker (one GPU) |
-| R2a | `verbose_json` (no `segments`), `srt`, `vtt` with timestamps from the greedy CTC path |
+| R2a | `verbose_json` (no `segments`), `srt`, `vtt` with timestamps from token emission times |
 | R3a | Realtime transcription over WebSocket `/v1/realtime`, explicit commit (`turn_detection: null`) |
 
 ## Not implemented yet
@@ -55,7 +55,9 @@ regardless of chunk length, see [baseline.vi.md](baseline.vi.md) §4), so §4 op
 ### 2. Word timestamps (R2b)
 
 `timestamp_granularities[]=word` returns 400 until this gate passes (`WORD_TIMESTAMPS = False` in
-`app/transcription.py`). Alignment code and the evaluator (`scripts/eval_alignment.py`) exist.
+`app/transcription.py`). Alignment code and the evaluator (`scripts/eval_alignment.py`) exist. The emission-time probe
+(docs/baseline.vi.md §6) puts the first word after a silence a median 75 ms early with quartiles -255 / +120 ms, so
+raw emission times are unlikely to pass this gate without a better word-start estimate.
 
 - [ ] Hand-annotated word boundaries in `tests/fixtures/alignment/` (Praat/Audacity, not another aligner):
   ≥ 200 words, ≥ 10 utterances, `dev`/`test` splits.

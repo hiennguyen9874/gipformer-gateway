@@ -55,4 +55,6 @@ Benchmark invocation (R4): docs/roadmap.md §1.
 
 ```bash
 uv run scripts/probe_limits.py --out docs/baseline/limits_probe.json  # short-audio floor, chunk length (~6 min, needs vi_long.wav)
+uv run scripts/probe_alignment.py --out docs/baseline/alignment_probe.json  # emission times -> cue constants (~1 min)
+uv run pytest tests/model/test_server.py              # R2a cue gate; writes docs/baseline/r2a_gate.json when it passes
 ```

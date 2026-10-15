@@ -127,7 +127,43 @@ RSS sau load ≈ 387 MB; peak lúc load (759 MB) là peak của cả process t�
 chunk < 1 s (cũng là thời gian tối đa một job LIVE phải chờ một chunk FILE đang chạy), WER thấp nhất trong bảng. WER
 trên một file 272 từ chỉ để loại các giá trị tệ, không phân biệt được 10–30 s.
 
-## 6. Tái tạo
+## 6. Thời điểm phát token và cue — gipformer1.5-68M-rnnt (CPU)
+
+Đo bằng `scripts/probe_alignment.py` (sherpa-onnx 1.13.8, fp32, `modified_beam_search` beam 4, chunk 20 s). Report chỉ
+có số đo và số đếm: [`baseline/alignment_probe.json`](baseline/alignment_probe.json).
+
+| Đo | Kết quả |
+|---|---|
+| (a) Độ phân giải | Mọi thời điểm là bội của 640 mẫu (**40 ms**), ở cả fp32/int8 × beam/greedy |
+| (b) Dịch audio (thêm 10 ms … 1 s số 0 phía trước, token không đổi) | ≥ 92% token dịch đúng lượng đó trong ±1 bước; ngoại lệ là token đầu (và có khi token thứ hai), luôn ở thời điểm 0 |
+| (c) Khoảng lặng 1 s chèn tại 27 điểm yên lặng giữa câu: token đầu sau khoảng lặng − cuối khoảng lặng | median −75 ms, tứ phân vị −255 / +120 ms, p10 −957 ms; 17/27 nằm **trong** khoảng lặng |
+| (c) Đầu khoảng lặng − token cuối trước nó | median 265 ms, p75 345 ms, p95 1,157 ms |
+| (d) Khoảng cách giữa hai lần bắt đầu từ (trong câu) | median 280 ms, p90 520 ms, p95 880 ms |
+| (e) Cue (`vi_long`, 106.6 s, 7 chunk) | 20 cue, dài nhất 6.97 s, nhiều nhất 80 ký tự; tốc độ đọc median 11 ký tự/s |
+
+Model phát token gần đầu âm tiết nhưng không có độ trễ cố định: độ lệch đổi dấu giữa các tứ phân vị và từ đầu sau
+khoảng lặng hay được đóng dấu sớm tới ~1 s. Encoder nhìn toàn bộ chunk nên thời điểm phát không bám chặt âm thanh.
+
+**Hằng số (`app/alignment.py`; probe exit 1 nếu lệch):**
+
+- `EMISSION_SHIFT = 0`: chỉ bù khi tứ phân vị 25/75 của (c) cùng dấu; ở đây khác dấu.
+- `LAST_WORD_SAMPLES = 4480` (0.28 s): median của "đầu khoảng lặng − token cuối" (265 ms), làm tròn lên bội 40 ms.
+- `PAUSE_SAMPLES = 8320` (0.52 s): p90 của (d), làm tròn lên bội 40 ms (dài hơn nhịp nói bình thường). Chỉ tác dụng
+  giữa các chunk (trong chunk, end của từ = start của từ sau).
+- `MAX_CUE_SAMPLES = 7 s`, `MAX_CUE_CHARS = 80`: quy ước phụ đề (tối đa 7 s trên màn hình, hai dòng 40 ký tự), không
+  phải đặc tính model; trên speech thật giới hạn ký tự thường cắt trước.
+
+**R2a cue gate** (`tests/model/test_server.py`, server thật trên model thật; report chỉ metadata
+[`baseline/r2a_gate.json`](baseline/r2a_gate.json)): `verbose_json`/`srt`/`vtt` khớp `json` trên mọi fixture; cue có thứ
+tự, trong audio, trong giới hạn; composite `vi_a | 1 s | vi_b | 1 s | vi_a | 1 s | vi_b` (37.7 s, 2 chunk, cắt trong
+khoảng lặng giữa): không cue nào phủ qua khoảng lặng chứa điểm cắt, cue trước kết thúc 0.66 s trước nó, cue sau bắt
+đầu 0.02 s trước khi lời nói tiếp; dịch audio 0.25/0.5/0.75 s dịch mọi mép cue (trừ start của từ đầu) trong ±20 ms;
+`vi_long` dạng m4a WER 4.0%, 7 chunk, 20 cue.
+
+Giới hạn: cue có thể bắt đầu trước lời nói (tới ~1 s) và phủ qua khoảng lặng nằm trong cùng một chunk. Không có mốc
+thời gian từng từ do người annotate, nên độ chính xác từng từ chưa được đo (R2b, [roadmap.md](roadmap.md) §2).
+
+## 7. Tái tạo
 
 ```bash
 uv sync --extra cu126
@@ -146,14 +182,23 @@ Probe §5 (Gipformer, CPU, ~6 phút; cần model đã stage và `fixtures-large/
 uv run scripts/probe_limits.py --out docs/baseline/limits_probe.json
 ```
 
-## 7. Reports trong `docs/baseline/`
+Probe và gate §6 (Gipformer, CPU, ~1 phút mỗi lệnh; cần model đã stage và `fixtures-large/vi_long.wav`). Probe exit 1
+nếu hằng số trong `app/alignment.py` khác giá trị suy ra; gate ghi `r2a_gate.json` khi mọi test gate pass:
+
+```bash
+uv run scripts/probe_alignment.py --out docs/baseline/alignment_probe.json
+uv run pytest tests/model/test_server.py
+```
+
+## 8. Reports trong `docs/baseline/`
 
 | File | Nội dung |
 |---|---|
 | `offline.json` | Baseline inference ở trên (chuẩn text cho smoke/GPU tests) |
 | `server.json` | Smoke gateway local trên GPU: mọi format + Realtime |
 | `server-container-cu128.json` | Smoke trong GPU container gate (chỉ metadata) |
-| `alignment_probe.json` | Hình học frame CTC và độ trễ spike, căn cứ cho timestamps `srt`/`vtt` |
+| `alignment_probe.json` | Gipformer: độ phân giải, dịch audio và độ trễ của thời điểm phát token; cue (§6) |
+| `r2a_gate.json` | Gipformer: R2a cue gate trên server với model thật, chỉ metadata (§6) |
 | `limits_probe.json` | Gipformer: input ngắn nhất, speech ngắn, latency/RSS/WER theo độ dài chunk (§5) |
 
 Chưa đo: LM/KenLM, Python 3.11, cold load khi page cache lạnh, tải đồng thời (xem [roadmap.md](roadmap.md)).

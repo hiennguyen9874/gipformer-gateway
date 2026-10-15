@@ -62,9 +62,10 @@ OpenAI SDK / curl / WebSocket client
 
 ### Timestamps (`srt`/`vtt`)
 
-Lấy từ đường CTC greedy của chính lần inference sinh ra text (`app/alignment.py`), cộng offset tuyệt đối của chunk;
-không chạy thêm GPU. Frame 40 ms, không có độ trễ cố định cần bù (`docs/baseline/alignment_probe.json`). Nếu đường
-CTC không khớp transcript → 500 `alignment_failed`; không bao giờ chia đều thời gian.
+Lấy từ thời điểm phát token (token emission time) của chính lần inference sinh ra text (`app/alignment.py`), cộng
+offset tuyệt đối của chunk; không chạy thêm inference. Bước 40 ms, không có độ trễ cố định cần bù; độ dài từ cuối chunk
+và ngưỡng pause đo bằng `scripts/probe_alignment.py` (`docs/baseline/alignment_probe.json`, baseline §6). Nếu token
+không khớp transcript → 500 `alignment_failed`; không bao giờ chia đều thời gian.
 
 ### Realtime
 

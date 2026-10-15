@@ -20,16 +20,20 @@ from app.chunking import Span
 from app.config import SAMPLE_RATE
 from app.engine import ChunkResult
 
-# Duration given to the last word of a chunk: nothing marks where it ends. Provisional until the token-time probe.
-LAST_WORD_SAMPLES = SAMPLE_RATE * 4 // 10
-# Constant emission delay compensation in samples; set from the token-time probe (0 until measured).
+# Values from scripts/probe_alignment.py (docs/baseline/alignment_probe.json, docs/baseline.vi.md §6); the probe exits 1
+# if they drift. Emission times come in steps of 640 samples (40 ms).
+# Duration given to the last word of a chunk: nothing marks where it ends. Median time from the last emission before
+# a known silence to that silence (265 ms), rounded up to a step.
+LAST_WORD_SAMPLES = 4480
+# Constant emission delay compensation in samples. 0: the onset delay is not constant (median -75 ms, quartiles
+# -255 / +120 ms), so no shift improves it.
 EMISSION_SHIFT = 0
 WORD_START = "\u2581"
 
-# Cue (subtitle segment) limits, A6.
-PAUSE_SAMPLES = SAMPLE_RATE // 2  # an aligned gap of at least this between two words ends the cue
-MAX_CUE_SAMPLES = 7 * SAMPLE_RATE
-MAX_CUE_CHARS = 80
+# Cue (subtitle segment) limits.
+PAUSE_SAMPLES = 8320  # an aligned gap of at least this ends the cue: p90 of word-start intervals (520 ms), step-rounded
+MAX_CUE_SAMPLES = 7 * SAMPLE_RATE  # subtitle conventions: at most 7 s on screen,
+MAX_CUE_CHARS = 80  # two 40-character lines
 
 _WORD = re.compile(r"\S+")
 

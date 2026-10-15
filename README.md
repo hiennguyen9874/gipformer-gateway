@@ -12,8 +12,8 @@ Không phải tương thích OpenAI đầy đủ. Payload, mã lỗi và capabil
 Giới hạn cần biết:
 
 - Output là text gốc của model: chữ HOA, không dấu câu, số viết bằng chữ. Chỉ `language=vi`; không có logprobs.
-- `srt`/`vtt` có thời gian từ thời điểm model phát từng token (chưa có probe độ trễ; xem roadmap). `verbose_json` không có
-  `segments`; word timestamps chưa bật.
+- `srt`/`vtt` có thời gian từ thời điểm model phát từng token (bước 40 ms; cue có thể bắt đầu sớm tới ~1 s sau khoảng
+  lặng, xem [baseline §6](docs/baseline.vi.md)). `verbose_json` không có `segments`; word timestamps chưa bật.
 - Realtime: transcript chỉ có sau `input_audio_buffer.commit`; không có partial, không có VAD.
 - Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model Gipformer. Model id cũ `gipformer1.5-68M-rnnt` trả 404 `model_not_found`.
 

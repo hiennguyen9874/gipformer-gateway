@@ -31,6 +31,9 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 
 - Times come only from the token emission times of the same inference that produced the text, plus the chunk offset.
   On mismatch raise `AlignmentError` -> 500 `alignment_failed`.
+- `EMISSION_SHIFT`, `LAST_WORD_SAMPLES`, `PAUSE_SAMPLES` and the cue limits come from `scripts/probe_alignment.py`
+  (docs/baseline.vi.md §6), which exits 1 if they drift. Change them only with a new probe report, then rerun the R2a
+  gate (`tests/model/test_server.py`) and commit both reports. Rerun both after changing sherpa-onnx or the model pin.
 - `WORD_TIMESTAMPS = False` in `app/transcription.py` until the R2b gate passes (docs/roadmap.md §2); flip it in the
   commit that carries the gate report.
 

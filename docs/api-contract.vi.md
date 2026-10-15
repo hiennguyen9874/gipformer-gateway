@@ -25,7 +25,7 @@ tài liệu OpenAI, không phải traffic quan sát được. Mã lỗi `code` b
 | `GET /v1/models`, `GET /v1/models/{id}` | Hỗ trợ | R1 |
 | `POST /v1/audio/transcriptions` `response_format=json\|text` | Hỗ trợ | R1 |
 | `stream=true` (SSE delta/done) | Hỗ trợ | R1 |
-| `response_format=verbose_json\|srt\|vtt` (không stream) | Hỗ trợ | R2a |
+| `response_format=verbose_json\|srt\|vtt` (không stream) | Hỗ trợ; cue gate qua trên model thật (`docs/baseline/r2a_gate.json`) | R2a |
 | `timestamp_granularities[]=segment` | 400 `unsupported_parameter`: `TranscriptionSegment` cần field chỉ Whisper có; segment chỉ có qua `srt`/`vtt` | — |
 | `timestamp_granularities[]=word` | 400 `unsupported_parameter` cho tới khi qua alignment gate ([roadmap](roadmap.md)) | R2b |
 | WS `/v1/realtime` transcription, `turn_detection: null`, append/commit/clear | Hỗ trợ | R3a |
@@ -86,10 +86,15 @@ Kết quả:
 - Timestamps (`srt`/`vtt`, sau này `words`): lấy từ thời điểm phát token (token emission time) của chính lần inference sinh ra text, cộng offset
   tuyệt đối của chunk; không chạy thêm inference. **Từ** = dãy ký tự không phải khoảng trắng của transcript (âm tiết tiếng
   Việt, không phải từ ghép); start của từ = thời điểm phát token đầu tiên của nó; end = start của từ kế tiếp trong chunk,
-  hoặc với từ cuối chunk là độ dài giới hạn `LAST_WORD_SAMPLES` (0.4 s, tạm thời cho tới khi có probe) và không quá cuối chunk.
-  Cue mới khi khoảng cách giữa end của từ trước và start của từ sau ≥ 0.5 s, hoặc khi thêm từ sẽ làm cue dài > 7 s
-  hay > 80 ký tự. Khoảng cách này chỉ có thể xuất hiện giữa các chunk; trong cùng chunk, end của từ trước bằng start
+  hoặc với từ cuối chunk là độ dài giới hạn `LAST_WORD_SAMPLES` (0.28 s) và không quá cuối chunk. Không bù độ trễ
+  (`EMISSION_SHIFT = 0`). Thời điểm phát token theo bước 40 ms.
+  Cue mới khi khoảng cách giữa end của từ trước và start của từ sau ≥ 0.52 s, hoặc khi thêm từ sẽ làm cue dài > 7 s
+  hay > 80 ký tự. Các hằng số này lấy từ probe `scripts/probe_alignment.py` (baseline §6). Khoảng cách này chỉ có thể xuất hiện giữa các chunk; trong cùng chunk, end của từ trước bằng start
   của từ sau. Khoảng cách lớn giữa các lần phát token không chứng minh có khoảng lặng, nên không tự tách cue.
+  Độ chính xác (đo ở baseline §6): từ đầu tiên sau một khoảng lặng thường được đóng dấu sớm, có khi tới ~1 s (nằm
+  trong khoảng lặng); token đầu tiên của chunk thường được đóng dấu ngay đầu chunk, kể cả khi chunk bắt đầu bằng im lặng. Vì vậy cue
+  có thể bắt đầu trước lời nói và một cue có thể phủ qua khoảng lặng nằm trong cùng chunk. Cue không bao giờ phủ qua
+  điểm cắt chunk.
   Ngoại lệ: một từ tự nó vượt giới hạn được giữ nguyên trong cue riêng, không cắt từ. Giờ SRT/VTT là
   ms nguyên làm tròn; cue có thứ tự, không chồng nhau, nằm trong `[0, duration]`. Một từ bị điểm cắt chunk chia đôi
   (hiếm, chỉ khi 5 s cuối trước giới hạn không có điểm lặng) thành hai từ, nhất quán với text.

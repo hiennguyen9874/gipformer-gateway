@@ -208,7 +208,7 @@ def test_word_timestamps_after_the_gate(tmp_path, monkeypatch):
 def test_alignment_failure_is_an_error_only_for_timed_formats(tmp_path):
     class Broken(FakeEngine):
         def transcribe(self, wav):
-            return super().transcribe(wav)._replace(units=())  # a path that does not spell the text
+            return super().transcribe(wav)._replace(tokens=())  # a path that does not spell the text
 
     audio = wav_file(tmp_path / "a.wav", noise(2.5, seed=13))
     with serve(Broken(text_fn=name), max_chunk_seconds=1.0) as srv:

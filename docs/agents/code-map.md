@@ -8,12 +8,12 @@ Each file's job, and the tests that cover it. Area rules live in [change-rules.m
 quan_loader.py    load QUAN from staged local dirs only (no Hub resolution); reuses quan_transcribe classes
 config.py         typed GIPFORMER_* env config, validated at startup; no default API key
 engine.py         QuanEngine adapter + EngineWorker, the single thread that runs the model;
-                    ChunkResult = text + greedy CTC path (units, first/last frame) + frames
+                    ChunkResult = text + tokens + token emission times (samples, relative to the chunk)
 scheduler.py      bounded fair queue (lanes = requests/sessions, jobs = chunks) feeding the worker
 audio.py          AudioIngress: multipart ingress (body limit before parser, bounded spool), sandboxed FFmpeg
                     `decode`, decoded-audio RAM budget (`hold`, `reserve`)
 chunking.py       `split`: quiet-point splitter, contiguous spans; <=100 ms audio -> no chunk (empty transcript)
-alignment.py      pure: CTC path -> words (absolute samples) -> cues; raises AlignmentError
+alignment.py      pure: token emission times -> words (absolute samples) -> cues; raises AlignmentError
 formats.py        pure: verbose_json / srt / vtt serializers
 main.py           FastAPI app factory: lifespan, /health, /ready, /metrics, auth, request ids
 transcription.py  /v1/models, POST /v1/audio/transcriptions (raw ASGI: json/text/SSE/verbose_json/srt/vtt,
@@ -35,7 +35,6 @@ fetch_fixtures.py   build fixtures from FLEURS vi_vn (CC BY 4.0) at a pinned rev
 smoke_inference.py  model baseline (full/streaming, timings, RAM/VRAM, short-clip probe) -> JSON
 smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline -> JSON
 benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metadata-only JSON, not a capacity claim
-probe_alignment.py  frame geometry, shift, spike latency -> docs/baseline/alignment_probe.json
 demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
                       (audio/, results.json, static index.html with WER, word diff, clickable SRT cues)
 eval_alignment.py   R2b gate: words vs hand annotations in tests/fixtures/alignment/ (none exist yet)
@@ -56,7 +55,7 @@ subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py an
 
 Shared helpers:
 
-- `fake_engine.py`: engine stand-in for CPU tests (`text_fn` for real decoded audio; synthetic CTC path).
+- `fake_engine.py`: engine stand-in for CPU tests (`text_fn` for real decoded audio; tokens + times).
 - `live_server.py`: `serve(...)` runs real Uvicorn (websockets-sansio, optional self-signed TLS via `tls_dir`)
   around `create_app`; also float-WAV/PCM24 audio helpers and the raw realtime client `WS`.
 - `fixtures/`: small committed fixtures + `manifest.json` (hashes, references, license).

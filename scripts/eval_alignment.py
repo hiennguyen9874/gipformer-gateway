@@ -137,7 +137,6 @@ def main() -> int:
 
     engine = QuanEngine(args.models_dir, "cuda", warmup_seconds=args.max_chunk_seconds)
     engine.load()
-    pieces = engine.pieces()
     max_chunk = int(args.max_chunk_seconds * 16000)
     by_split: dict[str, list] = {}
     for path in files:
@@ -151,7 +150,7 @@ def main() -> int:
         chunks = [(s, engine.transcribe(x[s.start : s.end])) for s in split(x, max_chunk)]
         hyp = [
             {"word": w.text, "start": seconds(w.start), "end": seconds(w.end)}
-            for w in align(chunks, pieces)
+            for w in align(chunks)
         ]
         by_split.setdefault(ann["split"], []).append((ann["words"], hyp, len(x) / sr))
 

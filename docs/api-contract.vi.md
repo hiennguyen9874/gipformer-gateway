@@ -83,16 +83,16 @@ Kết quả:
 - `srt` → `200 text/plain; charset=utf-8`: cue `n\nHH:MM:SS,mmm --> HH:MM:SS,mmm\ntext\n\n`, đánh số từ 1; không có
   cue → body rỗng. `vtt` → cùng content type, `WEBVTT\n\n` rồi `HH:MM:SS.mmm --> HH:MM:SS.mmm\ntext\n\n`; không có
   cue → chỉ header. Cả hai SDK trả nguyên body (string). Ví dụ `examples/transcription.srt`, `examples/transcription.vtt`.
-- Timestamps (`srt`/`vtt`, sau này `words`): lấy từ đường CTC greedy của chính lần inference sinh ra text, cộng offset
-  tuyệt đối của chunk; không chạy thêm GPU. **Từ** = dãy ký tự không phải khoảng trắng của transcript (âm tiết tiếng
-  Việt, không phải từ ghép); thời gian của từ = các frame 40 ms mà model phát unit của nó (spike, thường 1 frame,
-  nằm trong/cuối âm tiết), nên start của cue có thể trễ ~1 âm tiết so với lúc bắt đầu nói (đo: `docs/baseline/alignment_probe.json`).
+- Timestamps (`srt`/`vtt`, sau này `words`): lấy từ thời điểm phát token (token emission time) của chính lần inference sinh ra text, cộng offset
+  tuyệt đối của chunk; không chạy thêm inference. **Từ** = dãy ký tự không phải khoảng trắng của transcript (âm tiết tiếng
+  Việt, không phải từ ghép); start của từ = thời điểm phát token đầu tiên của nó; end = start của từ kế tiếp trong chunk,
+  hoặc với từ cuối chunk là độ dài giới hạn `LAST_WORD_SAMPLES` (0.4 s, tạm thời cho tới khi có probe) và không quá cuối chunk.
   Cue mới khi khoảng lặng giữa hai từ ≥ 0.5 s, hoặc khi thêm từ sẽ làm cue dài > 7 s hay > 80 ký tự.
   Ngoại lệ: một từ tự nó vượt giới hạn được giữ nguyên trong cue riêng, không cắt từ. Giờ SRT/VTT là
   ms nguyên làm tròn; cue có thứ tự, không chồng nhau, nằm trong `[0, duration]`. Một từ bị điểm cắt chunk chia đôi
   (hiếm, chỉ khi 5 s cuối trước giới hạn không có điểm lặng) thành hai từ, nhất quán với text.
 - Mọi format cho cùng transcript: `json.text == text == verbose_json.text == SSE done.text ==` các text cue nối bằng
-  một dấu cách. Nếu đường CTC không khớp transcript, `srt`/`vtt` trả 500 `alignment_failed` (không bao giờ chia đều
+  một dấu cách. Nếu token không khớp transcript, `srt`/`vtt` trả 500 `alignment_failed` (không bao giờ chia đều
   thời gian); `json`/`text`/`verbose_json`/SSE không chạy alignment nên không bị ảnh hưởng.
 - Text: chữ thường tiếng Việt, không dấu câu, số viết bằng chữ (output nguyên bản của model). Nhiều chunk nối bằng
   một dấu cách; chunk rỗng không sinh dấu cách.
@@ -236,7 +236,7 @@ Envelope (ví dụ `examples/error.json`):
 | 405 | `invalid_request_error` | `method_not_allowed` |
 | 413 | `invalid_request_error` | `request_too_large` (body vượt giới hạn, kiểm tra trước multipart parse; hoặc một form field vượt 8 KiB) |
 | 429 | `rate_limit_error` | `server_busy` (queue/concurrency/decode slot/spool disk/budget audio đã decode đầy); kèm `Retry-After` khi có ước lượng |
-| 500 | `server_error` | `inference_failed`, `alignment_failed` (`srt`/`vtt`: đường CTC không khớp transcript), `internal_error` (lỗi không lường trước, không lộ chi tiết) |
+| 500 | `server_error` | `inference_failed`, `alignment_failed` (`srt`/`vtt`: token không khớp transcript), `internal_error` (lỗi không lường trước, không lộ chi tiết) |
 | 503 | `server_error` | `model_not_ready` (đang load/recover, `Retry-After: 5`), `shutting_down` (đang drain), `request_timeout` (hết budget tổng của request ở upload, decode, chờ queue hoặc đang chạy; call đang chạy vẫn giữ worker/budget tới khi kết thúc) |
 
 Mọi response (kể cả lỗi) có header `x-request-id: req_…`; Python SDK đưa giá trị này vào `request_id` của exception; JS SDK dùng `requestID`.

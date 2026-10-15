@@ -1,14 +1,14 @@
-"""Word and cue timestamps from the greedy CTC path of each chunk (docs/api-contract.vi.md §4).
+"""Word and cue timestamps from the token emission times of each chunk (docs/api-contract.vi.md §4).
 
-The gateway decodes greedily, so the argmax path that produced the text is its alignment: no extra GPU work, no
-forced alignment. Times are absolute 16 kHz sample offsets (ints) until serialization.
+The transducer reports when it emitted each token, so those times are the alignment: no extra inference, no forced
+alignment. Times are absolute 16 kHz sample offsets (ints) until serialization.
 
 - A word is a maximal run of non-whitespace characters of the final text (a Vietnamese syllable, not a compound).
-  Token pieces start a new word with "▁" and never contain it elsewhere, so each word is a run of units.
-- Encoder frame k (40 ms) is centred on chunk sample 640 k and covers [640 k - 320, 640 k + 320), clipped to the
-  chunk. A word spans the frames of its units.
-- Any inconsistency (the path does not spell the text, frames out of order or outside the chunk) raises
-  `AlignmentError`: timestamps are never guessed or spread evenly.
+  Token pieces start a new word with "▁" and never contain it elsewhere, so each word is a run of tokens.
+- A word starts when its first token was emitted and ends where the next word of the chunk starts; the last word of a
+  chunk lasts `LAST_WORD_SAMPLES` (or until the chunk ends).
+- Any inconsistency (the tokens do not spell the text, times out of order or outside the chunk, a word with no
+  duration) raises `AlignmentError`: timestamps are never guessed or spread evenly.
 """
 
 import re
@@ -20,10 +20,9 @@ from app.chunking import Span
 from app.config import SAMPLE_RATE
 from app.engine import ChunkResult
 
-SAMPLES_PER_FRAME = 640  # two stride-2 convolutions over 10 ms mel frames
-HALF_FRAME = SAMPLES_PER_FRAME // 2
-# Constant spike delay compensation in samples. 0: the P0 probe found no constant delay to compensate
-# (docs/baseline/alignment_probe.json).
+# Duration given to the last word of a chunk: nothing marks where it ends. Provisional until the token-time probe.
+LAST_WORD_SAMPLES = SAMPLE_RATE * 4 // 10
+# Constant emission delay compensation in samples; set from the token-time probe (0 until measured).
 EMISSION_SHIFT = 0
 WORD_START = "\u2581"
 
@@ -48,55 +47,49 @@ class Segment(NamedTuple):
 
 
 class AlignmentError(Exception):
-    """The CTC path and the text disagree; the response must fail rather than carry made-up times."""
+    """The tokens and the text disagree; the response must fail rather than carry made-up times."""
 
 
-def words(span: Span, result: ChunkResult, pieces: Sequence[str]) -> list[Word]:
+def words(span: Span, result: ChunkResult) -> list[Word]:
     """Words of one chunk with absolute times inside `span`."""
     n = span.end - span.start
-    if not (len(result.units) == len(result.first) == len(result.last)):
-        raise AlignmentError("path arrays differ in length")
-    # Character range of each unit that emits text.
+    if len(result.tokens) != len(result.times):
+        raise AlignmentError("tokens and times differ in length")
+    # Character range and emission time of each token that emits text.
     chars: list[str] = []
-    ranges: list[tuple[int, int, int, int]] = []  # (char start, char end, first frame, last frame)
-    pos, prev_first, prev_last = 0, 0, 0
-    for u, f, last in zip(result.units, result.first, result.last, strict=True):
-        # Real paths are strictly increasing; non-decreasing is all the times below need.
-        if not (prev_first <= f <= last < result.frames and prev_last <= last):
-            raise AlignmentError("frames out of order or out of range")
-        prev_first, prev_last = f, last
-        if not 0 <= u < len(pieces):
-            raise AlignmentError("unit outside the vocabulary")
-        piece = pieces[u].replace(WORD_START, " ")
+    ranges: list[tuple[int, int, int]] = []  # (char start, char end, time)
+    pos, prev = 0, 0
+    for token, t in zip(result.tokens, result.times, strict=True):
+        if not prev <= t < n:
+            raise AlignmentError("token times out of order or out of range")
+        prev = t
+        piece = token.replace(WORD_START, " ")
         if piece:
             chars.append(piece)
-            ranges.append((pos, pos + len(piece), f, last))
+            ranges.append((pos, pos + len(piece), t))
             pos += len(piece)
     spelled = "".join(chars)
     if spelled.strip() != result.text:
-        raise AlignmentError("path does not spell the text")
+        raise AlignmentError("tokens do not spell the text")
 
-    out: list[Word] = []
+    found: list[tuple[str, int]] = []
     j = 0
     for m in _WORD.finditer(spelled):
-        a, b = m.span()
-        while ranges[j][1] <= a:
+        while ranges[j][1] <= m.start():
             j += 1
-        first, last, k = ranges[j][2], ranges[j][3], j
-        while k < len(ranges) and ranges[k][0] < b:
-            last = ranges[k][3]
-            k += 1
-        start = max(0, SAMPLES_PER_FRAME * first - HALF_FRAME + EMISSION_SHIFT)
-        end = min(n, SAMPLES_PER_FRAME * last + HALF_FRAME + EMISSION_SHIFT)
-        if not start < end:
-            raise AlignmentError("word outside the chunk")
-        out.append(Word(m.group(), span.start + start, span.start + end))
+        found.append((m.group(), max(0, ranges[j][2] + EMISSION_SHIFT)))
+    out: list[Word] = []
+    for i, (text, start) in enumerate(found):
+        end = found[i + 1][1] if i + 1 < len(found) else min(n, start + LAST_WORD_SAMPLES)
+        if not start < end <= n:
+            raise AlignmentError("word without duration or outside the chunk")
+        out.append(Word(text, span.start + start, span.start + end))
     if " ".join(w.text for w in out) != result.text:
         raise AlignmentError("words do not rebuild the text")
     return out
 
 
-def align(chunks: Sequence[tuple[Span, ChunkResult]], pieces: Sequence[str]) -> list[Word]:
+def align(chunks: Sequence[tuple[Span, ChunkResult]]) -> list[Word]:
     """Words of a whole transcript, chunks in audio order; their texts joined by one space give the transcript."""
     out: list[Word] = []
     prev_end = 0
@@ -104,7 +97,7 @@ def align(chunks: Sequence[tuple[Span, ChunkResult]], pieces: Sequence[str]) -> 
         if span.start < prev_end:
             raise AlignmentError("chunks overlap or are out of order")
         prev_end = span.end
-        out.extend(words(span, result, pieces))
+        out.extend(words(span, result))
     if any(b.start < a.start for a, b in pairwise(out)):
         raise AlignmentError("word starts go backwards")
     return out

@@ -28,45 +28,24 @@ from app.observability import log, Metrics
 # The log-mel frontend crashes below 161 samples (docs/baseline.vi.md §7). Audio policy for short clips (return ""
 # without inference) belongs to the callers; this is the hard safety floor.
 MIN_FORWARD_SAMPLES = 161
-BLANK = 0  # CTC unit ids: 0 = blank, 1 = <unk>, 2.. = Gemma tokens
 
 
 class ChunkResult(NamedTuple):
-    """Greedy CTC result of one chunk: the text and the best path it was decoded from (no tensors).
+    """Result of one chunk: the text and the tokens it was decoded from, with their emission times (no tensors).
 
-    `units` is the collapsed path without blanks (<unk> kept, so it matches the path); unit i was emitted on encoder
-    frames `first[i]..last[i]` (inclusive, relative to the chunk). `frames` is the number of valid encoder frames.
+    `tokens` are the decoded pieces ("▁" starts a word, so their concatenation spells the text); token i was emitted
+    at `times[i]`, a sample offset (16 kHz) relative to the chunk start, non-decreasing and inside the chunk.
     """
 
     text: str
-    units: tuple[int, ...]
-    first: tuple[int, ...]
-    last: tuple[int, ...]
-    frames: int
-
-
-def ctc_path(best: np.ndarray) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
-    """Collapse an argmax frame sequence like `quan_transcribe.model.greedy_decode`, keeping each unit's frames."""
-    best = np.asarray(best)
-    if best.size == 0:
-        return (), (), ()
-    starts = np.flatnonzero(np.concatenate(([True], best[1:] != best[:-1])))
-    ends = np.concatenate((starts[1:], [len(best)])) - 1
-    keep = best[starts] != BLANK
-    return (
-        tuple(best[starts][keep].tolist()),
-        tuple(starts[keep].tolist()),
-        tuple(ends[keep].tolist()),
-    )
+    tokens: tuple[str, ...]
+    times: tuple[int, ...]
 
 
 class Engine(Protocol):
     def load(self) -> None: ...
     def warmup(self) -> None: ...
     def transcribe(self, wav: np.ndarray) -> ChunkResult: ...
-    def pieces(self) -> tuple[str, ...]:
-        """Unit id -> token piece ("" for blank and <unk>); called once after `load`."""
-        ...
 
 
 class QuanEngine:
@@ -90,16 +69,8 @@ class QuanEngine:
         self.transcribe(np.zeros(int(self._warmup_seconds * SAMPLE_RATE), dtype=np.float32))
 
     def transcribe(self, wav: np.ndarray) -> ChunkResult:
-        # The reference's greedy batch decode step (`_run` with decoder=None) without `split_quiet` (which silently
-        # drops pieces <= 100 ms; chunking is the caller's job), keeping the best path for timestamps. The text is
-        # decoded from the same units as `_run`, so it equals the baseline.
-        logits, lens = self._asr._forward([wav], False, None)
-        frames = int(lens[0])
-        units, first, last = ctc_path(logits[0, :frames].argmax(-1).cpu().numpy())
-        return ChunkResult(self._asr.decode_units(list(units)), units, first, last, frames)
-
-    def pieces(self) -> tuple[str, ...]:
-        return ("", "") + tuple(self._asr.tokenizer.convert_ids_to_tokens(self._asr.gemma_ids))
+        # CTC has no token emission times; this engine is deleted with the real Gipformer engine.
+        raise NotImplementedError("QuanEngine does not produce token times")
 
 
 def check_waveform(wav: np.ndarray) -> None:
@@ -128,7 +99,6 @@ class EngineWorker:
         self._thread = threading.Thread(target=self._main, name="gipformer-inference", daemon=True)
         self._state = EngineState.LOADING
         self._call_started: float | None = None
-        self.pieces: tuple[str, ...] = ()  # set before the worker becomes ready
         metrics.gauge_fn(
             "ready",
             "1 when the model is loaded, warmed up and the worker is not hung.",
@@ -191,7 +161,6 @@ class EngineWorker:
         t0 = time.monotonic()
         try:
             self._engine.load()
-            self.pieces = tuple(self._engine.pieces())
             self._warmup()
         except Exception:
             log(logging.ERROR, "engine.load_failed", exc_info=True)

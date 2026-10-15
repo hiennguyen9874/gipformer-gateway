@@ -101,7 +101,7 @@ def inference_failed() -> APIError:
 
 
 def alignment_failed() -> APIError:
-    """The CTC path did not match the transcript: timestamps cannot be produced (never guessed)."""
+    """The tokens did not match the transcript: timestamps cannot be produced (never guessed)."""
     return APIError(500, "server_error", "alignment_failed", "Timestamps could not be computed.")
 
 

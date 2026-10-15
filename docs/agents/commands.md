@@ -53,7 +53,6 @@ One process per GPU, always one worker. Start the server from a shell with no `G
 ```bash
 CUDA_VISIBLE_DEVICES=<gpu> HF_HOME=$(mktemp -d) uv run --extra cu126 --offline scripts/smoke_inference.py \
     --no-network --out docs/baseline/offline.json
-CUDA_VISIBLE_DEVICES=<gpu> uv run --extra cu126 scripts/probe_alignment.py --out docs/baseline/alignment_probe.json
 ```
 
 Benchmark invocation (R4): docs/roadmap.md §1.

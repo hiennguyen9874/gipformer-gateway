@@ -3,7 +3,7 @@
 POST /v1/audio/transcriptions, one scheduler lane per request:
   pre-check (draining / not ready) -> receive multipart (spool) -> parse_params -> open lane -> decode -> drop spool
   -> hold decoded audio (RAM budget) -> split -> run chunks (pipelined) -> json | text | SSE
-  | verbose_json | srt | vtt (the timed formats align each chunk's CTC path after all chunks are done)
+  | verbose_json | srt | vtt (the timed formats align each chunk's token times after all chunks are done)
 
 - A raw ASGI handler, not `StreamingResponse`: once the body is read, a watcher cancels the work when the client
   disconnects (decode, queue wait, inference, streaming), and every send is bounded by `send_timeout_seconds`; a
@@ -424,7 +424,7 @@ class TranscriptionEndpoint:
             else:
                 chunks_done = await _until(deadline, watch.run(_collect(results)))
                 await _until(
-                    deadline, out.respond(_final(params, chunks_done, audio_s, self._worker.pieces))
+                    deadline, out.respond(_final(params, chunks_done, audio_s))
                 )
             outcome = "ok"
         except APIError as e:
@@ -506,7 +506,6 @@ def _final(
     params: Params,
     chunks: Sequence[tuple[Span, ChunkResult]],
     audio_s: float,
-    pieces: Sequence[str],
 ) -> Response:
     joiner = Joiner()
     for _, result in chunks:
@@ -521,7 +520,7 @@ def _final(
     words = None
     if fmt in ("srt", "vtt") or "word" in params.granularities:
         try:
-            words = align(chunks, pieces)
+            words = align(chunks)
         except AlignmentError as e:
             log(logging.ERROR, "transcription.alignment_failed", reason=str(e), chunks=len(chunks))
             raise alignment_failed() from None

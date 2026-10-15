@@ -25,7 +25,7 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 
 ## Timestamps (`alignment.py`, `formats.py`)
 
-- Times come only from the greedy CTC path of the same inference that produced the text, plus the chunk offset.
+- Times come only from the token emission times of the same inference that produced the text, plus the chunk offset.
   On mismatch raise `AlignmentError` -> 500 `alignment_failed`.
 - `WORD_TIMESTAMPS = False` in `app/transcription.py` until the R2b gate passes (docs/roadmap.md §2); flip it in the
   commit that carries the gate report.

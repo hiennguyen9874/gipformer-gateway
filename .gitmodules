@@ -1,6 +1,3 @@
-[submodule "references/audio.cpp"]
-	path = references/audio.cpp
-	url = git@github.com:0xShug0/audio.cpp.git
 [submodule "references/WhisperLiveKit"]
 	path = references/WhisperLiveKit
 	url = git@github.com:QuentinFuxa/WhisperLiveKit.git

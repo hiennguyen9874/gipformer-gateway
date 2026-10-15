@@ -36,7 +36,8 @@ class ChunkResult(NamedTuple):
     """Result of one chunk: the text and the tokens it was decoded from, with their emission times (no tensors).
 
     `tokens` are the decoded pieces ("▁" starts a word, so their concatenation spells the text); token i was emitted
-    at `times[i]`, a sample offset (16 kHz) relative to the chunk start, non-decreasing and inside the chunk.
+    at `times[i]`, a sample offset (16 kHz) relative to the chunk start, exactly as the recognizer reported it.
+    Times are not repaired here: alignment rejects times that go backwards or fall outside the chunk.
     """
 
     text: str
@@ -106,11 +107,8 @@ class GipformerEngine:
         result = stream.result
         # sherpa-onnx renders the word marker "▁" as a leading space; times are seconds from the chunk start.
         tokens = tuple(t.replace(" ", WORD_START) for t in result.tokens)
-        times, last = [], 0
-        for t in result.timestamps:
-            last = max(last, min(round(t * SAMPLE_RATE), len(wav)))
-            times.append(last)
-        return ChunkResult(result.text.strip(), tokens, tuple(times))
+        times = tuple(round(t * SAMPLE_RATE) for t in result.timestamps)
+        return ChunkResult(result.text.strip(), tokens, times)
 
 
 def check_waveform(wav: np.ndarray) -> None:

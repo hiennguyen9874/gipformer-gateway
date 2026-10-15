@@ -5,8 +5,8 @@ alignment. Times are absolute 16 kHz sample offsets (ints) until serialization.
 
 - A word is a maximal run of non-whitespace characters of the final text (a Vietnamese syllable, not a compound).
   Token pieces start a new word with "▁" and never contain it elsewhere, so each word is a run of tokens.
-- A word starts when its first token was emitted and ends where the next word of the chunk starts; the last word of a
-  chunk lasts `LAST_WORD_SAMPLES` (or until the chunk ends).
+- A word starts when its first token (the one carrying its "▁", even a lone "▁") was emitted and ends where
+  the next word of the chunk starts; the last word of a chunk lasts `LAST_WORD_SAMPLES` (or until the chunk ends).
 - Any inconsistency (the tokens do not spell the text, times out of order or outside the chunk, a word with no
   duration) raises `AlignmentError`: timestamps are never guessed or spread evenly.
 """
@@ -75,7 +75,9 @@ def words(span: Span, result: ChunkResult) -> list[Word]:
     found: list[tuple[str, int]] = []
     j = 0
     for m in _WORD.finditer(spelled):
-        while ranges[j][1] <= m.start():
+        # The space before a word is its "▁", so the token holding it is the word's first token.
+        first = max(0, m.start() - 1)
+        while ranges[j][1] <= first:
             j += 1
         found.append((m.group(), max(0, ranges[j][2] + EMISSION_SHIFT)))
     out: list[Word] = []

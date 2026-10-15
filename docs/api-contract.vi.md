@@ -1,4 +1,4 @@
-# API contract — QUAN-Transcribe gateway (profile OpenAI đã pin)
+# API contract — Gipformer gateway (profile OpenAI đã pin)
 
 Kiến trúc: [deployment-design.vi.md](deployment-design.vi.md). Cách chạy: [README](../README.md). Chưa hỗ trợ: [roadmap.md](roadmap.md).
 
@@ -38,11 +38,11 @@ Không có endpoint nào trả `logprobs`, `avg_logprob`, `no_speech_prob`, conf
 
 ## 3. Models
 
-- Id: `quan-transcribe-1.0`. Alias `whisper-1` chỉ khi bật cấu hình (mặc định tắt); khi bật, `whisper-1` được chấp
-  nhận ở mọi field `model` và được liệt kê trong `/v1/models` như một model riêng (cùng backend QUAN, output khác
-  Whisper; ghi rõ trong README). Mọi id khác: 404 `model_not_found`.
-- Object: `{"id", "object": "model", "created", "owned_by": "qnguyen3"}`. `created` = commit time của revision
-  weights đã pin (`a08726d…` → `1791950390`). Ví dụ: `examples/models.json`, `examples/model.json`.
+- Id: `gipformer1.5-68M-rnnt`. Alias `whisper-1` chỉ khi bật cấu hình (mặc định tắt); khi bật, `whisper-1` được chấp
+  nhận ở mọi field `model` và được liệt kê trong `/v1/models` như một model riêng (cùng backend Gipformer, output khác
+  Whisper; ghi rõ trong README). Mọi id khác (kể cả `quan-transcribe-1.0` cũ): 404 `model_not_found`.
+- Object: `{"id", "object": "model", "created", "owned_by": "g-group-ai-lab"}`. `created` = commit time của revision
+  weights đã pin (`dd9227d…` → `1789615207`). Ví dụ: `examples/models.json`, `examples/model.json`.
 
 ## 4. `POST /v1/audio/transcriptions`
 
@@ -53,7 +53,7 @@ Auth: `Authorization: Bearer <key>`. Body `multipart/form-data`.
 | `file` | Bắt buộc, đúng một part. Tên file client bị bỏ qua (không dùng làm path, không log). Định dạng nhận diện theo nội dung, không theo đuôi: Container allowlist: WAV, FLAC, MP3/MPGA, MP4/M4A, OGG, WEBM/Matroska. Decoder allowlist: PCM (`s16le`, `s24le`, `s32le`, `u8`, `f32le`, `f64le`, A-law, µ-law), FLAC, ALAC, MP1/MP2/MP3, AAC, Vorbis, Opus. Chấp nhận mọi tổ hợp container/decoder trong hai allowlist mà FFmpeg đọc được (kể cả OGG/FLAC và Matroska/AAC); không giới hạn theo cặp. Container/codec ngoài allowlist (ADTS `.aac`, MPEG-PS, playlist, ADPCM, …) → 400 `invalid_audio`. Mọi sample rate/số kênh được đưa về mono 16 kHz (downmix của FFmpeg) |
 | `model` | Bắt buộc; thiếu → 400 `missing_required_parameter`; không phục vụ → 404 `model_not_found` (`param: "model"`) |
 | `language` | Không gửi hoặc `vi`; khác → 400 `unsupported_language`. Không gửi **không** có nghĩa là auto-detect |
-| `temperature` | Không gửi hoặc số bằng 0 (`0`, `0.0`, `-0`; decode tất định, greedy). Không phải số hữu hạn (rỗng, `abc`, `nan`, `inf`) → 400 `invalid_value`; số khác 0 → 400 `unsupported_parameter` |
+| `temperature` | Không gửi hoặc số bằng 0 (`0`, `0.0`, `-0`; decode tất định theo `GIPFORMER_DECODING_METHOD`). Không phải số hữu hạn (rỗng, `abc`, `nan`, `inf`) → 400 `invalid_value`; số khác 0 → 400 `unsupported_parameter` |
 | `prompt` | Không gửi hoặc rỗng; khác → 400 `unsupported_parameter` |
 | `response_format` | `json` (mặc định), `text`, `verbose_json`, `srt`, `vtt`; khác → 400 `unsupported_response_format` |
 | `stream` | Đúng chuỗi `true` hoặc `false` (cả hai SDK gửi như vậy); giá trị khác (`True`, `1`, rỗng) → 400 `invalid_value`. `true` với `response_format` không gửi, `json` hoặc `text` → SSE (§5); với `verbose_json`/`srt`/`vtt` → 400 `unsupported_parameter` (`param: "stream"`) |
@@ -77,7 +77,7 @@ Kết quả:
 - `text` → `200 text/plain; charset=utf-8`, body đúng bằng transcript, không thêm newline. SDK trả nguyên body.
 - `verbose_json` → `200 application/json`: `{"text", "language": "vietnamese", "duration", "usage": {"type":
   "duration", "seconds"}}`, `duration == usage.seconds`. **Không có `segments`** (schema SDK bắt buộc
-  `avg_logprob`, `no_speech_prob`, `compression_ratio`, `tokens` kiểu Whisper — QUAN không có dữ liệu thật) và
+  `avg_logprob`, `no_speech_prob`, `compression_ratio`, `tokens` kiểu Whisper — Gipformer không có dữ liệu thật) và
   không có `words` cho tới R2b. Ví dụ `examples/transcription_verbose.json`; dạng R2b (có `words`, chưa phục vụ):
   `examples/transcription_verbose_words.json`.
 - `srt` → `200 text/plain; charset=utf-8`: cue `n\nHH:MM:SS,mmm --> HH:MM:SS,mmm\ntext\n\n`, đánh số từ 1; không có
@@ -94,7 +94,8 @@ Kết quả:
 - Mọi format cho cùng transcript: `json.text == text == verbose_json.text == SSE done.text ==` các text cue nối bằng
   một dấu cách. Nếu token không khớp transcript, `srt`/`vtt` trả 500 `alignment_failed` (không bao giờ chia đều
   thời gian); `json`/`text`/`verbose_json`/SSE không chạy alignment nên không bị ảnh hưởng.
-- Text: chữ thường tiếng Việt, không dấu câu, số viết bằng chữ (output nguyên bản của model). Nhiều chunk nối bằng
+- Text: chữ IN HOA tiếng Việt (vocabulary của model chỉ có chữ hoa), không dấu câu, số viết bằng chữ (output nguyên bản
+  của model, không hậu xử lý). Nhiều chunk nối bằng
   một dấu cách; chunk rỗng không sinh dấu cách.
 - Silence/clip ngắn (`app/chunking.py`): audio decode hợp lệ nhưng ≤ 1,600 mẫu ở 16 kHz (≤ 100 ms), kể
   cả 0 mẫu → `text: ""` (`verbose_json` với `duration` thật, `srt` rỗng, `vtt` chỉ header), không gọi model (frontend crash dưới 161 mẫu; xem baseline §7). Silence dài vẫn qua model
@@ -132,7 +133,7 @@ Kết quả:
 - Client ngắt kết nối: dừng enqueue chunk tiếp, hủy chunk đang chờ, bỏ kết quả chunk đang chạy; không phát gì
   thêm. Cũng áp dụng cho JSON/text và khi đang decode (FFmpeg bị kill). Client không đọc: một lần gửi event quá
   `GIPFORMER_SEND_TIMEOUT_SECONDS` (10 s) được coi như ngắt kết nối (đóng kết nối, không gửi `error`).
-- Tối đa `GIPFORMER_QUEUE_MAX_JOBS_PER_LANE` (2) chunk của một request nằm trong queue/đang chạy cùng lúc: GPU chạy
+- Tối đa `GIPFORMER_QUEUE_MAX_JOBS_PER_LANE` (2) chunk của một request nằm trong queue/đang chạy cùng lúc: model chạy
   trước client tối đa một cửa sổ đó, server không buffer thêm event. Admission chunk tiếp theo bị block không
   chặn việc gửi delta của chunk đã hoàn tất; deadline cũng áp dụng cho gửi delta/done.
 
@@ -156,7 +157,7 @@ Session sau khi accept (server gửi `session.created` ngay):
 
 ```json
 {"type": "transcription", "audio": {"input": {"format": {"type": "audio/pcm", "rate": 24000},
-  "transcription": {"model": "quan-transcribe-1.0", "language": "vi"}, "turn_detection": null}}}
+  "transcription": {"model": "gipformer1.5-68M-rnnt", "language": "vi"}, "turn_detection": null}}}
 ```
 
 Client events:
@@ -170,7 +171,7 @@ Client events:
 | Type khác trong union client GA (`response.create`, `conversation.item.create`, `output_audio_buffer.clear`, …) | `error` `unsupported_event` (`param: "type"`). JSON sai / không phải object → `invalid_event`; thiếu `type` hoặc type ngoài union GA (kể cả beta `transcription_session.update`) → `invalid_event` (`param: "type"`); field lạ trong event → `unknown_parameter`; `event_id` không phải chuỗi → `invalid_value`. Lỗi event không đóng socket |
 
 Audio: PCM16 / 32768 → float32, resample 24 → 16 kHz bằng soxr HQ dạng stream khi append; waveform commit **bằng
-tuyệt đối** soxr one-shot trên cả turn (cùng resampler `quan_transcribe` dùng), độc lập cách chia packet. Text có thể
+tuyệt đối** soxr one-shot trên cả turn, độc lập cách chia packet. Text có thể
 khác REST trên cùng file (FFmpeg resampler, quantize PCM16, ranh giới turn do client chọn). Turn dài hơn
 `GIPFORMER_MAX_CHUNK_SECONDS` được chia chunk như REST (§4): nhiều delta, cùng một item.
 

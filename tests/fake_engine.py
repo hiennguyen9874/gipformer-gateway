@@ -74,7 +74,7 @@ class FakeEngine:
             time.sleep(self.delay)
             if self.fail_calls:
                 self.fail_calls -= 1
-                raise RuntimeError("CUDA error: simulated")
+                raise RuntimeError("inference error: simulated")
             return fake_result(self.text_fn(wav), len(wav))
         finally:
             with self.lock:

@@ -91,7 +91,7 @@ class Blocker:
         self.calls += 1
         if self.calls == self.at:
             if self.fail:
-                raise RuntimeError("CUDA error: simulated")
+                raise RuntimeError("inference error: simulated")
             self.entered.set()
             self.release.wait(10)
         return name(w)

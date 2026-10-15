@@ -10,6 +10,8 @@ import numpy as np
 import pytest
 import soundfile as sf
 
+from app.alignment import words
+from app.chunking import Span
 from app.config import SAMPLE_RATE
 from app.engine import EngineState, EngineWorker, GipformerEngine
 from app.observability import Metrics
@@ -38,6 +40,8 @@ def test_engine_text_equals_reference_and_tokens_are_consistent(precision, decod
         assert "".join(result.tokens).replace("\u2581", " ").strip() == result.text
         assert list(result.times) == sorted(result.times) and 0 <= result.times[0] and result.times[-1] <= len(wav)
         assert result.tokens[0].startswith("\u2581")
+        # Raw recognizer times (not repaired by the engine) must pass alignment.
+        assert " ".join(w.text for w in words(Span(0, len(wav)), result)) == result.text
 
 
 def test_silence_decodes_without_error_and_tokens_spell_the_text():

@@ -78,7 +78,8 @@ xử lý FIFO qua cùng `split`/`run_chunks`/`Joiner` như REST. Gửi có giớ
   này resolve base model theo Hub `main`). Parity với loader reference đã kiểm chứng (`torch.equal` logits).
 - Pins duy nhất: `assets/manifest.json` (repo, commit, size, SHA256 từng file); `scripts/stage_models.py` tải và
   kiểm tra. Chi tiết: [baseline.vi.md](baseline.vi.md).
-- Decode greedy, không KenLM. Output giữ nguyên: chữ thường, không dấu câu, số viết bằng chữ.
+- Decode `modified_beam_search` beam 4 (mặc định, hoặc `greedy_search`), không KenLM. Output giữ nguyên: chữ IN HOA,
+  không dấu câu, số viết bằng chữ.
 - Peak đo được: ~2.4 GB VRAM, ~2.5 GB RSS lúc load.
 
 ## 5. Đóng gói

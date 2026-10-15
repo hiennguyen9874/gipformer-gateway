@@ -41,7 +41,7 @@ _Avoid_: provisioning, caching
 ### Audio and transcripts
 
 **Transcript**:
-The final text of one request or one realtime item: lowercase, unpunctuated, numbers spoken out, as the served model writes it.
+The final text of one request or one realtime item: uppercase Vietnamese, unpunctuated, numbers spoken out, as the served model writes it.
 _Avoid_: result, output text
 
 **Chunk**:

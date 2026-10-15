@@ -45,7 +45,7 @@ FAIL_MEAN = -0.5
 
 def text_fn(w: np.ndarray) -> str:
     if w.mean() < FAIL_MEAN:
-        raise RuntimeError("CUDA error: simulated")
+        raise RuntimeError("inference error: simulated")
     return name(w)
 
 

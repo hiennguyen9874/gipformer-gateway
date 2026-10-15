@@ -49,9 +49,11 @@ def test_last_word_is_capped_and_clipped_to_the_chunk():
 
 
 def test_tokens_without_text_make_no_words():
-    # A lone "▁" only separates words; an empty piece emits nothing.
+    # An empty piece emits nothing; a lone "▁" is the first token of the next word, so it sets that word's start.
     r = result("các a", ["", S + "các", S, "a"], [0, 100, 300, 500])
-    assert words(Span(0, 20000), r) == [Word("các", 100, 500), Word("a", 500, 500 + LAST_WORD_SAMPLES)]
+    assert words(Span(0, 20000), r) == [Word("các", 100, 300), Word("a", 300, 300 + LAST_WORD_SAMPLES)]
+    r = result("a", [S, "a"], [40, 200])
+    assert words(Span(0, 20000), r) == [Word("a", 40, 40 + LAST_WORD_SAMPLES)]
     # A token without "▁" continues the previous word.
     r = result("các aa", [S + "các", S + "a", "a"], [100, 500, 900])
     assert words(Span(0, 20000), r) == [Word("các", 100, 500), Word("aa", 500, 500 + LAST_WORD_SAMPLES)]

@@ -19,7 +19,7 @@ uv run --extra cu126 pre-commit install                 # autoflake, isort, ruff
 uv run --extra cu126 pytest                             # CPU tiers; GPU/container tests skip without CUDA/docker
 (cd tests/contract/js && npm ci && npm test)            # JS SDK contract (tsc --strict + node --test)
 CUDA_VISIBLE_DEVICES=<gpu> uv run --extra cu126 pytest tests/gpu
-QUAN_GPU=<gpu> uv run --extra cu128 --offline pytest tests/container --container-cuda=cu128   # image gate
+GIPFORMER_GPU=<gpu> uv run --extra cu128 --offline pytest tests/container --container-cuda=cu128   # image gate
 uv run --extra cu126 pre-commit run --all-files         # lint + format
 ```
 
@@ -28,7 +28,7 @@ The CPU tiers need `ffmpeg` on PATH. Image gate details (cu126 run, CPU diagnost
 ## Local server and smoke
 
 ```bash
-QUAN_API_KEYS=<key of >=16 chars> CUDA_VISIBLE_DEVICES=<gpu> uv run --extra cu126 \
+GIPFORMER_API_KEYS=<key of >=16 chars> CUDA_VISIBLE_DEVICES=<gpu> uv run --extra cu126 \
     uvicorn --factory app.main:create_app --port <port> --workers 1 --no-access-log \
     --timeout-graceful-shutdown 30 --ws websockets-sansio --ws-max-size 2097152    # /ready after warm-up
 OPENAI_API_KEY=<key> uv run --extra cu126 scripts/smoke_server.py \
@@ -45,8 +45,8 @@ OPENAI_API_KEY=<key> uv run --extra cu126 scripts/demo_page.py --base-url http:/
 If `uv run ... uvicorn` fails with `Failed to spawn`, the venv was created under another path (stale shebangs):
 use `uv run --extra cu126 python -m uvicorn ...` or recreate `.venv`.
 
-One process per GPU, always one worker. Start the server from a shell with no `QUAN_GPU`, `QUAN_BUILD_CUDA` or
-`QUAN_TEST_*` exported: unknown `QUAN_*` variables abort startup.
+One process per GPU, always one worker. Start the server from a shell with no `GIPFORMER_GPU`, `GIPFORMER_BUILD_CUDA` or
+`GIPFORMER_TEST_*` exported: unknown `GIPFORMER_*` variables abort startup.
 
 ## Baselines and probes
 

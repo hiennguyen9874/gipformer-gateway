@@ -49,7 +49,7 @@ from app.observability import log, Metrics
 from app.scheduler import JobKind, Lane, Scheduler
 
 MODEL_ID = "quan-transcribe-1.0"
-WHISPER_ALIAS = "whisper-1"  # opt-in (QUAN_WHISPER_ALIAS); same QUAN backend, not Whisper output
+WHISPER_ALIAS = "whisper-1"  # opt-in (GIPFORMER_WHISPER_ALIAS); same QUAN backend, not Whisper output
 MODEL_CREATED = (
     1791950390  # commit time of the pinned weights revision (docs/api-contract.vi.md §3)
 )
@@ -286,7 +286,7 @@ class DisconnectWatch:
     `receive()` can only return `http.disconnect`."""
 
     def __init__(self, receive: Receive):
-        self._task = asyncio.create_task(self._wait(receive), name="quan-disconnect-watch")
+        self._task = asyncio.create_task(self._wait(receive), name="gipformer-disconnect-watch")
 
     @staticmethod
     async def _wait(receive: Receive) -> None:

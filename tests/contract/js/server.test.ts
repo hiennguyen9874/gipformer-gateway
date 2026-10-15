@@ -1,6 +1,6 @@
 // The pinned JS SDK against a real gateway (fake engine). Started by tests/contract/test_server_sdk.py, which sets
-// QUAN_TEST_BASE_URL, QUAN_TEST_API_KEY and QUAN_TEST_AUDIO_DIR (speech.wav, fail.wav, turn*.pcm, expected.json),
-// plus QUAN_TEST_WSS_BASE_URL and QUAN_TEST_CA (a TLS gateway: OpenAIRealtimeWS always connects with wss:);
+// GIPFORMER_TEST_BASE_URL, GIPFORMER_TEST_API_KEY and GIPFORMER_TEST_AUDIO_DIR (speech.wav, fail.wav, turn*.pcm, expected.json),
+// plus GIPFORMER_TEST_WSS_BASE_URL and GIPFORMER_TEST_CA (a TLS gateway: OpenAIRealtimeWS always connects with wss:);
 // without them (plain `npm test`) every test here is skipped.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -12,9 +12,9 @@ import type { OpenAIRealtimeError } from 'openai/realtime/internal-base';
 import type { TranscriptionStreamEvent } from 'openai/resources/audio/transcriptions';
 import type { RealtimeServerEvent } from 'openai/resources/realtime/realtime';
 
-const baseURL = process.env.QUAN_TEST_BASE_URL;
-const apiKey = process.env.QUAN_TEST_API_KEY;
-const audioDir = process.env.QUAN_TEST_AUDIO_DIR ?? '';
+const baseURL = process.env.GIPFORMER_TEST_BASE_URL;
+const apiKey = process.env.GIPFORMER_TEST_API_KEY;
+const audioDir = process.env.GIPFORMER_TEST_AUDIO_DIR ?? '';
 const skip = baseURL && apiKey && audioDir ? false : 'no gateway: run tests/contract/test_server_sdk.py';
 const MODEL = 'quan-transcribe-1.0';
 
@@ -127,8 +127,8 @@ test('HTTP error envelope and request id', { skip }, async () => {
   );
 });
 
-const wssBaseURL = process.env.QUAN_TEST_WSS_BASE_URL;
-const ca = process.env.QUAN_TEST_CA;
+const wssBaseURL = process.env.GIPFORMER_TEST_WSS_BASE_URL;
+const ca = process.env.GIPFORMER_TEST_CA;
 const rtSkip = wssBaseURL && ca && !skip ? false : 'no TLS gateway: run tests/contract/test_server_sdk.py';
 const rtClient = (key = apiKey) => new OpenAI({ apiKey: key, baseURL: wssBaseURL, maxRetries: 0 });
 const tls = () => ({ ca: readFileSync(ca!) });

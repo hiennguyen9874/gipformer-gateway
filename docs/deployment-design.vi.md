@@ -44,7 +44,7 @@ OpenAI SDK / curl / WebSocket client
   lượng, deadline tổng mỗi request. Vượt → 413/429/503 với envelope OpenAI.
 - **Hủy:** client ngắt → hủy chunk đang chờ, bỏ kết quả chunk đang chạy. Kernel đang chạy không bị ngắt; worker và
   budget chỉ được giải phóng khi call thật kết thúc.
-- **Treo/lỗi:** call inference lâu hơn `QUAN_INFER_HANG_SECONDS` → `/health` 503 (supervisor restart). Lỗi đơn lẻ →
+- **Treo/lỗi:** call inference lâu hơn `GIPFORMER_INFER_HANG_SECONDS` → `/health` 503 (supervisor restart). Lỗi đơn lẻ →
   500 và worker tự warm-up lại.
 
 ## 3. Luồng xử lý
@@ -54,7 +54,7 @@ OpenAI SDK / curl / WebSocket client
 1. Kiểm tra auth, giới hạn body (trước khi parse multipart), validate tham số theo thứ tự cố định.
 2. Spool upload vào thư mục tạm riêng; FFmpeg (argv cố định, chỉ protocol `file`, allowlist demuxer/decoder, env
    tối thiểu) decode về mono 16 kHz float32, dừng ngay khi vượt thời lượng cho phép.
-3. `chunking.split`: chunk ≤ `QUAN_MAX_CHUNK_SECONDS`, cắt tại cửa sổ 50 ms yên lặng nhất trong 5 s cuối; các chunk
+3. `chunking.split`: chunk ≤ `GIPFORMER_MAX_CHUNK_SECONDS`, cắt tại cửa sổ 50 ms yên lặng nhất trong 5 s cuối; các chunk
    phủ liền audio. Audio ≤ 100 ms → `""`, không gọi model (frontend crash dưới 161 mẫu).
 4. `run_chunks` đưa từng chunk qua lane; `Joiner` nối text bằng một dấu cách (chunk rỗng không sinh dấu cách).
 5. SSE: headers chỉ gửi sau khi decode xong; một `delta` mỗi chunk, một `done` ở cuối; lỗi sau headers → event

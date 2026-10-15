@@ -18,8 +18,8 @@ Cần Docker, NVIDIA Container Toolkit, một GPU trống, model đã stage (`./
 (`scripts/fetch_fixtures.py`, gồm `fixtures-large/vi_long.wav`).
 
 ```bash
-QUAN_GPU=<gpu> uv run --extra cu128 --offline pytest tests/container --container-cuda=cu128 -v
-QUAN_GPU=<gpu> uv run --extra cu126 --offline pytest tests/container -v                    # GPU sm_≤90
+GIPFORMER_GPU=<gpu> uv run --extra cu128 --offline pytest tests/container --container-cuda=cu128 -v
+GIPFORMER_GPU=<gpu> uv run --extra cu126 --offline pytest tests/container -v                    # GPU sm_≤90
 uv run --extra cu126 --offline pytest tests/container --container-device=cpu -v           # chẩn đoán, không phải gate
 ```
 

@@ -15,7 +15,7 @@ Giới hạn cần biết:
 - `srt`/`vtt` có thời gian từ đường CTC greedy (start của cue có thể trễ ~1 âm tiết). `verbose_json` không có
   `segments`; word timestamps chưa bật.
 - Realtime: transcript chỉ có sau `input_audio_buffer.commit`; không có partial, không có VAD.
-- Alias `whisper-1` (tắt mặc định, `QUAN_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model QUAN.
+- Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model QUAN.
 
 Tài liệu: [kiến trúc](docs/deployment-design.vi.md) · [API contract](docs/api-contract.vi.md) ·
 [baseline và pins](docs/baseline.vi.md) · [kiểm định image](docs/container-gate.vi.md) ·
@@ -45,49 +45,49 @@ uv run --extra cu126 scripts/stage_models.py --verify # kiểm tra lại, không
 
 # 2. API key: một key mỗi dòng, ≥ 16 ký tự, đọc được bởi UID 10001 trong container
 mkdir -p secrets
-python3 -c "import secrets; print(secrets.token_urlsafe(32))" > secrets/quan_api_keys
-sudo chown 10001 secrets/quan_api_keys && sudo chmod 0400 secrets/quan_api_keys
+python3 -c "import secrets; print(secrets.token_urlsafe(32))" > secrets/gipformer_api_keys
+sudo chown 10001 secrets/gipformer_api_keys && sudo chmod 0400 secrets/gipformer_api_keys
 
 # 3. Build + chạy trên một GPU (nvidia-smi để chọn GPU trống)
-QUAN_GPU=0 docker compose up -d --build                         # cu126
-QUAN_BUILD_CUDA=cu128 QUAN_GPU=0 docker compose up -d --build   # Blackwell
+GIPFORMER_GPU=0 docker compose up -d --build                         # cu126
+GIPFORMER_BUILD_CUDA=cu128 GIPFORMER_GPU=0 docker compose up -d --build   # Blackwell
 
 # 4. Chờ sẵn sàng (load + warm-up)
 curl -s 127.0.0.1:18000/ready                                   # {"status":"ready"}
 
 # 5. Thử nhanh với file mẫu có sẵn trong repo (tests/fixtures/vi_a.wav, 8.9 s, FLEURS, CC BY 4.0)
 curl -s 127.0.0.1:18000/v1/audio/transcriptions \
-    -H "Authorization: Bearer $(sudo head -1 secrets/quan_api_keys)" \
+    -H "Authorization: Bearer $(sudo head -1 secrets/gipformer_api_keys)" \
     -F model=quan-transcribe-1.0 -F file=@tests/fixtures/vi_a.wav
 # {"text":"các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều ..."}
 
 # 6. Smoke test (tùy chọn): mọi format + Realtime, so với baseline
-OPENAI_API_KEY=$(sudo cat secrets/quan_api_keys | head -1) \
+OPENAI_API_KEY=$(sudo cat secrets/gipformer_api_keys | head -1) \
     uv run --extra cu126 scripts/smoke_server.py --base-url http://127.0.0.1:18000
 ```
 
 `uv run` luôn kèm đúng một `--extra cu126` hoặc `--extra cu128` (không chạy `uv` trần, không `--all-extras`).
-`QUAN_BUILD_CUDA` và `QUAN_GPU` chỉ dùng cho compose.
+`GIPFORMER_BUILD_CUDA` và `GIPFORMER_GPU` chỉ dùng cho compose.
 
-Image (`quan-transcribe:r1-<profile>`): Ubuntu 24.04 (pin digest), Python 3.12.14, FFmpeg 6.1.1, user `10001`, chỉ
+Image (`gipformer-gateway:r1-<profile>`): Ubuntu 24.04 (pin digest), Python 3.12.14, FFmpeg 6.1.1, user `10001`, chỉ
 chứa `app/` và venv. Không có model, `HF_TOKEN` hay API key trong image; server không truy cập Hub.
 `compose.yaml` chạy:
 
-- model mount `./models:/models:ro`, key qua Docker secret `/run/secrets/quan_api_keys`;
+- model mount `./models:/models:ro`, key qua Docker secret `/run/secrets/gipformer_api_keys`;
 - rootfs read-only, tmpfs `/tmp` 512 MiB (spool upload), `HF_HUB_OFFLINE=1`;
 - port chỉ bind `127.0.0.1:18000`; `restart: unless-stopped`; `stop_grace_period: 70s`.
 
 **Một container = một model = một GPU**, luôn một Uvicorn worker. Nhiều GPU: chạy nhiều container (mỗi container
-một `QUAN_GPU`, một port host) sau load balancer; WebSocket cần sticky routing.
+một `GIPFORMER_GPU`, một port host) sau load balancer; WebSocket cần sticky routing.
 
 **TLS:** gateway không làm TLS, rate limit theo client hay CORS. Khi expose ra ngoài localhost, đặt sau hạ tầng
-HTTPS của bạn với: SSE không buffer, hỗ trợ WebSocket upgrade, read timeout ≥ `QUAN_REQUEST_TIMEOUT_SECONDS`
-(600 s), body ≥ `QUAN_MAX_UPLOAD_BYTES`. JS SDK Realtime chỉ kết nối `wss:`.
+HTTPS của bạn với: SSE không buffer, hỗ trợ WebSocket upgrade, read timeout ≥ `GIPFORMER_REQUEST_TIMEOUT_SECONDS`
+(600 s), body ≥ `GIPFORMER_MAX_UPLOAD_BYTES`. JS SDK Realtime chỉ kết nối `wss:`.
 
 ## 3. Gọi API
 
 ```bash
-KEY=$(sudo cat secrets/quan_api_keys | head -1)
+KEY=$(sudo cat secrets/gipformer_api_keys | head -1)
 curl -s 127.0.0.1:18000/v1/models -H "Authorization: Bearer $KEY"
 curl -s 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
     -F model=quan-transcribe-1.0 -F file=@tests/fixtures/vi_a.wav
@@ -133,30 +133,30 @@ Audio: WAV, FLAC, MP3, MP4/M4A (AAC/ALAC), OGG (Vorbis/Opus/FLAC), WEBM/Matroska
 
 ## 4. Cấu hình
 
-Thêm biến `QUAN_*` vào `environment:` của service (ví dụ trong `compose.override.yaml`). Biến lạ, giá trị ≤ 0 hoặc
+Thêm biến `GIPFORMER_*` vào `environment:` của service (ví dụ trong `compose.override.yaml`). Biến lạ, giá trị ≤ 0 hoặc
 không nhất quán → container không start. Đầy đủ: `app/config.py`.
 
 | Biến | Mặc định | Ý nghĩa |
 |---|---|---|
-| `QUAN_API_KEYS_FILE` / `QUAN_API_KEYS` | (bắt buộc) | Key Bearer (compose dùng file secret) |
-| `QUAN_WHISPER_ALIAS` | `false` | Chấp nhận model id `whisper-1` |
-| `QUAN_LOG_LEVEL` | `INFO` | Mức log |
-| `QUAN_MAX_UPLOAD_BYTES` | 25 MiB | Cả body multipart → 413 |
-| `QUAN_MAX_AUDIO_SECONDS` | 1800 | Thời lượng sau decode → 400 `audio_too_long` |
-| `QUAN_MAX_DECODED_SECONDS` | 3600 | Audio đã decode giữ trong RAM của mọi request (≈ 64 KB/s) → 429 |
-| `QUAN_MAX_SPOOL_BYTES` | 200 MiB | File tạm của upload đang nhận (nằm trong tmpfs 512 MiB) → 429 |
-| `QUAN_MAX_CHUNK_SECONDS` | 30 | Độ dài chunk (giữ 30 để giống baseline) |
-| `QUAN_QUEUE_MAX_LANES` | 32 | Request/session đồng thời → 429 |
-| `QUAN_QUEUE_TIMEOUT_SECONDS` | 30 | Chờ chỗ trong queue tối đa → 429 |
-| `QUAN_REQUEST_TIMEOUT_SECONDS` | 600 | Tổng upload + decode + queue + infer + gửi → 503 `request_timeout` |
-| `QUAN_SEND_TIMEOUT_SECONDS` | 10 | Một lần gửi SSE/WebSocket; client không đọc → ngắt |
-| `QUAN_MAX_SESSIONS` | 16 | Realtime session đồng thời (≤ lanes) → handshake 429 |
-| `QUAN_MAX_SESSION_SECONDS` | 3600 | Tuổi tối đa một session → `session_expired` |
-| `QUAN_SESSION_IDLE_TIMEOUT_SECONDS` | 120 | Session không hoạt động → `idle_timeout` |
-| `QUAN_MAX_TURN_SECONDS` | 120 | Audio chưa commit của một session → `input_audio_buffer_full` |
-| `QUAN_MAX_PENDING_ITEMS` | 4 | Item đã commit chưa xong → `too_many_pending_items` |
-| `QUAN_INFER_HANG_SECONDS` | 120 | Một call inference lâu hơn → worker "hung", `/health` 503 |
-| `QUAN_SHUTDOWN_DRAIN_SECONDS` | 30 | Chờ job đang chạy khi tắt |
+| `GIPFORMER_API_KEYS_FILE` / `GIPFORMER_API_KEYS` | (bắt buộc) | Key Bearer (compose dùng file secret) |
+| `GIPFORMER_WHISPER_ALIAS` | `false` | Chấp nhận model id `whisper-1` |
+| `GIPFORMER_LOG_LEVEL` | `INFO` | Mức log |
+| `GIPFORMER_MAX_UPLOAD_BYTES` | 25 MiB | Cả body multipart → 413 |
+| `GIPFORMER_MAX_AUDIO_SECONDS` | 1800 | Thời lượng sau decode → 400 `audio_too_long` |
+| `GIPFORMER_MAX_DECODED_SECONDS` | 3600 | Audio đã decode giữ trong RAM của mọi request (≈ 64 KB/s) → 429 |
+| `GIPFORMER_MAX_SPOOL_BYTES` | 200 MiB | File tạm của upload đang nhận (nằm trong tmpfs 512 MiB) → 429 |
+| `GIPFORMER_MAX_CHUNK_SECONDS` | 30 | Độ dài chunk (giữ 30 để giống baseline) |
+| `GIPFORMER_QUEUE_MAX_LANES` | 32 | Request/session đồng thời → 429 |
+| `GIPFORMER_QUEUE_TIMEOUT_SECONDS` | 30 | Chờ chỗ trong queue tối đa → 429 |
+| `GIPFORMER_REQUEST_TIMEOUT_SECONDS` | 600 | Tổng upload + decode + queue + infer + gửi → 503 `request_timeout` |
+| `GIPFORMER_SEND_TIMEOUT_SECONDS` | 10 | Một lần gửi SSE/WebSocket; client không đọc → ngắt |
+| `GIPFORMER_MAX_SESSIONS` | 16 | Realtime session đồng thời (≤ lanes) → handshake 429 |
+| `GIPFORMER_MAX_SESSION_SECONDS` | 3600 | Tuổi tối đa một session → `session_expired` |
+| `GIPFORMER_SESSION_IDLE_TIMEOUT_SECONDS` | 120 | Session không hoạt động → `idle_timeout` |
+| `GIPFORMER_MAX_TURN_SECONDS` | 120 | Audio chưa commit của một session → `input_audio_buffer_full` |
+| `GIPFORMER_MAX_PENDING_ITEMS` | 4 | Item đã commit chưa xong → `too_many_pending_items` |
+| `GIPFORMER_INFER_HANG_SECONDS` | 120 | Một call inference lâu hơn → worker "hung", `/health` 503 |
+| `GIPFORMER_SHUTDOWN_DRAIN_SECONDS` | 30 | Chờ job đang chạy khi tắt |
 
 Các mặc định là giới hạn an toàn hữu hạn, **chưa phải capacity đã đo** (xem [roadmap](docs/roadmap.md) R4). Đo
 trên phần cứng của bạn trước khi tăng.
@@ -164,7 +164,7 @@ trên phần cứng của bạn trước khi tăng.
 ## 5. Vận hành
 
 - **Readiness/liveness:** `/ready` 200 khi model đã load + warm-up và không đang drain/recover (dùng cho load
-  balancer). `/health` 503 khi load/recovery lỗi hoặc một call inference treo quá `QUAN_INFER_HANG_SECONDS`.
+  balancer). `/health` 503 khi load/recovery lỗi hoặc một call inference treo quá `GIPFORMER_INFER_HANG_SECONDS`.
   Docker không tự restart container chỉ vì `unhealthy`: dùng watchdog/orchestrator (autoheal, systemd, Kubernetes
   `livenessProbe`). Lỗi inference đơn lẻ trả 500 `inference_failed`, worker tự warm-up lại.
 - **Dừng/cập nhật:** `docker compose stop` (SIGTERM) ngừng nhận kết nối mới, request đang chạy được làm xong (≤ 30 s),
@@ -183,7 +183,7 @@ trên phần cứng của bạn trước khi tăng.
 
 ```bash
 uv run --extra cu126 pytest                                         # CPU: unit, scheduler, audio, contract
-QUAN_GPU=0 uv run --extra cu128 pytest tests/container --container-cuda=cu128   # gate image trên GPU
+GIPFORMER_GPU=0 uv run --extra cu128 pytest tests/container --container-cuda=cu128   # gate image trên GPU
 ```
 
 Chi tiết gate image: [docs/container-gate.vi.md](docs/container-gate.vi.md). Lệnh phát triển: [docs/agents/commands.md](docs/agents/commands.md).

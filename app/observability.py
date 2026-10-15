@@ -15,7 +15,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 request_id: contextvars.ContextVar[str | None] = contextvars.ContextVar("request_id", default=None)
-logger = logging.getLogger("quan")
+logger = logging.getLogger("gipformer")
 
 
 class JsonFormatter(logging.Formatter):

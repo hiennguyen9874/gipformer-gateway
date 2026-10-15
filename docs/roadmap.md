@@ -16,7 +16,7 @@ Ordered by priority. A feature is enabled only after its gate passes with record
 
 ### 1. Production capacity and limits (R4)
 
-Current defaults (`QUAN_QUEUE_MAX_LANES=32`, `QUAN_MAX_SESSIONS=16`, …) are finite safety budgets, **not measured
+Current defaults (`GIPFORMER_QUEUE_MAX_LANES=32`, `GIPFORMER_MAX_SESSIONS=16`, …) are finite safety budgets, **not measured
 capacity**. Tooling exists (`scripts/benchmark.py`); the measurement does not.
 
 - [ ] Benchmark on an **exclusive** GPU: REST short/long, SSE, WebSocket commits and mixed, ramping clients;

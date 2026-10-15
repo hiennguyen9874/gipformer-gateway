@@ -125,7 +125,7 @@ class EngineWorker:
     def __init__(self, engine: Engine, hang_seconds: float, metrics: Metrics):
         self._engine, self._hang_seconds, self._metrics = engine, hang_seconds, metrics
         self._queue: queue.SimpleQueue = queue.SimpleQueue()
-        self._thread = threading.Thread(target=self._main, name="quan-inference", daemon=True)
+        self._thread = threading.Thread(target=self._main, name="gipformer-inference", daemon=True)
         self._state = EngineState.LOADING
         self._call_started: float | None = None
         self.pieces: tuple[str, ...] = ()  # set before the worker becomes ready
@@ -141,7 +141,7 @@ class EngineWorker:
         )
         metrics.gauge_fn(
             "worker_hung",
-            "1 when the running call exceeded QUAN_INFER_HANG_SECONDS.",
+            "1 when the running call exceeded GIPFORMER_INFER_HANG_SECONDS.",
             lambda: float(self.hung),
         )
 

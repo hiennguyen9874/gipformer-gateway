@@ -55,14 +55,14 @@ def create_app(config: Config | None = None, engine: Engine | None = None) -> Fa
     if engine is None:
         if not config.models_dir.is_dir():
             raise ConfigError(
-                f"QUAN_MODELS_DIR is not a directory (run scripts/stage_models.py): {config.models_dir}"
+                f"GIPFORMER_MODELS_DIR is not a directory (run scripts/stage_models.py): {config.models_dir}"
             )
         engine = QuanEngine(
             config.models_dir, config.device, warmup_seconds=config.max_chunk_seconds
         )
 
     if not config.spool_dir.is_dir():
-        raise ConfigError(f"QUAN_SPOOL_DIR is not a directory: {config.spool_dir}")
+        raise ConfigError(f"GIPFORMER_SPOOL_DIR is not a directory: {config.spool_dir}")
     metrics = Metrics()
     metrics.process_resources()
     try:

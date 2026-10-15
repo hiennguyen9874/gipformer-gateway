@@ -182,7 +182,7 @@ def test_real_engine_requires_staged_models_dir(tmp_path: Path):
 
 
 def test_startup_requires_spool_dir_and_ffmpeg(tmp_path: Path, monkeypatch):
-    with pytest.raises(ConfigError, match="QUAN_SPOOL_DIR"):
+    with pytest.raises(ConfigError, match="GIPFORMER_SPOOL_DIR"):
         create_app(config(spool_dir=tmp_path / "missing"), FakeEngine())
     monkeypatch.setenv("PATH", str(tmp_path))
     with pytest.raises(ConfigError, match="ffmpeg"):

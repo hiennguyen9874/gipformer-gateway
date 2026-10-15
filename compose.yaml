@@ -1,46 +1,46 @@
 # R1: one gateway process on one GPU (README "Docker").
 #   uv run --extra cu126 scripts/stage_models.py                       # on the host, once: ./models
-#   install -m 0400 -o 10001 /dev/stdin secrets/quan_api_keys <<< "<key>"   # one key per line
-#   QUAN_BUILD_CUDA=cu128 QUAN_GPU=<free gpu id> docker compose up -d --build
+#   install -m 0400 -o 10001 /dev/stdin secrets/gipformer_api_keys <<< "<key>"   # one key per line
+#   GIPFORMER_BUILD_CUDA=cu128 GIPFORMER_GPU=<free gpu id> docker compose up -d --build
 # The port is bound to localhost only; terminate TLS and expose it through a reverse proxy.
 services:
-  quan:
+  gipformer-gateway:
     build:
       context: .
       args:
-        TORCH_CUDA: "${QUAN_BUILD_CUDA:-cu126}"
-    image: quan-transcribe:r1-${QUAN_BUILD_CUDA:-cu126}
+        TORCH_CUDA: "${GIPFORMER_BUILD_CUDA:-cu126}"
+    image: gipformer-gateway:r1-${GIPFORMER_BUILD_CUDA:-cu126}
     init: true
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["${QUAN_GPU:-0}"]
+              device_ids: ["${GIPFORMER_GPU:-0}"]
               capabilities: [gpu]
     environment:
-      QUAN_MODELS_DIR: /models
-      QUAN_DEVICE: cuda
-      QUAN_API_KEYS_FILE: /run/secrets/quan_api_keys
+      GIPFORMER_MODELS_DIR: /models
+      GIPFORMER_DEVICE: cuda
+      GIPFORMER_API_KEYS_FILE: /run/secrets/gipformer_api_keys
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
       HF_HOME: /tmp/hf
       HOME: /tmp
     secrets:
-      - quan_api_keys
+      - gipformer_api_keys
     volumes:
       - ./models:/models:ro
     read_only: true
     tmpfs:
-      # Upload spool (QUAN_MAX_SPOOL_BYTES, 200 MiB by default) + small caches.
+      # Upload spool (GIPFORMER_MAX_SPOOL_BYTES, 200 MiB by default) + small caches.
       - /tmp:size=512m,mode=1777
     # SIGTERM: Uvicorn waits up to 30 s for open requests, then the lifespan drains the scheduler
-    # (QUAN_SHUTDOWN_DRAIN_SECONDS, 30 s) and stops the worker (5 s): worst case ~65 s before SIGKILL is needed.
+    # (GIPFORMER_SHUTDOWN_DRAIN_SECONDS, 30 s) and stops the worker (5 s): worst case ~65 s before SIGKILL is needed.
     stop_grace_period: 70s
     restart: unless-stopped
     ports:
       - "127.0.0.1:18000:18000"
 
 secrets:
-  quan_api_keys:
-    file: ./secrets/quan_api_keys
+  gipformer_api_keys:
+    file: ./secrets/gipformer_api_keys

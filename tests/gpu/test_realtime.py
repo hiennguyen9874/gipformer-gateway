@@ -25,7 +25,7 @@ from scripts.smoke_inference import wer
 from tests.live_server import serve, SR, wav_file, WS
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models"))
+MODELS = Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
 FIXTURES = ROOT / "tests/fixtures"
 MODEL = "quan-transcribe-1.0"
 PACKET = PCM_RATE // 50 * 2  # 20 ms of PCM16
@@ -117,7 +117,7 @@ def test_concurrent_sessions_do_not_mix(srv):
 def test_long_turn_is_one_item_with_several_deltas(srv, tmp_path):
     a, b = load("vi_a.wav"), load("vi_b.wav")
     gap = np.zeros(SR, np.float32)
-    pcm = to_pcm24(np.concatenate([a, gap, b, gap, a, gap, b]))  # 37.7 s > QUAN_MAX_CHUNK_SECONDS (30)
+    pcm = to_pcm24(np.concatenate([a, gap, b, gap, a, gap, b]))  # 37.7 s > GIPFORMER_MAX_CHUNK_SECONDS (30)
     [(deltas, done)] = realtime(srv, [pcm])
     assert len(deltas) == 2 and all(deltas)  # (d)
     assert done["transcript"] == rest(srv, wav_file(tmp_path / "long.wav", committed(pcm)))

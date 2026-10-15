@@ -1,4 +1,4 @@
-"""Typed gateway configuration, read once from `QUAN_*` environment variables.
+"""Typed gateway configuration, read once from `GIPFORMER_*` environment variables.
 
 Every limit is finite and validated at startup; an invalid or unknown variable aborts startup (`ConfigError`).
 There is no default API key. Gateway API keys are separate from `HF_TOKEN` (staging secret), and a key equal to
@@ -14,7 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 SAMPLE_RATE = 16000  # QUAN input rate; queue budgets are counted in 16 kHz samples
-PREFIX = "QUAN_"
+PREFIX = "GIPFORMER_"
+OLD_PREFIX = "QUAN_"  # pre-rename settings: a leftover one means a half-migrated deployment
 MIN_API_KEY_LENGTH = 16
 MIN_CHUNK_SECONDS = 1.0
 
@@ -81,7 +82,7 @@ class Config:
 
     def __post_init__(self) -> None:
         if not self.api_keys:
-            raise ConfigError("QUAN_API_KEYS (or QUAN_API_KEYS_FILE) must define at least one key")
+            raise ConfigError("GIPFORMER_API_KEYS (or GIPFORMER_API_KEYS_FILE) must define at least one key")
         for key in self.api_keys:
             if len(key) < MIN_API_KEY_LENGTH or not all("!" <= c <= "~" for c in key):
                 raise ConfigError(
@@ -91,10 +92,10 @@ class Config:
             raise ConfigError("duplicate API key")
         if self.log_level not in ("DEBUG", "INFO", "WARNING", "ERROR"):
             raise ConfigError(
-                f"QUAN_LOG_LEVEL must be DEBUG, INFO, WARNING or ERROR, got {self.log_level!r}"
+                f"GIPFORMER_LOG_LEVEL must be DEBUG, INFO, WARNING or ERROR, got {self.log_level!r}"
             )
         if not self.device:
-            raise ConfigError("QUAN_DEVICE must not be empty")
+            raise ConfigError("GIPFORMER_DEVICE must not be empty")
         for f in dataclasses.fields(self):
             value = getattr(self, f.name)
             if f.type in (int, float) and not (math.isfinite(value) and value > 0):
@@ -102,24 +103,24 @@ class Config:
                     f"{PREFIX}{f.name.upper()} must be a finite number > 0, got {value!r}"
                 )
         if self.max_chunk_seconds > self.max_audio_seconds:
-            raise ConfigError("QUAN_MAX_CHUNK_SECONDS must be <= QUAN_MAX_AUDIO_SECONDS")
+            raise ConfigError("GIPFORMER_MAX_CHUNK_SECONDS must be <= GIPFORMER_MAX_AUDIO_SECONDS")
         if self.max_chunk_seconds < MIN_CHUNK_SECONDS:
             # The splitter needs room to cut at a quiet point and keep every chunk above the short-clip floor.
-            raise ConfigError(f"QUAN_MAX_CHUNK_SECONDS must be >= {MIN_CHUNK_SECONDS}")
+            raise ConfigError(f"GIPFORMER_MAX_CHUNK_SECONDS must be >= {MIN_CHUNK_SECONDS}")
         if self.max_decoded_seconds < self.max_audio_seconds:
-            raise ConfigError("QUAN_MAX_DECODED_SECONDS must be >= QUAN_MAX_AUDIO_SECONDS")
+            raise ConfigError("GIPFORMER_MAX_DECODED_SECONDS must be >= GIPFORMER_MAX_AUDIO_SECONDS")
         if self.max_spool_bytes < self.max_upload_bytes:
-            raise ConfigError("QUAN_MAX_SPOOL_BYTES must be >= QUAN_MAX_UPLOAD_BYTES")
+            raise ConfigError("GIPFORMER_MAX_SPOOL_BYTES must be >= GIPFORMER_MAX_UPLOAD_BYTES")
         # A single job must fit the queue budget, otherwise it could never be admitted.
         for name in ("max_chunk_seconds", "max_turn_seconds"):
             if getattr(self, name) > self.queue_max_buffered_seconds:
                 raise ConfigError(
-                    f"{PREFIX}{name.upper()} must be <= QUAN_QUEUE_MAX_BUFFERED_SECONDS"
+                    f"{PREFIX}{name.upper()} must be <= GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS"
                 )
         if self.queue_max_jobs_per_lane > self.queue_max_jobs:
-            raise ConfigError("QUAN_QUEUE_MAX_JOBS_PER_LANE must be <= QUAN_QUEUE_MAX_JOBS")
+            raise ConfigError("GIPFORMER_QUEUE_MAX_JOBS_PER_LANE must be <= GIPFORMER_QUEUE_MAX_JOBS")
         if self.max_sessions > self.queue_max_lanes:
-            raise ConfigError("QUAN_MAX_SESSIONS must be <= QUAN_QUEUE_MAX_LANES")
+            raise ConfigError("GIPFORMER_MAX_SESSIONS must be <= GIPFORMER_QUEUE_MAX_LANES")
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> "Config":
@@ -129,7 +130,7 @@ class Config:
             PREFIX + "API_KEYS",
             PREFIX + "API_KEYS_FILE",
         }
-        unknown = sorted(k for k in env if k.startswith(PREFIX) and k not in known)
+        unknown = sorted(k for k in env if k.startswith((PREFIX, OLD_PREFIX)) and k not in known)
         if unknown:
             raise ConfigError(f"unknown configuration variables: {', '.join(unknown)}")
 
@@ -144,12 +145,12 @@ class Config:
 def _read_api_keys(env: Mapping[str, str]) -> tuple[str, ...]:
     inline, path = env.get(PREFIX + "API_KEYS"), env.get(PREFIX + "API_KEYS_FILE")
     if inline is not None and path is not None:
-        raise ConfigError("set only one of QUAN_API_KEYS and QUAN_API_KEYS_FILE")
+        raise ConfigError("set only one of GIPFORMER_API_KEYS and GIPFORMER_API_KEYS_FILE")
     if path is not None:
         try:
             text = Path(path).read_text()
         except OSError as e:
-            raise ConfigError(f"cannot read QUAN_API_KEYS_FILE: {e.strerror}") from None
+            raise ConfigError(f"cannot read GIPFORMER_API_KEYS_FILE: {e.strerror}") from None
         keys = tuple(
             line.strip() for line in text.splitlines() if line.strip() and not line.startswith("#")
         )

@@ -6,7 +6,7 @@ Each file's job, and the tests that cover it. Area rules live in [change-rules.m
 
 ```text
 quan_loader.py    load QUAN from staged local dirs only (no Hub resolution); reuses quan_transcribe classes
-config.py         typed QUAN_* env config, validated at startup; no default API key
+config.py         typed GIPFORMER_* env config, validated at startup; no default API key
 engine.py         QuanEngine adapter + EngineWorker, the single thread that runs the model;
                     ChunkResult = text + greedy CTC path (units, first/last frame) + frames
 scheduler.py      bounded fair queue (lanes = requests/sessions, jobs = chunks) feeding the worker
@@ -30,7 +30,7 @@ observability.py  JSON logs + Prometheus-style metrics (metadata only)
 ## scripts/ (host tooling, never in the image)
 
 ```text
-stage_models.py     download pinned assets (assets/manifest.json) into ./models or $QUAN_MODELS_DIR, verify SHA256
+stage_models.py     download pinned assets (assets/manifest.json) into ./models or $GIPFORMER_MODELS_DIR, verify SHA256
 fetch_fixtures.py   build fixtures from FLEURS vi_vn (CC BY 4.0) at a pinned revision, verify SHA256
 smoke_inference.py  model baseline (full/streaming, timings, RAM/VRAM, short-clip probe) -> JSON
 smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline -> JSON
@@ -52,7 +52,7 @@ subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py an
 | `audio/` | CPU + ffmpeg | formats, hostile inputs, decode bounds, multipart limits, temp cleanup |
 | `contract/` | CPU (+ Node for `js/`) | `examples/` parsed by the pinned Python SDK (`test_python_sdk.py`) and JS SDK (`js/contract.test.ts`); `test_server_sdk.py` runs a real server against both SDKs (REST over http, Realtime over wss with a self-signed cert, JS via `js/server.test.ts`) |
 | `gpu/` | CUDA + staged models | loader parity with the reference (exact logits, needs network), real engine, decode -> chunk -> engine pipeline, `test_server.py` (R2a cue gate), `test_realtime.py` (R3a gate) |
-| `container/` | docker (+ NVIDIA toolkit, `QUAN_GPU`) | image gate; skips without docker |
+| `container/` | docker (+ NVIDIA toolkit, `GIPFORMER_GPU`) | image gate; skips without docker |
 
 Shared helpers:
 

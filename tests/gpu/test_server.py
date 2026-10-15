@@ -22,7 +22,7 @@ from scripts.smoke_inference import wer
 from tests.live_server import parse_cues, serve, SR, wav_file
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models"))
+MODELS = Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
 FIXTURES = ROOT / "tests/fixtures"
 LONG = ROOT / "fixtures-large/vi_long.wav"
 URL = "/v1/audio/transcriptions"

@@ -51,7 +51,7 @@ def test_docker_cuda_profile_selection():
     assert 'case "$TORCH_CUDA" in cu126|cu128)' in dockerfile
     assert 'uv sync --frozen --no-dev --extra "$TORCH_CUDA"' in dockerfile
     compose = (ROOT / "compose.yaml").read_text()
-    assert 'TORCH_CUDA: "${QUAN_BUILD_CUDA:-cu126}"' in compose
+    assert 'TORCH_CUDA: "${GIPFORMER_BUILD_CUDA:-cu126}"' in compose
 
 
 def test_small_fixtures_match_manifest():

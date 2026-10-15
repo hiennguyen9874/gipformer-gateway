@@ -110,7 +110,7 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument(
-        "--models-dir", type=Path, default=Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models"))
+        "--models-dir", type=Path, default=Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
     )
     ap.add_argument("--device", default="cuda")
     ap.add_argument(

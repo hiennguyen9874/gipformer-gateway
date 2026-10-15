@@ -29,7 +29,7 @@ from scripts.smoke_inference import wer
 from tests.fake_engine import config
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models"))
+MODELS = Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
 FIXTURES = ROOT / "tests/fixtures"
 LONG = ROOT / "fixtures-large/vi_long.wav"
 pytestmark = [

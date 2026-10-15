@@ -19,7 +19,7 @@ from app.scheduler import JobKind, Scheduler
 from tests.fake_engine import config
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models"))
+MODELS = Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
 pytestmark = [
     pytest.mark.gpu,
     pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA"),

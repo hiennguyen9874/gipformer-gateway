@@ -2,7 +2,7 @@
 start to /ready with the models mounted read-only, smoke against the baseline, graceful SIGTERM, restart.
 
 Needs Docker; the runtime checks also need the NVIDIA Container Toolkit, a free GPU and staged models:
-    QUAN_GPU=<free gpu id> uv run --extra cu128 pytest tests/container --container-cuda=cu128
+    GIPFORMER_GPU=<free gpu id> uv run --extra cu128 pytest tests/container --container-cuda=cu128
 The gateway runs with `--network none`; requests come from a sidecar container sharing its network namespace, with
 this repository mounted read-only (scripts/smoke_server.py + fixtures). The smoke report is written to
 docs/baseline/server-container[-cu128].json (metadata only).
@@ -26,8 +26,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = Path(os.environ.get("QUAN_MODELS_DIR", ROOT / "models")).resolve()
-IMAGE = "quan-transcribe:test"
+MODELS = Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models")).resolve()
+IMAGE = "gipformer-gateway:test"
 KEY = "ctr-" + secrets.token_hex(16)
 pytestmark = [pytest.mark.container,
               pytest.mark.skipif(shutil.which("docker") is None, reason="needs docker")]
@@ -66,16 +66,16 @@ def test_image_contains_only_the_app(image, container_cuda):
 def test_no_secrets_in_image_metadata(image):
     meta = docker("inspect", image).stdout + docker("history", "--no-trunc", image).stdout
     config_env = json.loads(docker("inspect", image).stdout)[0]["Config"]["Env"]
-    assert not any(e.startswith(("HF_TOKEN=", "QUAN_API_KEYS=", "QUAN_API_KEYS_FILE=")) for e in config_env)
-    assert "HF_TOKEN" not in meta and "QUAN_API_KEYS" not in meta
+    assert not any(e.startswith(("HF_TOKEN=", "GIPFORMER_API_KEYS=", "GIPFORMER_API_KEYS_FILE=")) for e in config_env)
+    assert "HF_TOKEN" not in meta and "GIPFORMER_API_KEYS" not in meta
     hf_token = os.environ.get("HF_TOKEN")
     assert not hf_token or hf_token not in meta
 
 
 def gpu() -> str:
-    gpu_id = os.environ.get("QUAN_GPU")
+    gpu_id = os.environ.get("GIPFORMER_GPU")
     if gpu_id is None:
-        pytest.skip("set QUAN_GPU to a free GPU id for the runtime checks")
+        pytest.skip("set GIPFORMER_GPU to a free GPU id for the runtime checks")
     assert (MODELS / "embeddinggemma-2").is_dir(), "models not staged; run scripts/stage_models.py"
     return gpu_id
 
@@ -124,18 +124,18 @@ with urllib.request.urlopen(req, timeout=600) as r:
 def running_container(image, *env, device="cuda"):
     gpu_id = gpu() if device == "cuda" else None
     # Exercise the same file-secret path as compose, without putting the key in container metadata.
-    with tempfile.TemporaryDirectory(prefix="quan-gate-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="gipformer-gate-") as tmp:
         key_file = Path(tmp) / "api_keys"
         key_file.write_text(KEY + "\n")
         key_file.chmod(0o444)  # bind mount must be readable by uid 10001
         args = ["run", "-d", "--network", "none", "--read-only",
                 "--tmpfs", "/tmp:size=512m,mode=1777", "--mount", f"type=bind,src={MODELS},dst=/models,readonly",
-                "--mount", f"type=bind,src={key_file},dst=/run/secrets/quan_api_keys,readonly",
-                "-e", "QUAN_API_KEYS_FILE=/run/secrets/quan_api_keys"]
+                "--mount", f"type=bind,src={key_file},dst=/run/secrets/gipformer_api_keys,readonly",
+                "-e", "GIPFORMER_API_KEYS_FILE=/run/secrets/gipformer_api_keys"]
         if gpu_id is not None:
             args += ["--gpus", f"device={gpu_id}"]
         else:
-            args += ["-e", "QUAN_DEVICE=cpu", "-e", "OMP_NUM_THREADS=2", "-e", "MKL_NUM_THREADS=2"]
+            args += ["-e", "GIPFORMER_DEVICE=cpu", "-e", "OMP_NUM_THREADS=2", "-e", "MKL_NUM_THREADS=2"]
         for value in env:
             args += ["-e", value]
         cid = docker(*args, image).stdout.strip()
@@ -219,7 +219,7 @@ print('auth/errors/overload/isolation passed')
 
 
 def test_errors_overload_and_isolation(image, container_device):
-    with running_container(image, "QUAN_QUEUE_MAX_LANES=2", "QUAN_MAX_SESSIONS=2", device=container_device) as cid:
+    with running_container(image, "GIPFORMER_QUEUE_MAX_LANES=2", "GIPFORMER_MAX_SESSIONS=2", device=container_device) as cid:
         r = sidecar(cid, image, "-c", ERRORS_AND_ISOLATION)
         assert r.returncode == 0, r.stdout[-4000:] + r.stderr[-4000:]
         assert KEY not in docker("logs", cid).stderr
@@ -227,7 +227,7 @@ def test_errors_overload_and_isolation(image, container_device):
 
 def test_stream_drain_and_restart(image, container_device):
     if not (ROOT / "fixtures-large/vi_long.wav").is_file():
-        if os.environ.get("QUAN_GPU") or container_device == "cpu":
+        if os.environ.get("GIPFORMER_GPU") or container_device == "cpu":
             pytest.fail("drain/restart gate needs fixtures-large/vi_long.wav; run scripts/fetch_fixtures.py")
         pytest.skip("drain/restart gate needs fixtures-large/vi_long.wav; run scripts/fetch_fixtures.py")
     with running_container(image, device=container_device) as cid:

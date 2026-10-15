@@ -1,5 +1,5 @@
 [project]
-name = "quan-transcribe-deploy"
+name = "gipformer-gateway"
 version = "0.0.0"
 description = "OpenAI-compatible (scoped) serving for QUAN-Transcribe-1.0"
 requires-python = ">=3.12,<3.13"
@@ -57,5 +57,5 @@ testpaths = ["tests"]
 pythonpath = ["."]
 markers = [
     "gpu: needs a CUDA GPU and staged model assets (scripts/stage_models.py)",
-    "container: needs docker (runtime checks: NVIDIA Container Toolkit, QUAN_GPU, staged models)",
+    "container: needs docker (runtime checks: NVIDIA Container Toolkit, GIPFORMER_GPU, staged models)",
 ]

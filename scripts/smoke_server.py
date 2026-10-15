@@ -8,7 +8,7 @@ Runs with `uv run` from the host against a container port as well (or with the i
 fails):
 - every fixture: json text == text body == "".join(SSE deltas) == SSE done text == verbose_json text == SRT/VTT cue
   texts joined by spaces; usage.seconds == verbose_json duration == samples / 16 kHz; cues ordered, inside the audio;
-- fixtures of one chunk (<= QUAN_MAX_CHUNK_SECONDS, 16 kHz WAV decodes bit-exactly): text == docs/baseline/offline.json
+- fixtures of one chunk (<= GIPFORMER_MAX_CHUNK_SECONDS, 16 kHz WAV decodes bit-exactly): text == docs/baseline/offline.json
   (same greedy decoder, same model); silence and the 200 ms clip -> "";
 - fixtures-large/vi_long.wav, if present: WER against the FLEURS reference <= 0.10 (the server's quiet-point chunking
   differs from the reference splitter used by the baseline, so text parity is not expected);
@@ -274,7 +274,7 @@ def main() -> int:
     ap.add_argument("--ready-timeout", type=float, default=600.0)
     ap.add_argument("--timeout", type=float, default=600.0, help="per HTTP request")
     ap.add_argument(
-        "--max-chunk-seconds", type=float, default=30.0, help="the server's QUAN_MAX_CHUNK_SECONDS"
+        "--max-chunk-seconds", type=float, default=30.0, help="the server's GIPFORMER_MAX_CHUNK_SECONDS"
     )
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()

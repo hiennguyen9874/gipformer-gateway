@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # R1 image of the QUAN-Transcribe gateway: one Uvicorn worker = one model instance = one GPU.
 # Models are staged on the host (scripts/stage_models.py) and mounted read-only at /models at runtime; no model,
-# HF token or API key is ever part of the image. Build: docker build -t quan-transcribe:r1 .
+# HF token or API key is ever part of the image. Build: docker build -t gipformer-gateway:r1 .
 #
 # Base: Ubuntu 24.04 for FFmpeg 6.1.1 (the version the M2 decoder allowlist was tested with) and a uv-managed
 # CPython 3.12.14 (the baseline's). The selected torch wheel ships its CUDA libraries; only the driver comes from the
@@ -21,7 +21,7 @@ RUN uv python install 3.12.14
 WORKDIR /srv
 COPY pyproject.toml uv.lock ./
 # Exact, mutually exclusive profiles from uv.lock; cu126 preserves the baseline, cu128 supports Blackwell.
-# docker build --build-arg TORCH_CUDA=cu128 -t quan-transcribe:cu128 .
+# docker build --build-arg TORCH_CUDA=cu128 -t gipformer-gateway:cu128 .
 ARG TORCH_CUDA=cu126
 RUN case "$TORCH_CUDA" in cu126|cu128) ;; *) echo 'TORCH_CUDA must be cu126 or cu128' >&2; exit 1;; esac \
     && uv sync --frozen --no-dev --extra "$TORCH_CUDA" --python 3.12.14
@@ -30,13 +30,13 @@ FROM ${BASE}
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ffmpeg=7:6.1.1-3ubuntu5 \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd --gid 10001 quan \
-    && useradd --uid 10001 --gid 10001 --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin quan
+    && groupadd --gid 10001 gipformer \
+    && useradd --uid 10001 --gid 10001 --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin gipformer
 COPY --from=builder /opt/python /opt/python
 COPY --from=builder /srv/.venv /srv/.venv
 COPY app/ /srv/app/
 ENV PATH=/srv/.venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
-    QUAN_MODELS_DIR=/models HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_HOME=/tmp/hf HOME=/tmp
+    GIPFORMER_MODELS_DIR=/models HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_HOME=/tmp/hf HOME=/tmp
 USER 10001:10001
 WORKDIR /srv
 EXPOSE 18000

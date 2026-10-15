@@ -1,210 +1,492 @@
 {
-  "environment": {
-    "python": "3.12.14",
-    "torch": "2.14.1+cu126",
-    "torch_cuda": "12.6",
-    "transformers": "5.19.0",
-    "cpu_count": 64,
-    "cuda_visible_devices": "3",
-    "gpu": "NVIDIA A100-PCIE-40GB",
-    "gpu_total_mb": 40339,
-    "driver": "535.230.02"
+  "commit": "2b16f641695d4de0ccdfa5aeaf4b4bbd2dd890bd-dirty",
+  "sherpa_onnx": "1.13.8",
+  "python": "3.12.14",
+  "model_revision": "dd9227dcd8705c13f33bdbe59728d546ab94480f",
+  "cpu": {
+    "count": 64,
+    "model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz"
   },
-  "network_blocked": true,
-  "hf_home": "/tmp/tmp.3bdUQNYeH9",
-  "revisions": {
-    "code": {
-      "quan-transcribe": {
-        "repo": "https://github.com/qnguyen3/QUAN-Transcribe",
-        "commit": "88ddcd2130a3c355d081bc002439f29e5e849060"
+  "load_average_start": [
+    5.5,
+    7.4,
+    7.6
+  ],
+  "beam_size": 4,
+  "max_chunk_seconds": 20.0,
+  "repeats": {
+    "fixtures": 5,
+    "vi_long": 3
+  },
+  "default": "fp32/modified_beam_search",
+  "a_settings": {
+    "threads": 4,
+    "rows": {
+      "fp32/modified_beam_search": {
+        "load_s": 1.621,
+        "warmup_s": 0.848,
+        "peak_rss_load_mb": 386,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.8205,
+          "min_s": 0.7853,
+          "max_s": 0.8838,
+          "rtf": 0.041,
+          "rtf_max": 0.0442,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 4.3024,
+          "min_s": 4.0436,
+          "max_s": 4.3945,
+          "rtf": 0.0404,
+          "rtf_max": 0.0412,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "vi_a.wav": {
+          "audio_s": 8.88,
+          "median_s": 0.3321,
+          "min_s": 0.3282,
+          "max_s": 0.3414,
+          "rtf": 0.0374,
+          "rtf_max": 0.0385,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "b53eb4e4d1419cc2c16a62a9ce3cd5fedc6e3da3d36e4cdbc51bbdd7c6d11f43",
+          "wer": 0.0
+        },
+        "vi_b.wav": {
+          "audio_s": 8.46,
+          "median_s": 0.3131,
+          "min_s": 0.3116,
+          "max_s": 0.3206,
+          "rtf": 0.037,
+          "rtf_max": 0.0379,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "8367c5073f4f862995cf4fd0e8e9515471ea94f2b5eae518797c74008a0ce6dd",
+          "wer": 0.04
+        },
+        "silence_2s.wav": {
+          "audio_s": 2.0,
+          "median_s": 0.0892,
+          "min_s": 0.0876,
+          "max_s": 0.1277,
+          "rtf": 0.0446,
+          "rtf_max": 0.0638,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "5a4214ad727134ac0de7522ba24ad773db89baddbdaf9100536c90987da8d944"
+        },
+        "short_200ms.wav": {
+          "audio_s": 0.2,
+          "median_s": 0.0232,
+          "min_s": 0.0231,
+          "max_s": 0.0307,
+          "rtf": 0.1161,
+          "rtf_max": 0.1533,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "a3dbc4b644a9a2c51e74509ded5c46ccf31d84c65ca417fe0126af1555c66ceb"
+        },
+        "peak_rss_mb": 792
+      },
+      "fp32/greedy_search": {
+        "load_s": 1.626,
+        "warmup_s": 0.65,
+        "peak_rss_load_mb": 386,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.5966,
+          "min_s": 0.5935,
+          "max_s": 0.6341,
+          "rtf": 0.0298,
+          "rtf_max": 0.0317,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 3.2944,
+          "min_s": 3.0592,
+          "max_s": 3.3996,
+          "rtf": 0.0309,
+          "rtf_max": 0.0319,
+          "deterministic": true,
+          "wer": 0.0441,
+          "text_sha256": "23b177122c2d6668ad251dbcd5565b4ed90e229b0d3c4706ed0988ec65e0343d"
+        },
+        "vi_a.wav": {
+          "audio_s": 8.88,
+          "median_s": 0.2502,
+          "min_s": 0.2493,
+          "max_s": 0.2621,
+          "rtf": 0.0282,
+          "rtf_max": 0.0295,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "b53eb4e4d1419cc2c16a62a9ce3cd5fedc6e3da3d36e4cdbc51bbdd7c6d11f43",
+          "wer": 0.0
+        },
+        "vi_b.wav": {
+          "audio_s": 8.46,
+          "median_s": 0.2411,
+          "min_s": 0.2394,
+          "max_s": 0.2436,
+          "rtf": 0.0285,
+          "rtf_max": 0.0288,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "8367c5073f4f862995cf4fd0e8e9515471ea94f2b5eae518797c74008a0ce6dd",
+          "wer": 0.04
+        },
+        "silence_2s.wav": {
+          "audio_s": 2.0,
+          "median_s": 0.0697,
+          "min_s": 0.0689,
+          "max_s": 0.1443,
+          "rtf": 0.0349,
+          "rtf_max": 0.0722,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "5a4214ad727134ac0de7522ba24ad773db89baddbdaf9100536c90987da8d944"
+        },
+        "short_200ms.wav": {
+          "audio_s": 0.2,
+          "median_s": 0.0235,
+          "min_s": 0.0227,
+          "max_s": 0.0278,
+          "rtf": 0.1176,
+          "rtf_max": 0.1392,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "a3dbc4b644a9a2c51e74509ded5c46ccf31d84c65ca417fe0126af1555c66ceb"
+        },
+        "peak_rss_mb": 796
+      },
+      "int8/modified_beam_search": {
+        "load_s": 1.485,
+        "warmup_s": 0.666,
+        "peak_rss_load_mb": 196,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.6343,
+          "min_s": 0.6038,
+          "max_s": 0.6384,
+          "rtf": 0.0317,
+          "rtf_max": 0.0319,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 3.2998,
+          "min_s": 3.2557,
+          "max_s": 3.3117,
+          "rtf": 0.0309,
+          "rtf_max": 0.0311,
+          "deterministic": true,
+          "wer": 0.0441,
+          "text_sha256": "5cb9af79b1331997804151aa0afb19dbadbe8c9333a65d721ecf63d3525acd66"
+        },
+        "vi_a.wav": {
+          "audio_s": 8.88,
+          "median_s": 0.2702,
+          "min_s": 0.2692,
+          "max_s": 0.2779,
+          "rtf": 0.0304,
+          "rtf_max": 0.0313,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "b53eb4e4d1419cc2c16a62a9ce3cd5fedc6e3da3d36e4cdbc51bbdd7c6d11f43",
+          "wer": 0.0
+        },
+        "vi_b.wav": {
+          "audio_s": 8.46,
+          "median_s": 0.2598,
+          "min_s": 0.2584,
+          "max_s": 0.2886,
+          "rtf": 0.0307,
+          "rtf_max": 0.0341,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "8367c5073f4f862995cf4fd0e8e9515471ea94f2b5eae518797c74008a0ce6dd",
+          "wer": 0.04
+        },
+        "silence_2s.wav": {
+          "audio_s": 2.0,
+          "median_s": 0.0756,
+          "min_s": 0.075,
+          "max_s": 0.0804,
+          "rtf": 0.0378,
+          "rtf_max": 0.0402,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "5a4214ad727134ac0de7522ba24ad773db89baddbdaf9100536c90987da8d944"
+        },
+        "short_200ms.wav": {
+          "audio_s": 0.2,
+          "median_s": 0.0183,
+          "min_s": 0.018,
+          "max_s": 0.0227,
+          "rtf": 0.0914,
+          "rtf_max": 0.1137,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "f29e8d3e7dd7dbfec259cff96e5bb7695b8770a7f16eb100ead31743e77c128f"
+        },
+        "peak_rss_mb": 462
+      },
+      "int8/greedy_search": {
+        "load_s": 1.45,
+        "warmup_s": 0.506,
+        "peak_rss_load_mb": 197,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.4341,
+          "min_s": 0.4302,
+          "max_s": 0.4643,
+          "rtf": 0.0217,
+          "rtf_max": 0.0232,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 2.4518,
+          "min_s": 2.4013,
+          "max_s": 2.4534,
+          "rtf": 0.023,
+          "rtf_max": 0.023,
+          "deterministic": true,
+          "wer": 0.0441,
+          "text_sha256": "4d6cb00a22a7a04f127a1391c5d65904a15410c84cf2b9810d91549e486aad18"
+        },
+        "vi_a.wav": {
+          "audio_s": 8.88,
+          "median_s": 0.2104,
+          "min_s": 0.2034,
+          "max_s": 0.2156,
+          "rtf": 0.0237,
+          "rtf_max": 0.0243,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "b53eb4e4d1419cc2c16a62a9ce3cd5fedc6e3da3d36e4cdbc51bbdd7c6d11f43",
+          "wer": 0.0
+        },
+        "vi_b.wav": {
+          "audio_s": 8.46,
+          "median_s": 0.1941,
+          "min_s": 0.1914,
+          "max_s": 0.2015,
+          "rtf": 0.0229,
+          "rtf_max": 0.0238,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "8367c5073f4f862995cf4fd0e8e9515471ea94f2b5eae518797c74008a0ce6dd",
+          "wer": 0.04
+        },
+        "silence_2s.wav": {
+          "audio_s": 2.0,
+          "median_s": 0.0577,
+          "min_s": 0.0565,
+          "max_s": 0.0608,
+          "rtf": 0.0288,
+          "rtf_max": 0.0304,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "5a4214ad727134ac0de7522ba24ad773db89baddbdaf9100536c90987da8d944"
+        },
+        "short_200ms.wav": {
+          "audio_s": 0.2,
+          "median_s": 0.0171,
+          "min_s": 0.017,
+          "max_s": 0.0229,
+          "rtf": 0.0856,
+          "rtf_max": 0.1147,
+          "deterministic": true,
+          "empty": false,
+          "text_sha256": "a3dbc4b644a9a2c51e74509ded5c46ccf31d84c65ca417fe0126af1555c66ceb"
+        },
+        "peak_rss_mb": 465
       }
-    },
-    "models": {
-      "quan-transcribe-1.0": "a08726d9fffeb5f16fc1ab05eecc8ad0b86af5a0",
-      "embeddinggemma-2": "914f7f89142e33e77833254d9c9b90c3cef7303b"
     }
   },
-  "decoder": {
-    "decoder": "greedy",
-    "use_lm": false,
-    "chunk_seconds": 30.0,
-    "batch_seconds": 600.0,
-    "left_chunks": null
-  },
-  "load": {
-    "cold_load_s": 4.9,
-    "rss_mb": 1131,
-    "peak_rss_mb": 2537,
-    "gpu": {
-      "allocated_mb": 1361,
-      "reserved_mb": 1384,
-      "peak_allocated_mb": 1361,
-      "peak_reserved_mb": 1384
+  "b_threads": {
+    "setting": "fp32/modified_beam_search",
+    "rows": {
+      "1": {
+        "load_s": 1.547,
+        "warmup_s": 1.834,
+        "peak_rss_load_mb": 387,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 1.7154,
+          "min_s": 1.6886,
+          "max_s": 1.7882,
+          "rtf": 0.0858,
+          "rtf_max": 0.0894,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 9.1438,
+          "min_s": 8.9267,
+          "max_s": 9.2095,
+          "rtf": 0.0858,
+          "rtf_max": 0.0864,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "peak_rss_mb": 793
+      },
+      "2": {
+        "load_s": 1.699,
+        "warmup_s": 1.144,
+        "peak_rss_load_mb": 382,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 1.0821,
+          "min_s": 1.0409,
+          "max_s": 1.1172,
+          "rtf": 0.0541,
+          "rtf_max": 0.0559,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 5.6751,
+          "min_s": 5.6391,
+          "max_s": 5.7045,
+          "rtf": 0.0532,
+          "rtf_max": 0.0535,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "peak_rss_mb": 790
+      },
+      "4": {
+        "load_s": 1.615,
+        "warmup_s": 0.962,
+        "peak_rss_load_mb": 386,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.8096,
+          "min_s": 0.7854,
+          "max_s": 0.8976,
+          "rtf": 0.0405,
+          "rtf_max": 0.0449,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 4.3328,
+          "min_s": 4.1507,
+          "max_s": 4.4055,
+          "rtf": 0.0406,
+          "rtf_max": 0.0413,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "peak_rss_mb": 791
+      },
+      "8": {
+        "load_s": 1.579,
+        "warmup_s": 0.714,
+        "peak_rss_load_mb": 385,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.6311,
+          "min_s": 0.6218,
+          "max_s": 0.6584,
+          "rtf": 0.0316,
+          "rtf_max": 0.0329,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 3.5461,
+          "min_s": 3.4698,
+          "max_s": 3.587,
+          "rtf": 0.0333,
+          "rtf_max": 0.0336,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "peak_rss_mb": 791
+      },
+      "16": {
+        "load_s": 1.591,
+        "warmup_s": 0.723,
+        "peak_rss_load_mb": 387,
+        "max_chunk": {
+          "audio_s": 20.0,
+          "median_s": 0.632,
+          "min_s": 0.6092,
+          "max_s": 0.7199,
+          "rtf": 0.0316,
+          "rtf_max": 0.036,
+          "deterministic": true
+        },
+        "vi_long.wav": {
+          "audio_s": 106.62,
+          "chunks": 7,
+          "median_s": 3.8737,
+          "min_s": 3.7637,
+          "max_s": 4.0205,
+          "rtf": 0.0363,
+          "rtf_max": 0.0377,
+          "deterministic": true,
+          "wer": 0.0404,
+          "text_sha256": "53a8843f170a8b6f64ee805bba05800f4c7922ec6660fd68dbf8f9482cce2b95"
+        },
+        "peak_rss_mb": 794
+      }
     }
   },
-  "first_inference_s": 0.771,
-  "results": {
-    "vi_a.wav:full": {
-      "text": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "deterministic": true,
-      "audio_s": 8.88,
-      "median_s": 0.0553,
-      "min_s": 0.0537,
-      "rtf": 0.00623,
-      "wer": 0.0625
+  "c_derived": {
+    "rules": {
+      "min_thread_efficiency": 0.5,
+      "hang_margin": 20
     },
-    "vi_a.wav:streaming": {
-      "text": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "deterministic": true,
-      "audio_s": 8.88,
-      "median_s": 0.0525,
-      "min_s": 0.0517,
-      "rtf": 0.00591,
-      "wer": 0.0625
+    "thread_efficiency": {
+      "1": 1.0,
+      "2": 0.793,
+      "4": 0.53,
+      "8": 0.34,
+      "16": 0.17
     },
-    "vi_b.wav:full": {
-      "text": "nghiên cứu trí tuệ nhân tạo bao gồm tạo ra những cỗ máy tự động hóa các tác dụ đòi hỏi hành vi thông minh",
-      "deterministic": true,
-      "audio_s": 8.46,
-      "median_s": 0.0559,
-      "min_s": 0.0538,
-      "rtf": 0.00661,
-      "wer": 0.04
-    },
-    "vi_b.wav:streaming": {
-      "text": "nghiên cứu chếệ nhân tạo bao gồm tạo ra những cỗ máy từ động hóa các tác dụ đòi hỏi hành vi thông minh",
-      "deterministic": true,
-      "audio_s": 8.46,
-      "median_s": 0.0541,
-      "min_s": 0.0524,
-      "rtf": 0.00639,
-      "wer": 0.16
-    },
-    "silence_2s.wav:full": {
-      "text": "",
-      "deterministic": true,
-      "audio_s": 2.0,
-      "median_s": 0.053,
-      "min_s": 0.0519,
-      "rtf": 0.0265
-    },
-    "silence_2s.wav:streaming": {
-      "text": "",
-      "deterministic": true,
-      "audio_s": 2.0,
-      "median_s": 0.0507,
-      "min_s": 0.0501,
-      "rtf": 0.02535
-    },
-    "short_200ms.wav:full": {
-      "text": "",
-      "deterministic": true,
-      "audio_s": 0.2,
-      "median_s": 0.0531,
-      "min_s": 0.0511,
-      "rtf": 0.2656
-    },
-    "short_200ms.wav:streaming": {
-      "text": "",
-      "deterministic": true,
-      "audio_s": 0.2,
-      "median_s": 0.0501,
-      "min_s": 0.0491,
-      "rtf": 0.2503
-    },
-    "vi_long.wav:full": {
-      "text": "một số loài động vật như voi và hô cao cổ thường hay đã gần xe và chỉ với các dụng cụ bình thường chúng ta cũng sẽ quan sát một cách dễ dàng điện thoại vệ tinh nói chung không phải là sự thay thế cho điện thoại di động vì bạn phải ở ngoài trời và có tầm nhìn thông thoáng thẳng đến vệ tinh thì mới sử dụng được sau đó la singh giữa vai giờ chính khi hát các bài hát h bác sĩ nghĩ rằng một số bệnh nhân có thể đã bị lâyẹp ở bệnh viện và ít nhất hai người là nhân viên y tế trong bệnh viện tôi không biết bạn có nhận ra hay không nhưng hầu hết hàng từ trung mỹ nhập khẩu vào nước này đều được miễn thuế argentina nổi tiếng có một trong những đội bóng polo và cầu thủ giỏi nhất thế giới nếu đến thăm vùng bắc cực hoặc nam cực vào mùa đông bạn sẽ được trải nghiệm đêm vùng cực nghĩa là mặt trời không nhú lên khỏi chân trời lúc đầu trang phục chịu ảnh hưởng nặng nề của nền văn hóa b ở phía đông điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem nhẹ chính quyền trung ương đến mức đại diễn bang thường xuyên vắng mặt bản báo cáo mở đầu bằng lời biện hộ cho cuộc tranh luận mở và tạo lập sự đồng thuận của hoa kỳ về chính sách đối với trung đông",
-      "deterministic": true,
-      "audio_s": 106.62,
-      "median_s": 0.1241,
-      "min_s": 0.1137,
-      "rtf": 0.00116,
-      "wer": 0.0515
-    },
-    "vi_long.wav:streaming": {
-      "text": "một số loài động vật như voi và hút cao cổ thường hay đã gần xe và chỉ với các dụng cụ bình thường chúng ta cũng sẽ quan sát một cách dễ dàng điện thoại với tinh nói chung không phải là sự thay thế cho điện thoại di động vì bạn phải ở ngoài trời và có tầm nhìn thông thoáng thẳng đến vệ tin thì mới sử dụng được sau đó la khai singh giữ về giờ chính khi hát các bài hát hel bác sĩ nghĩ rằng một số bệnh nhân có thể đã bị lây gẹp ở bệnh viện và ít nhất hai người là nhân viên y tế trong bệnh viện tôi không biết bạn có nhận ra hay không nhưng hầu hết hàng từ trung mỹ nhập khẩu vào nước này đều được miễn thuế argentina nổi tiếng có một trong những đội bóng bol và cầu thủ giỏi nhất thế giới nếu đến thăm vùng bắc cực hoặc nam cực vào mùa đông bạn sẽ được trải nghiệm đến vùng cực nghĩa là mặt trời không nhú lên khỏi chân trời lúc đầu trang phục chịu ảnh hưởng nặng nề của nền văn hóa b ở phía đông điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem nhẹ chính quyền trung ương đến mức đại diện ban thường xuyên vắng mặt bạn báo cáo mở đầu bằng lời biện hộ cho cuộc tranh luận mở và tạo lập sự đồng thuận có hoa kỳ về chính sách đối với trung đông",
-      "deterministic": true,
-      "audio_s": 106.62,
-      "median_s": 0.1055,
-      "min_s": 0.1049,
-      "rtf": 0.00099,
-      "wer": 0.0699
-    }
+    "num_threads": 4,
+    "rtf_worst_default": 0.0449,
+    "queue_max_buffered_seconds_max": 668,
+    "queue_wait_at_default_s": 26.9,
+    "live_wait_behind_file_chunk_s": 0.8976,
+    "worst_max_chunk_s": 1.7882,
+    "infer_hang_seconds_min": 36,
+    "max_audio_alone_s": 80.8,
+    "full_length_files_per_request_timeout": 7
   },
-  "inference_gpu": {
-    "allocated_mb": 1370,
-    "reserved_mb": 2424,
-    "peak_allocated_mb": 2130,
-    "peak_reserved_mb": 2424
-  },
-  "inference_cpu": {
-    "rss_mb": 2019,
-    "peak_rss_mb": 2537
-  },
-  "batch_isolation": {
-    "equal_to_single": true,
-    "texts": [
-      "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "nghiên cứu trí tuệ nhân tạo bao gồm tạo ra những cỗ máy tự động hóa các tác dụ đòi hỏi hành vi thông minh"
-    ]
-  },
-  "short_probe": {
-    "1": {
-      "text": null,
-      "error": "RuntimeError: maximum size for tensor at dimension 1 is 161 but size is 321",
-      "transcribe": ""
-    },
-    "160": {
-      "text": null,
-      "error": "RuntimeError: maximum size for tensor at dimension 1 is 320 but size is 321",
-      "transcribe": ""
-    },
-    "161": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "320": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "480": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "640": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "1280": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "1600": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "1601": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "3200": {
-      "text": "",
-      "error": null,
-      "transcribe": ""
-    },
-    "8000": {
-      "text": "có thể",
-      "error": null,
-      "transcribe": "có thể"
-    }
-  },
-  "empty_input_transcribe": "''",
-  "failures": []
+  "load_average_end": [
+    16.0,
+    9.4,
+    8.2
+  ],
+  "checks": {
+    "deterministic": true,
+    "num_threads": true,
+    "queue_max_buffered_seconds": true,
+    "infer_hang_seconds": true
+  }
 }

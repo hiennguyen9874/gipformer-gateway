@@ -31,7 +31,10 @@ Pre-release: tag `v0.1.0-rc.1`.
 - **GPU container gate (cu128, RTX 5090):** 6 test pass, không skip; smoke 5 fixture khớp baseline, Realtime,
   auth/lỗi/overload/isolation, SIGTERM khi đang stream → `done` + `drained: true`, restart → ready.
   `docs/baseline/server-container-cu128.json`.
-- **Server smoke (local GPU):** mọi format + Realtime; `vi_long` WER 7.0%. `docs/baseline/server.json`.
+- **Baseline offline (Gipformer, CPU):** RTF/WER cho fp32/int8 × beam/greedy, số thread; mặc định `GIPFORMER_NUM_THREADS=4`,
+  `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS=600` suy ra từ đó. `docs/baseline/offline.json`, [baseline.vi.md](baseline.vi.md) §4.
+- **Server smoke (local CPU, Gipformer):** mọi format + Realtime, khớp hash baseline; `vi_long` WER 4.0%.
+  `docs/baseline/server.json`.
 - **CPU suite:** unit + scheduler + audio + contract (Python SDK `openai==3.31.0`, JS SDK `openai@7.33.0`, server
   HTTP/WSS thật) — 429 passed.
 

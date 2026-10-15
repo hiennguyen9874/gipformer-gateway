@@ -131,7 +131,7 @@ không nhất quán → container không start. Đầy đủ: `app/config.py`.
 | `GIPFORMER_PRECISION` | `fp32` | Trọng số `fp32` hoặc `int8` (nhanh hơn, kém chính xác hơn); giá trị khác → không start |
 | `GIPFORMER_DECODING_METHOD` | `modified_beam_search` | Hoặc `greedy_search` (nhanh hơn, mặc định của reference là beam search) |
 | `GIPFORMER_BEAM_SIZE` | 4 | Số path của `modified_beam_search` (số nguyên > 0; bỏ qua khi greedy) |
-| `GIPFORMER_NUM_THREADS` | 4 | Số intra-op thread của recognizer duy nhất (số nguyên > 0) |
+| `GIPFORMER_NUM_THREADS` | 4 | Số intra-op thread của recognizer duy nhất (số nguyên > 0). Đo: chunk 20 s mất 1.7 / 0.81 / 0.63 s ở 1 / 4 / 8 thread; trên 4 thread hiệu suất < 50%: [baseline §4](docs/baseline.vi.md) |
 | `GIPFORMER_MAX_UPLOAD_BYTES` | 25 MiB | Cả body multipart → 413 |
 | `GIPFORMER_MAX_AUDIO_SECONDS` | 1800 | Thời lượng sau decode → 400 `audio_too_long` |
 | `GIPFORMER_MAX_DECODED_SECONDS` | 3600 | Audio đã decode giữ trong RAM của mọi request (≈ 64 KB/s) → 429 |
@@ -139,6 +139,7 @@ không nhất quán → container không start. Đầy đủ: `app/config.py`.
 | `GIPFORMER_MAX_CHUNK_SECONDS` | 20 | Độ dài chunk tối đa (cũng là độ dài warm-up). Trên 30 s RAM peak tăng nhanh (60 s ≈ 2 GB, 120 s ≈ 8 GB): [baseline §5](docs/baseline.vi.md) |
 | `GIPFORMER_QUEUE_MAX_LANES` | 32 | Request/session đồng thời → 429 |
 | `GIPFORMER_QUEUE_TIMEOUT_SECONDS` | 30 | Chờ chỗ trong queue tối đa → 429 |
+| `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS` | 600 | Audio trong queue + đang chạy → chờ chỗ (rồi 429). Chọn để queue đầy chạy hết trong ≤ 30 s ở RTF đo được (beam 4, 4 thread): [baseline §4](docs/baseline.vi.md). Giảm nếu CPU chậm hơn hoặc tăng `GIPFORMER_BEAM_SIZE` |
 | `GIPFORMER_REQUEST_TIMEOUT_SECONDS` | 600 | Tổng upload + decode + queue + infer + gửi → 503 `request_timeout` |
 | `GIPFORMER_SEND_TIMEOUT_SECONDS` | 10 | Một lần gửi SSE/WebSocket; client không đọc → ngắt |
 | `GIPFORMER_MAX_SESSIONS` | 16 | Realtime session đồng thời (≤ lanes) → handshake 429 |
@@ -146,7 +147,7 @@ không nhất quán → container không start. Đầy đủ: `app/config.py`.
 | `GIPFORMER_SESSION_IDLE_TIMEOUT_SECONDS` | 120 | Session không hoạt động → `idle_timeout` |
 | `GIPFORMER_MAX_TURN_SECONDS` | 120 | Audio chưa commit của một session → `input_audio_buffer_full` |
 | `GIPFORMER_MAX_PENDING_ITEMS` | 4 | Item đã commit chưa xong → `too_many_pending_items` |
-| `GIPFORMER_INFER_HANG_SECONDS` | 120 | Một call inference lâu hơn → worker "hung", `/health` 503 |
+| `GIPFORMER_INFER_HANG_SECONDS` | 120 | Một call inference lâu hơn → worker "hung", `/health` 503 (call dài nhất đo được: 1.8 s) |
 | `GIPFORMER_SHUTDOWN_DRAIN_SECONDS` | 30 | Chờ job đang chạy khi tắt |
 
 Các mặc định là giới hạn an toàn hữu hạn, **chưa phải capacity đã đo** (xem [roadmap](docs/roadmap.md) R4). Đo

@@ -1,5 +1,6 @@
 """Smoke test of a running gateway (local process or container): readiness, models, json/text/SSE and
-verbose_json/srt/vtt on the fixtures, transcripts compared with the offline inference baseline, timings -> JSON report.
+verbose_json/srt/vtt on the fixtures, transcripts compared with the offline baseline, timings -> metadata-only JSON
+report (counts, timings, WER and SHA256 of transcripts; no text).
 
     OPENAI_API_KEY=<gateway key> uv run scripts/smoke_server.py --base-url http://127.0.0.1:18000 \
         --out docs/baseline/server.json
@@ -8,17 +9,18 @@ Runs with `uv run` from the host against a container port as well (or with the i
 fails):
 - every fixture: json text == text body == "".join(SSE deltas) == SSE done text == verbose_json text == SRT/VTT cue
   texts joined by spaces; usage.seconds == verbose_json duration == samples / 16 kHz; cues ordered, inside the audio;
-- fixtures of one chunk (<= GIPFORMER_MAX_CHUNK_SECONDS, 16 kHz WAV decodes bit-exactly): text == docs/baseline/offline.json
-  (same greedy decoder, same model); silence and the 200 ms clip -> "";
-- fixtures-large/vi_long.wav, if present: WER against the FLEURS reference <= 0.10 (the server's quiet-point chunking
-  differs from the reference splitter used by the baseline, so text parity is not expected);
+- fixtures of one chunk (<= GIPFORMER_MAX_CHUNK_SECONDS, 16 kHz WAV decodes bit-exactly): SHA256 of the text == the
+  default setting of docs/baseline/offline.json (scripts/baseline_offline.py), so the server must run the default
+  GIPFORMER_PRECISION and GIPFORMER_DECODING_METHOD;
+- fixtures-large/vi_long.wav, if present: WER against the FLEURS reference <= 0.10;
 - Realtime (`/v1/realtime`, one socket, one commit per fixture, 24 kHz PCM16 in 20 ms packets): events in order,
   transcript == joined deltas, usage == committed seconds, WER <= REST WER + 0.02 (soxr + PCM16 vs no resampling),
-  silence -> "". This part imports runtime dependencies (`websockets`, `numpy`, `soundfile`, `soxr`); the rest is
+  silence == REST (digital zeros survive resampling; the model's own text, not forced to ""). This part imports runtime dependencies (`websockets`, `numpy`, `soundfile`, `soxr`); the rest is
   stdlib only.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -41,6 +43,12 @@ LONG = ROOT / "fixtures-large/vi_long.wav"
 MODEL = "gipformer1.5-68M-rnnt"
 LONG_MAX_WER = 0.10
 SMALL = ("vi_a.wav", "vi_b.wav", "silence_2s.wav", "short_200ms.wav")
+TEXT_FIELDS = (
+    "text",
+    "text_body",
+    "sse_joined",
+    "sse_done",
+)  # verified in memory, never written to the report
 REALTIME_WER_SLACK = 0.02
 PCM_RATE = 24000
 
@@ -299,7 +307,8 @@ def main() -> int:
     if MODEL not in report["models"] or gw.get_json(f"/v1/models/{MODEL}")["id"] != MODEL:
         failures.append("models: served model missing")
 
-    baseline = json.loads((ROOT / "docs/baseline/offline.json").read_text())["results"]
+    offline = json.loads((ROOT / "docs/baseline/offline.json").read_text())
+    baseline = offline["a_settings"]["rows"][offline["default"]]
     manifest = json.loads((FIXTURES / "manifest.json").read_text())["files"]
     inputs = [FIXTURES / n for n in SMALL] + ([LONG] if LONG.exists() else [])
     report["results"] = {}
@@ -338,12 +347,13 @@ def main() -> int:
         ].startswith("text/event-stream"):
             failures.append(f"{name}: content types")
         if res["audio_s"] <= args.max_chunk_seconds:
-            res["baseline"] = baseline[f"{name}:full"]["text"]
-            res["matches_baseline"] = res["text"] == res["baseline"]
+            res["text_sha256"] = hashlib.sha256(res["text"].encode()).hexdigest()
+            res["matches_baseline"] = res["text_sha256"] == baseline[name]["text_sha256"]
             if not res["matches_baseline"]:
                 failures.append(f"{name}: differs from the offline baseline")
         else:
-            res["wer"] = round(wer(info["reference"], res["text"]), 4)
+            # The model's vocabulary is upper case; FLEURS references are lower case.
+            res["wer"] = round(wer(info["reference"], res["text"].lower()), 4)
             if res["wer"] > LONG_MAX_WER:
                 failures.append(f"{name}: WER {res['wer']} > {LONG_MAX_WER}")
         report["results"][name] = res
@@ -355,14 +365,14 @@ def main() -> int:
             continue
         ref = manifest[name]["reference"]
         if ref:
-            res["wer"] = round(wer(ref, res["text"]), 4)
-            res["rest_wer"] = round(wer(ref, report["results"][name]["text"]), 4)
+            res["wer"] = round(wer(ref, res["text"].lower()), 4)
+            res["rest_wer"] = round(wer(ref, report["results"][name]["text"].lower()), 4)
             if res["wer"] > res["rest_wer"] + REALTIME_WER_SLACK:
                 failures.append(
                     f"realtime {name}: WER {res['wer']} > REST {res['rest_wer']} + {REALTIME_WER_SLACK}"
                 )
-        elif name == "silence_2s.wav" and res["text"] != "":
-            failures.append(f"realtime {name}: expected empty transcript")
+        elif name == "silence_2s.wav" and res["text"] != report["results"][name]["text"]:
+            failures.append(f"realtime {name}: differs from REST")
     report["metrics_excerpt"] = [
         line
         for line in gw.request("GET", "/metrics").read().decode().splitlines()
@@ -376,6 +386,10 @@ def main() -> int:
         )
     ]
     report["failures"] = failures
+    for group in ("results", "realtime"):
+        for res in report[group].values():
+            for field in TEXT_FIELDS:
+                res.pop(field, None)
     out = json.dumps(report, ensure_ascii=False, indent=2)
     if args.out:
         args.out.write_text(out + "\n")

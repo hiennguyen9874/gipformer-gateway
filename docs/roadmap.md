@@ -17,7 +17,9 @@ Ordered by priority. A feature is enabled only after its gate passes with record
 ### 1. Production capacity and limits (R4)
 
 Current defaults (`GIPFORMER_QUEUE_MAX_LANES=32`, `GIPFORMER_MAX_SESSIONS=16`, …) are finite safety budgets, **not measured
-capacity**. Tooling exists (`scripts/benchmark.py`); the measurement does not.
+capacity**. `GIPFORMER_NUM_THREADS=4` and `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS=600` come from the single-stream CPU
+baseline (docs/baseline.vi.md §4: RTF 0.04 at fp32, beam 4, 4 threads), not from load. Tooling exists
+(`scripts/benchmark.py`); the load measurement does not.
 
 - [ ] Benchmark on an **exclusive** GPU: REST short/long, SSE, WebSocket commits and mixed, ramping clients;
   ≥ 3 runs per level, ≥ 100 successes per group for p95. Fix workload, p95 SLO and error budget before measuring.
@@ -50,7 +52,7 @@ and soak were not done.
 
 Throughput saturates at ~2 clients; beyond that latency grows linearly with queue wait. At saturation the GPU was
 ~38 % utilized while the server process used ~470 % CPU: the single model thread is launch-bound (~50 ms per call
-regardless of chunk length, see [baseline.vi.md](baseline.vi.md) §4), so §4 optimizations raise this ceiling.
+regardless of chunk length, measured on QUAN before the migration), so §4 optimizations raise this ceiling.
 
 ### 2. Word timestamps (R2b)
 

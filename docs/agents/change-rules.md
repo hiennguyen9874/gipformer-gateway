@@ -61,6 +61,8 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - Every `GIPFORMER_*` variable is a server setting, and unknown ones abort startup. Leftover `QUAN_*` variables abort
   too. `GIPFORMER_TEST_*` (JS server test) is therefore kept out of the server's environment.
 - Each limit is finite and validated at startup. A new setting also gets a row in the README config table.
+- `num_threads` and `queue_max_buffered_seconds` defaults come from `scripts/baseline_offline.py` (docs/baseline.vi.md
+  §4), which exits 1 if they drift; change them only with a new `docs/baseline/offline.json`.
 
 ## Pins, dependencies, image
 
@@ -70,5 +72,6 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - The image contains only `app/` and the venv; models are mounted read-only, keys come from a Docker secret.
 - No torch or CUDA dependency: the image is CPU only. After changing the base image, sherpa-onnx or FFmpeg pins:
   rerun unit + contract tests and the full container gate with no skips (docs/container-gate.vi.md). After changing
-  sherpa-onnx or the model pin, also rerun `scripts/probe_limits.py` (it exits 1 if the floor moved).
+  sherpa-onnx or the model pin, also rerun `scripts/probe_limits.py` (it exits 1 if the floor moved),
+  `scripts/baseline_offline.py` and `scripts/smoke_server.py` (it checks transcripts against the baseline's hashes).
 - `docs/baseline/*.json` reports hold metadata only. CPU-diagnostic container reports stay uncommitted.

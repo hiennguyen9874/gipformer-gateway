@@ -33,7 +33,7 @@ class Config:
     precision: str = "fp32"  # fp32 | int8 weights
     decoding_method: str = "modified_beam_search"  # or greedy_search
     beam_size: int = 4  # active paths of modified_beam_search; ignored by greedy_search
-    num_threads: int = 4  # intra-op threads of the one recognizer
+    num_threads: int = 4  # intra-op threads of the one recognizer; measured: docs/baseline.vi.md §4
     whisper_alias: bool = False  # opt-in alias `whisper-1` (docs/api-contract.vi.md §3)
     log_level: str = "INFO"
 
@@ -55,7 +55,9 @@ class Config:
     queue_max_lanes: int = 32
     queue_max_jobs: int = 64
     queue_max_jobs_per_lane: int = 2
-    queue_max_buffered_seconds: float = 900.0  # audio held by queued + running jobs
+    queue_max_buffered_seconds: float = (
+        600.0  # audio held by queued + running jobs; measured: docs/baseline.vi.md §4
+    )
     queue_timeout_seconds: float = 30.0  # max wait for queue capacity before 429
     live_priority_ratio: int = 3  # live jobs dispatched per file job when both are waiting
     request_timeout_seconds: float = 600.0  # total upload/decode/queue/infer budget of one request

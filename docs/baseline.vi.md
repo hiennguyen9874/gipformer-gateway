@@ -42,43 +42,59 @@ stage. Lý do: `from_pretrained` resolve base theo Hub `main`, không pin đư�
 
 FLEURS vi_vn không có speaker id: `vi_a`/`vi_b` chắc chắn khác nội dung, không chắc khác người nói.
 
-## 4. Số đo (A100-PCIE-40GB, cu126, offline)
+## 4. Baseline offline — gipformer1.5-68M-rnnt (CPU)
 
-Greedy, không LM, chunk 30 s, autocast bf16. Median 5 lần sau warm-up. Report: [`baseline/offline.json`](baseline/offline.json)
-(text ở đây là chuẩn so sánh cho smoke và GPU tests).
+Đo bằng `scripts/baseline_offline.py` (sherpa-onnx 1.13.8, model `dd9227dc`, Xeon Silver 4216 × 64 core, **host dùng
+chung**: load average 5.5 → 16 trong lúc đo). Mỗi setting một process mới; engine dùng y như gateway: warm-up 20 s số
+0, fixture là một chunk, `vi_long` cắt bằng `chunking.split` (20 s, 7 chunk) và nối bằng `Joiner`. Median 5 lần
+(`vi_long`: 3 lần). Report chỉ có số đo, số đếm và SHA256 của transcript:
+[`baseline/offline.json`](baseline/offline.json); hash của setting mặc định là chuẩn so sánh cho smoke server và
+container gate.
 
-| Chỉ số | Giá trị |
-|---|---|
-| Cold load (file trong page cache → model trên GPU) | 4.9 s |
-| Inference đầu tiên (8.88 s audio) | 0.77 s |
-| Peak CPU RSS / RSS sau load | 2,537 MB / 1,131 MB |
-| GPU sau load: allocated / reserved | 1,361 / 1,384 MB |
-| GPU peak (≤ 106 s audio/lần): allocated / reserved | 2,130 / 2,424 MB |
+**(a) Precision × decoding** (4 thread). RTF = latency / thời lượng audio.
 
-| Fixture | Audio | Full: median | Full: WER | Streaming mask: median | Streaming mask: WER |
-|---|---:|---:|---:|---:|---:|
-| `vi_a.wav` | 8.88 s | 55 ms | 6.3% | 53 ms | 6.3% |
-| `vi_b.wav` | 8.46 s | 56 ms | 4.0% | 54 ms | 16.0% |
-| `vi_long.wav` | 106.62 s | 124 ms | 5.2% | 106 ms | 7.0% |
-| `silence_2s.wav` | 2.00 s | 53 ms → `""` | — | 51 ms → `""` | — |
-| `short_200ms.wav` | 0.20 s | 53 ms → `""` | — | 50 ms → `""` | — |
+| Setting | Load | RSS peak | RTF chunk 20 s | RTF `vi_long` | WER `vi_a` / `vi_b` / `vi_long` |
+|---|---:|---:|---:|---:|---|
+| **fp32, `modified_beam_search` (beam 4)** | 1.6 s | 792 MB | **0.041** | **0.040** | 0% / 4.0% / **4.0%** |
+| fp32, `greedy_search` | 1.6 s | 796 MB | 0.030 | 0.031 | 0% / 4.0% / 4.4% |
+| int8, `modified_beam_search` | 1.5 s | 462 MB | 0.032 | 0.031 | 0% / 4.0% / 4.4% |
+| int8, `greedy_search` | 1.5 s | 465 MB | 0.022 | 0.023 | 0% / 4.0% / 4.4% |
 
-WER thô so với transcript FLEURS, chỉ để phát hiện model hỏng. Output tất định qua các lần lặp; batch hai clip cho
-text giống chạy riêng; online = offline. Có sàn ~50 ms mỗi lời gọi, chi phối với utterance ngắn. Gateway chỉ dùng
-chế độ full-context.
+Mọi setting tất định qua các lần lặp. `silence_2s` và `short_200ms` cho text khác rỗng (model tự phát token trên số 0
+hay speech cắt ngắn; gateway không ép `""` với audio > 100 ms). Mỗi lời gọi có sàn nhỏ: 200 ms audio mất ~20 ms
+(RTF ~0.1). WER thô so với transcript FLEURS (lower-case), chỉ để phát hiện model hỏng: trên 3 clip, beam 4 hơn greedy
+và fp32 hơn int8 đúng một từ của `vi_long`; int8 giảm RAM ~40%, greedy nhanh hơn ~25–30%.
 
-**Nguồn gốc sàn ~50 ms** (tái kiểm tại `8cffbe7`, cùng máy; số liệu ở trên vẫn khớp). Mỗi lời gọi bị giới hạn bởi
-kernel launch, không bởi compute GPU:
+**(b) Số thread** (fp32, beam 4; chunk 20 s là lời gọi dài nhất gateway thực hiện). Hiệu suất = latency 1 thread /
+(số thread × latency). Transcript giống hệt nhau ở mọi số thread.
 
-| Đo `_forward` (A100, cu126, bf16, median 10 lần) | Giá trị |
-|---|---:|
-| 1 s / 8.9 s / 30 s audio, batch 1 | 51.7 / 50.4 / 52.5 ms |
-| Batch 8 × 8.9 s, một lời gọi | 60.5 ms |
-| Kernel launch mỗi lời gọi | ~2,440 |
-| Thời gian kernel trên GPU (torch profiler, 8.9 s) | ~14 ms |
+| Thread | Latency chunk 20 s (median) | Hiệu suất | RTF `vi_long` |
+|---:|---:|---:|---:|
+| 1 | 1.72 s | 1.00 | 0.086 |
+| 2 | 1.08 s | 0.79 | 0.053 |
+| **4** | **0.81 s** | **0.53** | **0.041** |
+| 8 | 0.63 s | 0.34 | 0.033 |
+| 16 | 0.63 s | 0.17 | 0.036 |
 
-Trên gateway, REST còn cộng thêm decode FFmpeg (~69 ms/request trung bình, `quan_decode_seconds`), nên REST
-8.88 s ≈ 125 ms trong khi Realtime commit → completed ≈ 57 ms. Hệ quả cho tải: [roadmap.md](roadmap.md) §1, §4.
+**(c) Mặc định suy ra** (script exit 1 nếu `app/config.py` lệch):
+
+- `GIPFORMER_NUM_THREADS = 4`: số thread lớn nhất còn hiệu suất ≥ 0.5. Từ 8 thread trở lên mỗi core thêm chỉ nhanh
+  thêm vài phần trăm cho một stream, và lấy core của FFmpeg decode và event loop. Lần đo trước trong cùng ngày cho
+  0.55 / 0.35 ở 4 / 8 thread; trên host khác nên đo lại.
+- `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS` 900 → **600**: một chunk đã vào queue có thể phải chờ toàn bộ audio đã buffer
+  trước nó; thời gian đó phải ≤ `GIPFORMER_QUEUE_TIMEOUT_SECONDS` (30 s). Với RTF xấu nhất của mặc định (0.045, max
+  qua các lần lặp) giới hạn là 668 s (lần đo trước: 721 s); 600 s chờ tối đa ~27 s. 900 s cũ (đặt cho GPU) sẽ là ~40 s.
+- `GIPFORMER_INFER_HANG_SECONDS = 120` giữ nguyên: ≥ 20 × lời gọi chậm nhất đo được (1.8 s, chunk 20 s ở 1 thread).
+- Giữ nguyên, kiểm tra với số đo: một job LIVE chờ tối đa một chunk FILE đang chạy (≤ 0.9 s); file dài nhất (1,800 s)
+  chạy một mình mất ~81 s, nên `GIPFORMER_REQUEST_TIMEOUT_SECONDS` 600 s đủ cho ~7 file dài tối đa cùng chia worker.
+  Lanes (32), sessions (16), jobs (64, 2 mỗi lane) là giới hạn an toàn khi rảnh; queue buffer ở trên là giới hạn chặn.
+
+Đây là số đo một stream offline trên host dùng chung, **không phải năng lực phục vụ** (R4, [roadmap.md](roadmap.md) §1).
+
+**Server smoke** (`scripts/smoke_server.py`, server local với cấu hình mặc định; report chỉ metadata
+[`baseline/server.json`](baseline/server.json)): `json`/`text`/SSE/`verbose_json`/`srt`/`vtt` khớp nhau trên 5
+fixture, hash transcript 4 fixture một chunk khớp (a), `vi_long` WER 4.0%; Realtime một socket 5 commit, WER bằng
+REST. REST `vi_a` (8.88 s) ≈ 0.45 s, Realtime commit → completed ≈ 0.39 s; `vi_long` ≈ 4.4 s, delta đầu sau 0.7 s.
 
 ## 5. Clip ngắn và độ dài chunk — gipformer1.5-68M-rnnt (CPU)
 
@@ -180,15 +196,17 @@ từng packet 20 ms như client live:
 
 ## 8. Tái tạo
 
-```bash
-uv sync --extra cu126
-uv run --extra cu126 scripts/stage_models.py
-uv run --extra cu126 scripts/fetch_fixtures.py
-CUDA_VISIBLE_DEVICES=<gpu> HF_HOME=$(mktemp -d) uv run --extra cu126 --offline scripts/smoke_inference.py \
-    --no-network --out docs/baseline/offline.json
-```
+Baseline §4 (Gipformer, CPU, ~3.5 phút; cần model đã stage và `fixtures-large/vi_long.wav`; exit 1 nếu mặc định
+trong `app/config.py` lệch số đo hoặc decode không tất định), rồi smoke trên server local cấu hình mặc định (lệnh ở
+docs/agents/commands.md):
 
-`--no-network` đặt `HF_HUB_OFFLINE=1` và chặn mọi `socket.connect`/`getaddrinfo` trong process.
+```bash
+uv sync
+uv run scripts/stage_models.py
+uv run scripts/fetch_fixtures.py
+uv run scripts/baseline_offline.py --out docs/baseline/offline.json
+OPENAI_API_KEY=<key> uv run scripts/smoke_server.py --base-url http://127.0.0.1:<port> --out docs/baseline/server.json
+```
 
 Probe §5 (Gipformer, CPU, ~6 phút; cần model đã stage và `fixtures-large/vi_long.wav`; exit 1 nếu sàn đo được khác
 `MIN_FORWARD_SAMPLES` hoặc sàn clip ngắn thấp hơn nó):
@@ -215,8 +233,8 @@ uv run pytest tests/model/test_realtime.py
 
 | File | Nội dung |
 |---|---|
-| `offline.json` | Baseline inference ở trên (chuẩn text cho smoke/GPU tests) |
-| `server.json` | Smoke gateway local trên GPU: mọi format + Realtime |
+| `offline.json` | Gipformer: RTF/WER theo precision × decoding, số thread, mặc định suy ra; hash transcript là chuẩn cho smoke (§4) |
+| `server.json` | Gipformer: smoke gateway local trên CPU, mọi format + Realtime, chỉ metadata (§4) |
 | `server-container-cu128.json` | Smoke trong GPU container gate (chỉ metadata) |
 | `alignment_probe.json` | Gipformer: độ phân giải, dịch audio và độ trễ của thời điểm phát token; cue (§6) |
 | `r2a_gate.json` | Gipformer: R2a cue gate trên server với model thật, chỉ metadata (§6) |

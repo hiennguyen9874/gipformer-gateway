@@ -137,24 +137,19 @@ def running_container(image, *env):
 def test_offline_ready_and_smoke(image):
     with running_container(image) as cid:
         r = sidecar(cid, image, "/w/scripts/smoke_server.py", "--base-url", "http://127.0.0.1:18000")
-        assert r.returncode == 0, r.stderr[-4000:]  # stdout contains transcripts: never include it in test logs
+        assert r.returncode == 0, r.stderr[-4000:]
         report = json.loads(r.stdout)
         report["image"] = json.loads(docker("inspect", image).stdout)[0]["Id"]
         report["commit"] = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                                           text=True, check=True).stdout.strip()
         report["source_dirty"] = bool(subprocess.run(
             ["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip())
-        # Persist gate evidence, not transcripts (the smoke verifies them in memory).
-        for group in ("results", "realtime"):
-            for result in report.get(group, {}).values():
-                for field in ("text", "text_body", "sse_joined", "sse_done", "baseline"):
-                    result.pop(field, None)
         (ROOT / "docs/baseline/server-container.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
 
 
 # Two idle realtime sessions deterministically occupy both lanes: no timing-dependent saturation.
 ERRORS_AND_ISOLATION = """
-import concurrent.futures, json, os, sys, urllib.error
+import concurrent.futures, hashlib, json, os, sys, urllib.error
 sys.path.insert(0, '/w')
 from scripts.smoke_server import Gateway
 from websockets.sync.client import connect
@@ -188,11 +183,12 @@ for _ in range(100):
     time.sleep(.1)
 else:
     raise AssertionError('lanes not released')
-baseline = json.load(open('/w/docs/baseline/offline.json'))['results']
+offline = json.load(open('/w/docs/baseline/offline.json'))
+baseline = offline['a_settings']['rows'][offline['default']]
 def transcribe(name):
     data = open('/w/tests/fixtures/' + name, 'rb').read()
     with gw.transcribe(data) as r:
-        assert json.load(r)['text'] == baseline[name + ':full']['text']
+        assert hashlib.sha256(json.load(r)['text'].encode()).hexdigest() == baseline[name]['text_sha256']
 with concurrent.futures.ThreadPoolExecutor(2) as pool:
     list(pool.map(transcribe, ['vi_a.wav', 'vi_b.wav']))
 print('auth/errors/overload/isolation passed')

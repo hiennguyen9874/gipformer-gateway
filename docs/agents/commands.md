@@ -31,7 +31,7 @@ GIPFORMER_API_KEYS=<key of >=16 chars> uv run \
     uvicorn --factory app.main:create_app --port <port> --workers 1 --no-access-log \
     --timeout-graceful-shutdown 30 --ws websockets-sansio --ws-max-size 2097152    # /ready after warm-up
 OPENAI_API_KEY=<key> uv run scripts/smoke_server.py \
-    --base-url http://127.0.0.1:<port> --out docs/baseline/server.json
+    --base-url http://127.0.0.1:<port> --out docs/baseline/server.json       # server on default settings
 ```
 
 Listening page against a running gateway (writes `outputs/demo/index.html`; `outputs/` is gitignored):
@@ -49,11 +49,10 @@ unknown `GIPFORMER_*` variables abort startup, as do leftover `QUAN_*` ones.
 
 ## Baselines and probes
 
-The offline baseline script (`smoke_inference.py`) was QUAN-specific and is gone; its Gipformer replacement
-(RTF/WER for precision x decoding) is unshipped work, see docs/implementation-plan.vi.md and docs/roadmap.md.
 Benchmark invocation (R4): docs/roadmap.md §1.
 
 ```bash
+uv run scripts/baseline_offline.py --out docs/baseline/offline.json  # RTF/WER per setting, threads -> defaults (~3.5 min, needs vi_long.wav)
 uv run scripts/probe_limits.py --out docs/baseline/limits_probe.json  # short-audio floor, chunk length (~6 min, needs vi_long.wav)
 uv run scripts/probe_alignment.py --out docs/baseline/alignment_probe.json  # emission times -> cue constants (~1 min)
 uv run pytest tests/model/test_server.py              # R2a cue gate; writes docs/baseline/r2a_gate.json when it passes

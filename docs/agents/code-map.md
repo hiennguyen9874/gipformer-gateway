@@ -32,7 +32,10 @@ observability.py  JSON logs + Prometheus-style metrics (metadata only)
 ```text
 stage_models.py     download pinned assets (assets/manifest.json) into ./models or $GIPFORMER_MODELS_DIR, verify SHA256
 fetch_fixtures.py   build fixtures from FLEURS vi_vn (CC BY 4.0) at a pinned revision, verify SHA256
-smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline -> JSON
+baseline_offline.py RTF/WER per precision x decoding, thread sweep -> default threads and queue bounds; metadata-only
+                      JSON with transcript SHA256; checks the app/config.py defaults
+smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline's transcript
+                      hashes -> metadata-only JSON
 benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metadata-only JSON, not a capacity claim
 demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
                       (audio/, results.json, static index.html with WER, word diff, clickable SRT cues)

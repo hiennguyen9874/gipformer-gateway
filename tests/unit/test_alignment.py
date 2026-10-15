@@ -79,6 +79,11 @@ def test_empty_text_has_no_words():
     result("a b", [S + "a", S + "b"], [100, 100]),  # a word without duration
     result("a", [S + "a"], [1, 2]),  # tokens and times differ in length
     result("a", [S + "a", S + "b"], [1]),
+    result("ab c", [S + "a", "b" + S + "c"], [100, 200]),  # marker inside a token
+    result("a b", [S + "a b"], [100]),  # literal whitespace is not a word marker
+    result("a b", [S + "a", " ", "b"], [100, 200, 300]),
+    result("a\tb", [S + "a\tb"], [100]),
+    result("a\nb", [S + "a\nb"], [100]),
 ])
 def test_inconsistent_results_raise(r):
     with pytest.raises(AlignmentError):
@@ -130,6 +135,24 @@ def test_segments_split_at_pauses():
     ws = [w("a", 0, 0.2), w("b", 0.3, 0.5), w("c", 0.5 + pause, 1.5 + pause),  # gap == PAUSE: split
           w("d", 1.5 + pause + pause - 0.01, 3 + pause * 2)]  # gap just below PAUSE: same cue
     assert segments(ws) == [Segment("a b", 0, 8000), Segment("c d", ws[2].start, ws[3].end)]
+
+
+def test_emission_gap_within_a_chunk_does_not_imply_silence():
+    ws = words(Span(0, 80000), result("a b", [S + "a", S + "b"], [0, 48000]))
+    assert ws[0].end == ws[1].start == 48000
+    assert segments(ws) == [Segment("a b", 0, 48000 + LAST_WORD_SAMPLES)]
+
+
+@pytest.mark.parametrize("gap", [PAUSE_SAMPLES - 1, PAUSE_SAMPLES])
+def test_aligned_gaps_across_chunks_split_cues_at_threshold(gap):
+    next_start = LAST_WORD_SAMPLES + gap
+    ws = align([
+        (Span(0, next_start), result("a", [S + "a"], [0])),
+        (Span(next_start, next_start + LAST_WORD_SAMPLES), result("b", [S + "b"], [0])),
+    ])
+    expected = ([Segment("a", 0, LAST_WORD_SAMPLES), Segment("b", next_start, next_start + LAST_WORD_SAMPLES)]
+                if gap == PAUSE_SAMPLES else [Segment("a b", 0, next_start + LAST_WORD_SAMPLES)])
+    assert segments(ws) == expected
 
 
 def test_segments_respect_max_duration():

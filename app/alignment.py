@@ -27,7 +27,7 @@ EMISSION_SHIFT = 0
 WORD_START = "\u2581"
 
 # Cue (subtitle segment) limits, A6.
-PAUSE_SAMPLES = SAMPLE_RATE // 2  # a silence of at least this between two words ends the cue
+PAUSE_SAMPLES = SAMPLE_RATE // 2  # an aligned gap of at least this between two words ends the cue
 MAX_CUE_SAMPLES = 7 * SAMPLE_RATE
 MAX_CUE_CHARS = 80
 
@@ -63,6 +63,8 @@ def words(span: Span, result: ChunkResult) -> list[Word]:
         if not prev <= t < n:
             raise AlignmentError("token times out of order or out of range")
         prev = t
+        if WORD_START in token[1:] or any(c.isspace() for c in token):
+            raise AlignmentError("token crosses a word boundary")
         piece = token.replace(WORD_START, " ")
         if piece:
             chars.append(piece)
@@ -106,8 +108,12 @@ def align(chunks: Sequence[tuple[Span, ChunkResult]]) -> list[Word]:
 
 
 def segments(ws: Sequence[Word]) -> list[Segment]:
-    """Group words into subtitle cues: a new cue after a pause of `PAUSE_SAMPLES`, or when the next word would make
-    the cue longer than `MAX_CUE_SAMPLES` or `MAX_CUE_CHARS` (a single oversized word is a cue of its own)."""
+    """Group words into subtitle cues: a new cue after an aligned gap of `PAUSE_SAMPLES`, or when the next word
+    would exceed `MAX_CUE_SAMPLES` or `MAX_CUE_CHARS` (a single oversized word is a cue of its own).
+
+    Alignment leaves gaps only across chunks: within a chunk each word ends at the next word's start.
+    Emission times alone cannot identify silence, so large emission gaps do not imply cue boundaries.
+    """
     out: list[Segment] = []
     cue: list[Word] = []
     for w in ws:

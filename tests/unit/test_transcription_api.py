@@ -205,10 +205,16 @@ def test_word_timestamps_after_the_gate(tmp_path, monkeypatch):
         assert v.segments is None
 
 
-def test_alignment_failure_is_an_error_only_for_timed_formats(tmp_path):
+@pytest.mark.parametrize("failure", ["missing_tokens", "embedded_marker", "whitespace"])
+def test_alignment_failure_is_an_error_only_for_timed_formats(tmp_path, failure):
     class Broken(FakeEngine):
         def transcribe(self, wav):
-            return super().transcribe(wav)._replace(tokens=())  # a path that does not spell the text
+            r = super().transcribe(wav)
+            if failure == "embedded_marker":
+                return r._replace(text="ab c", tokens=("▁a", "b▁c"), times=(0, 1))
+            if failure == "whitespace":
+                return r._replace(text="a b", tokens=("▁a b",), times=(0,))
+            return r._replace(tokens=())  # tokens do not spell the text
 
     audio = wav_file(tmp_path / "a.wav", noise(2.5, seed=13))
     with serve(Broken(text_fn=name), max_chunk_seconds=1.0) as srv:

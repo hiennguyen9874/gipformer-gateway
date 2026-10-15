@@ -87,12 +87,15 @@ Kết quả:
   tuyệt đối của chunk; không chạy thêm inference. **Từ** = dãy ký tự không phải khoảng trắng của transcript (âm tiết tiếng
   Việt, không phải từ ghép); start của từ = thời điểm phát token đầu tiên của nó; end = start của từ kế tiếp trong chunk,
   hoặc với từ cuối chunk là độ dài giới hạn `LAST_WORD_SAMPLES` (0.4 s, tạm thời cho tới khi có probe) và không quá cuối chunk.
-  Cue mới khi khoảng lặng giữa hai từ ≥ 0.5 s, hoặc khi thêm từ sẽ làm cue dài > 7 s hay > 80 ký tự.
+  Cue mới khi khoảng cách giữa end của từ trước và start của từ sau ≥ 0.5 s, hoặc khi thêm từ sẽ làm cue dài > 7 s
+  hay > 80 ký tự. Khoảng cách này chỉ có thể xuất hiện giữa các chunk; trong cùng chunk, end của từ trước bằng start
+  của từ sau. Khoảng cách lớn giữa các lần phát token không chứng minh có khoảng lặng, nên không tự tách cue.
   Ngoại lệ: một từ tự nó vượt giới hạn được giữ nguyên trong cue riêng, không cắt từ. Giờ SRT/VTT là
   ms nguyên làm tròn; cue có thứ tự, không chồng nhau, nằm trong `[0, duration]`. Một từ bị điểm cắt chunk chia đôi
   (hiếm, chỉ khi 5 s cuối trước giới hạn không có điểm lặng) thành hai từ, nhất quán với text.
 - Mọi format cho cùng transcript: `json.text == text == verbose_json.text == SSE done.text ==` các text cue nối bằng
-  một dấu cách. Nếu token không khớp transcript, `srt`/`vtt` trả 500 `alignment_failed` (không bao giờ chia đều
+  một dấu cách. Token chỉ được chứa `▁` ở đầu và không chứa ký tự khoảng trắng; `▁` đứng riêng vẫn đặt start của từ.
+  Nếu token sai cấu trúc hoặc không khớp transcript, `srt`/`vtt` trả 500 `alignment_failed` (không bao giờ chia đều
   thời gian); `json`/`text`/`verbose_json`/SSE không chạy alignment nên không bị ảnh hưởng.
 - Text: chữ IN HOA tiếng Việt (vocabulary của model chỉ có chữ hoa), không dấu câu, số viết bằng chữ (output nguyên bản
   của model, không hậu xử lý). Nhiều chunk nối bằng

@@ -276,7 +276,7 @@ def main() -> int:
     ap.add_argument(
         "--max-chunk-seconds",
         type=float,
-        default=30.0,
+        default=20.0,
         help="the server's GIPFORMER_MAX_CHUNK_SECONDS",
     )
     ap.add_argument("--out", type=Path)

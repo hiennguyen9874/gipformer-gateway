@@ -24,7 +24,7 @@ OpenAI SDK / curl / WebSocket client
    ├─ REST / SSE / verbose_json / srt / vtt                     app/transcription.py, app/formats.py
    ├─ Realtime transcription (explicit commit)                  app/realtime.py
    ├─ audio ingress: giới hạn body, spool, FFmpeg sandbox       app/audio.py
-   ├─ chunking tại điểm yên lặng (≤ 30 s, phủ liền audio)       app/chunking.py
+   ├─ chunking tại điểm yên lặng (≤ 20 s, phủ liền audio)       app/chunking.py
    ├─ scheduler: queue có giới hạn, công bằng giữa lane         app/scheduler.py
    └─ EngineWorker: thread duy nhất gọi model                   app/engine.py
                  |
@@ -55,7 +55,7 @@ OpenAI SDK / curl / WebSocket client
 2. Spool upload vào thư mục tạm riêng; FFmpeg (argv cố định, chỉ protocol `file`, allowlist demuxer/decoder, env
    tối thiểu) decode về mono 16 kHz float32, dừng ngay khi vượt thời lượng cho phép.
 3. `chunking.split`: chunk ≤ `GIPFORMER_MAX_CHUNK_SECONDS`, cắt tại cửa sổ 50 ms yên lặng nhất trong 5 s cuối; các chunk
-   phủ liền audio. Audio ≤ 100 ms → `""`, không gọi model (frontend crash dưới 161 mẫu).
+   phủ liền audio. Audio ≤ 100 ms → `""`, không gọi model (recognizer lỗi dưới 1,360 mẫu; baseline §5).
 4. `run_chunks` đưa từng chunk qua lane; `Joiner` nối text bằng một dấu cách (chunk rỗng không sinh dấu cách).
 5. SSE: headers chỉ gửi sau khi decode xong; một `delta` mỗi chunk, một `done` ở cuối; lỗi sau headers → event
    `error`, không có `done`.

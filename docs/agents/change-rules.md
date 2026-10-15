@@ -21,8 +21,9 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - Decode client audio only with `AudioIngress.decode`; chunk only with `chunking.split`.
 - FFmpeg gets fixed argv, the `file` protocol and the demuxer/decoder allowlists; client filenames, paths and URLs
   stay out of its arguments, out of disk paths and out of logs.
-- The engine refuses fewer than 161 samples (`MIN_FORWARD_SAMPLES`, a QUAN-era floor pending the probe). Audio <= 100 ms (1,600 samples) yields `""` without a model
-  call (docs/baseline.vi.md §5).
+- The engine refuses fewer than 1,360 samples (`MIN_FORWARD_SAMPLES`, the recognizer's measured floor). Audio <= 100 ms
+  (1,600 samples) yields `""` without a model call; `GIPFORMER_MAX_CHUNK_SECONDS` defaults to 20 s. Both come from
+  `scripts/probe_limits.py` (docs/baseline.vi.md §5); change them only with a new report.
 - Every resource is budgeted: body limit before the multipart parser, spool bytes, decoded audio in RAM (`hold`,
   realtime pending audio via `reserve`). Exceeding one returns 413/429/503 in the OpenAI envelope.
 
@@ -63,5 +64,6 @@ Read the section for each area you touch before editing it. File roles: [code-ma
   (`tests/unit/test_manifests.py`).
 - The image contains only `app/` and the venv; models are mounted read-only, keys come from a Docker secret.
 - No torch or CUDA dependency: the image is CPU only. After changing the base image, sherpa-onnx or FFmpeg pins:
-  rerun unit + contract tests and the full container gate with no skips (docs/container-gate.vi.md).
+  rerun unit + contract tests and the full container gate with no skips (docs/container-gate.vi.md). After changing
+  sherpa-onnx or the model pin, also rerun `scripts/probe_limits.py` (it exits 1 if the floor moved).
 - `docs/baseline/*.json` reports hold metadata only. CPU-diagnostic container reports stay uncommitted.

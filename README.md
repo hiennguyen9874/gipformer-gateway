@@ -98,7 +98,7 @@ with open("audio.mp3", "rb") as f:
 ```
 
 Realtime (`openai[realtime]`): PCM16 little-endian mono 24 kHz, base64; nhiều commit trên một socket, mỗi commit là
-một item với các `delta` (một mỗi chunk ≤ 30 s) rồi `completed`.
+một item với các `delta` (một mỗi chunk ≤ 20 s) rồi `completed`.
 
 ```python
 import base64
@@ -115,7 +115,7 @@ with client.realtime.connect(model="gipformer1.5-68M-rnnt") as conn:
 ```
 
 Audio: WAV, FLAC, MP3, MP4/M4A (AAC/ALAC), OGG (Vorbis/Opus/FLAC), WEBM/Matroska, nhận diện theo nội dung. Audio dài
-được cắt thành chunk ≤ 30 s tại điểm yên lặng; SSE gửi một delta mỗi chunk. Audio ≤ 100 ms → `""`. `srt`/`vtt`/
+được cắt thành chunk ≤ 20 s tại điểm yên lặng; SSE gửi một delta mỗi chunk. Audio ≤ 100 ms → `""` (không gọi model). `srt`/`vtt`/
 `verbose_json` không stream (`stream=true` → 400). Lỗi dùng envelope OpenAI; danh sách mã lỗi: contract §7.
 
 ## 4. Cấu hình
@@ -136,7 +136,7 @@ không nhất quán → container không start. Đầy đủ: `app/config.py`.
 | `GIPFORMER_MAX_AUDIO_SECONDS` | 1800 | Thời lượng sau decode → 400 `audio_too_long` |
 | `GIPFORMER_MAX_DECODED_SECONDS` | 3600 | Audio đã decode giữ trong RAM của mọi request (≈ 64 KB/s) → 429 |
 | `GIPFORMER_MAX_SPOOL_BYTES` | 200 MiB | File tạm của upload đang nhận (nằm trong tmpfs 512 MiB) → 429 |
-| `GIPFORMER_MAX_CHUNK_SECONDS` | 30 | Độ dài chunk tối đa (cũng là độ dài warm-up) |
+| `GIPFORMER_MAX_CHUNK_SECONDS` | 20 | Độ dài chunk tối đa (cũng là độ dài warm-up). Trên 30 s RAM peak tăng nhanh (60 s ≈ 2 GB, 120 s ≈ 8 GB): [baseline §5](docs/baseline.vi.md) |
 | `GIPFORMER_QUEUE_MAX_LANES` | 32 | Request/session đồng thời → 429 |
 | `GIPFORMER_QUEUE_TIMEOUT_SECONDS` | 30 | Chờ chỗ trong queue tối đa → 429 |
 | `GIPFORMER_REQUEST_TIMEOUT_SECONDS` | 600 | Tổng upload + decode + queue + infer + gửi → 503 `request_timeout` |

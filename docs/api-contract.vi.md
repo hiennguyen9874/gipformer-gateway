@@ -101,9 +101,9 @@ Kết quả:
   của model, không hậu xử lý). Nhiều chunk nối bằng
   một dấu cách; chunk rỗng không sinh dấu cách.
 - Silence/clip ngắn (`app/chunking.py`): audio decode hợp lệ nhưng ≤ 1,600 mẫu ở 16 kHz (≤ 100 ms), kể
-  cả 0 mẫu → `text: ""` (`verbose_json` với `duration` thật, `srt` rỗng, `vtt` chỉ header), không gọi model (frontend crash dưới 161 mẫu; xem baseline §7). Silence dài vẫn qua model
+  cả 0 mẫu → `text: ""` (`verbose_json` với `duration` thật, `srt` rỗng, `vtt` chỉ header), không gọi model (recognizer lỗi dưới 1,360 mẫu; xem baseline §5). Silence dài vẫn qua model
   và cho `""` (đã đo), không dùng ngưỡng biên độ.
-- Chunking: audio dài hơn `GIPFORMER_MAX_CHUNK_SECONDS` (mặc định 30 s) được cắt tại điểm yên lặng nhất trong 5 s cuối
+- Chunking: audio dài hơn `GIPFORMER_MAX_CHUNK_SECONDS` (mặc định 20 s, đo ở baseline §5) được cắt tại điểm yên lặng nhất trong 5 s cuối
   trước giới hạn; các chunk phủ liền toàn bộ audio (không bỏ silence, không bỏ đuôi), mỗi chunk > 100 ms. Text có
   thể khác một lời gọi `transcribe()` của reference trên cùng file vì điểm cắt khác.
 - Giới hạn (cấu hình, xem `app/config.py`): toàn bộ body ≤ `GIPFORMER_MAX_UPLOAD_BYTES` (25 MiB) → 413, kể cả upload

@@ -28,9 +28,15 @@ def noise(n: int, seed: int = 0) -> np.ndarray:
     return np.random.default_rng(seed).normal(0, 0.1, n).astype(np.float32)
 
 
-@pytest.mark.parametrize("n", [0, 1, 160, 161, MIN_AUDIO_SAMPLES])
+@pytest.mark.parametrize("n", [0, 1, MIN_FORWARD_SAMPLES - 1, MIN_FORWARD_SAMPLES, MIN_AUDIO_SAMPLES])
 def test_too_short_audio_yields_no_chunk(n):
     assert split(noise(n), MAX) == []
+
+
+def test_short_audio_floor_never_forwards_what_the_engine_rejects():
+    # Measured floor (docs/baseline/limits_probe.json): the recognizer fails below MIN_FORWARD_SAMPLES.
+    assert MIN_FORWARD_SAMPLES == 1360 and MIN_AUDIO_SAMPLES == 1600
+    assert split(noise(MIN_AUDIO_SAMPLES + 1), MAX) == [Span(0, MIN_AUDIO_SAMPLES + 1)]
 
 
 @pytest.mark.parametrize("n", [MIN_AUDIO_SAMPLES + 1, 8 * SR, MAX])

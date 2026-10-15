@@ -24,9 +24,10 @@ from app.config import SAMPLE_RATE
 from app.errors import inference_failed, model_not_ready
 from app.observability import log, Metrics
 
-# The log-mel frontend crashes below 161 samples (docs/baseline.vi.md §7). Audio policy for short clips (return ""
-# without inference) belongs to the callers; this is the hard safety floor.
-MIN_FORWARD_SAMPLES = 161
+# The recognizer fails below 1,360 samples (85 ms: fewer than 7 feature frames for the encoder's input convolution),
+# for every precision and decoding method (docs/baseline/limits_probe.json, docs/baseline.vi.md §5). Audio policy for
+# short clips (return "" without inference) belongs to the callers; this is the hard safety floor.
+MIN_FORWARD_SAMPLES = 1360
 MODEL_DIR = "gipformer1.5-68M-rnnt"  # under the staging root of scripts/stage_models.py
 FEATURE_DIM = 80
 WORD_START = "\u2581"

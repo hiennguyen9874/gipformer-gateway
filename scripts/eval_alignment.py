@@ -121,7 +121,7 @@ def main() -> int:
         default=Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models")),
     )
     ap.add_argument("--annotations", type=Path, default=ANNOTATIONS)
-    ap.add_argument("--max-chunk-seconds", type=float, default=30.0)
+    ap.add_argument("--max-chunk-seconds", type=float, default=20.0)
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
 

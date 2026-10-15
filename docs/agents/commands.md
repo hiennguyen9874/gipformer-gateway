@@ -52,3 +52,7 @@ unknown `GIPFORMER_*` variables abort startup, as do leftover `QUAN_*` ones.
 The offline baseline script (`smoke_inference.py`) was QUAN-specific and is gone; its Gipformer replacement
 (RTF/WER for precision x decoding) is unshipped work, see docs/implementation-plan.vi.md and docs/roadmap.md.
 Benchmark invocation (R4): docs/roadmap.md §1.
+
+```bash
+uv run scripts/probe_limits.py --out docs/baseline/limits_probe.json  # short-audio floor, chunk length (~6 min, needs vi_long.wav)
+```

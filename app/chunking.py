@@ -2,7 +2,8 @@
 
 Policy (docs/api-contract.vi.md §4):
 - Audio of at most `MIN_AUDIO_SAMPLES` (100 ms at 16 kHz), empty included, yields no chunk: the transcript is ""
-  and the model is not called. The log-mel frontend crashes below 161 samples, and the reference drops such pieces.
+  and the model is not called. The recognizer fails below 1,360 samples (`app.engine.MIN_FORWARD_SAMPLES`), and cuts
+  of speech of 85-100 ms almost never yield text (docs/baseline.vi.md §5), so the floor keeps a margin above it.
 - Otherwise the chunks cover the audio exactly and in order: chunk i ends where chunk i+1 starts, the first starts
   at 0 and the last ends at `len(wav)`. Nothing is dropped, silence included (no amplitude threshold).
 - Each chunk is at most `max_samples` long and longer than `MIN_AUDIO_SAMPLES`; a short tail is avoided by

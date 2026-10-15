@@ -1,7 +1,8 @@
 """Seam 2: the real app on CPU over a real Uvicorn server: json, text and SSE transcription of the committed fixtures.
 
 Transcripts through the HTTP API equal the reference script's output; every format carries the same text; concurrent
-requests do not mix; silence -> "". Needs the staged model and ffmpeg.
+requests do not mix; silence -> ""; clips at and just above the short-audio floors never fail. Needs the staged model
+and ffmpeg.
 """
 
 import json
@@ -9,8 +10,12 @@ import threading
 from pathlib import Path
 
 import pytest
+import soundfile as sf
 
-from app.engine import GipformerEngine
+from app.chunking import MIN_AUDIO_SAMPLES
+from app.config import SAMPLE_RATE
+from app.engine import GipformerEngine, MIN_FORWARD_SAMPLES
+from tests.fake_engine import config
 from tests.live_server import serve
 from tests.model.conftest import FIXTURES, MODELS, reference_text
 
@@ -20,7 +25,7 @@ MODEL = "gipformer1.5-68M-rnnt"
 
 @pytest.fixture(scope="module")
 def srv():
-    engine = GipformerEngine(MODELS, "fp32", "modified_beam_search", 4, 4, warmup_seconds=30.0)
+    engine = GipformerEngine(MODELS, "fp32", "modified_beam_search", 4, 4, warmup_seconds=config().max_chunk_seconds)
     with serve(engine, ready_timeout=300, http_timeout=300, models_dir=MODELS) as s:
         yield s
 
@@ -57,6 +62,22 @@ def test_silence_and_short_clip_match_the_reference(srv):
     assert post(srv, silence).json()["text"] == expected
     assert stream(srv, silence)[1] == expected
     assert isinstance(post(srv, FIXTURES / "short_200ms.wav").json()["text"], str)
+
+
+@pytest.mark.parametrize("samples", [MIN_FORWARD_SAMPLES, MIN_AUDIO_SAMPLES, MIN_AUDIO_SAMPLES + 1, 2 * MIN_AUDIO_SAMPLES])
+def test_clips_at_and_just_above_the_floors_succeed_in_every_format(srv, tmp_path, samples):
+    # Speech cut mid-utterance: at or below the short-audio floor -> "" without the model, just above it -> the
+    # model's own (possibly empty) output; never an error, timed formats included.
+    x = sf.read(FIXTURES / "vi_a.wav", dtype="float32")[0][2 * SAMPLE_RATE:][:samples]
+    path = tmp_path / "cut.wav"
+    sf.write(path, x, SAMPLE_RATE, subtype="FLOAT")
+    text = post(srv, path).json()["text"]
+    assert samples > MIN_AUDIO_SAMPLES or text == ""
+    assert post(srv, path, response_format="text").text == text
+    assert stream(srv, path)[1] == text
+    assert post(srv, path, response_format="verbose_json").json()["text"] == text
+    for fmt in ("srt", "vtt"):
+        post(srv, path, response_format=fmt)
 
 
 def test_concurrent_requests_do_not_mix(srv):

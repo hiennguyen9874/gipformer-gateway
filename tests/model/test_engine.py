@@ -13,7 +13,7 @@ import soundfile as sf
 from app.alignment import words
 from app.chunking import Span
 from app.config import SAMPLE_RATE
-from app.engine import EngineState, EngineWorker, GipformerEngine
+from app.engine import EngineState, EngineWorker, GipformerEngine, MIN_FORWARD_SAMPLES
 from app.observability import Metrics
 from app.scheduler import JobKind, Scheduler
 from tests.fake_engine import config
@@ -49,6 +49,22 @@ def test_silence_decodes_without_error_and_tokens_spell_the_text():
     result = loaded().transcribe(np.zeros(2 * SAMPLE_RATE, dtype=np.float32))
     assert "".join(result.tokens).replace("\u2581", " ").strip() == result.text
     assert len(result.tokens) == len(result.times)
+
+
+@pytest.mark.parametrize("precision", ["fp32", "int8"])
+@pytest.mark.parametrize("decoding", ["modified_beam_search", "greedy_search"])
+def test_hard_floor_is_the_shortest_input_the_recognizer_accepts(precision, decoding):
+    # Measured by scripts/probe_limits.py (docs/baseline/limits_probe.json); a sherpa-onnx or model change that
+    # moves it must move MIN_FORWARD_SAMPLES too.
+    engine = loaded(precision, decoding)
+    speech = sf.read(FIXTURES / "vi_a.wav", dtype="float32")[0]
+    for x in (np.zeros(MIN_FORWARD_SAMPLES + 1, np.float32), speech[2 * SAMPLE_RATE:][:MIN_FORWARD_SAMPLES + 1]):
+        with pytest.raises(RuntimeError):
+            engine.transcribe(x[:MIN_FORWARD_SAMPLES - 1])
+        for n in (MIN_FORWARD_SAMPLES, MIN_FORWARD_SAMPLES + 1):
+            result = engine.transcribe(x[:n])
+            assert "".join(result.tokens).replace("\u2581", " ").strip() == result.text
+            assert len(result.tokens) == len(result.times)
 
 
 def test_missing_model_files_fail_load(tmp_path):

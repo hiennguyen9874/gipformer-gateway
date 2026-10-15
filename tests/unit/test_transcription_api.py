@@ -20,7 +20,8 @@ import soundfile as sf
 
 from app import transcription
 from app.alignment import PAUSE_SAMPLES
-from app.chunking import split
+from app.chunking import MIN_AUDIO_SAMPLES, split
+from app.engine import MIN_FORWARD_SAMPLES
 from app.main import create_app
 from app.transcription import MODEL_ID
 from tests.fake_engine import config, FakeEngine
@@ -227,7 +228,7 @@ def test_alignment_failure_is_an_error_only_for_timed_formats(tmp_path, failure)
         assert idle(srv.app)
 
 
-@pytest.mark.parametrize("samples", [0, 1, 1600])
+@pytest.mark.parametrize("samples", [0, 1, MIN_FORWARD_SAMPLES - 1, MIN_FORWARD_SAMPLES, MIN_AUDIO_SAMPLES])
 def test_empty_and_short_audio_is_empty_text_without_inference(tmp_path, samples, monkeypatch):
     monkeypatch.setattr(transcription, "WORD_TIMESTAMPS", True)
     audio = wav_file(tmp_path / "a.wav", noise(1, seed=2)[:samples])
@@ -244,6 +245,14 @@ def test_empty_and_short_audio_is_empty_text_without_inference(tmp_path, samples
         assert post(srv, audio, response_format="srt").text == ""
         assert post(srv, audio, response_format="vtt").text == "WEBVTT\n\n"
         assert srv.engine.calls == []
+        assert idle(srv.app)
+
+
+def test_audio_just_above_the_short_audio_floor_reaches_the_engine_once(tmp_path):
+    x = noise(1, seed=3)[:MIN_AUDIO_SAMPLES + 1]
+    with serve(FakeEngine(text_fn=name)) as srv:
+        assert post(srv, wav_file(tmp_path / "a.wav", x)).json()["text"] == name(x)
+        assert len(srv.engine.calls) == 1
         assert idle(srv.app)
 
 

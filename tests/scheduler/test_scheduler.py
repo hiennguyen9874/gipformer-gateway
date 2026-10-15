@@ -384,13 +384,13 @@ async def test_lane_refused_while_loading_and_load_failure_is_terminal():
 def test_invalid_waveforms_never_reach_the_engine():
     import numpy as np
 
-    from app.engine import check_waveform
+    from app.engine import check_waveform, MIN_FORWARD_SAMPLES
 
-    for bad in (np.zeros(160, np.float32), np.zeros((2, 1600), np.float32), np.zeros(1600, np.float64),
-                np.full(1600, np.nan, np.float32)):
+    for bad in (np.zeros(MIN_FORWARD_SAMPLES - 1, np.float32), np.zeros((2, 1600), np.float32),
+                np.zeros(1600, np.float64), np.full(1600, np.nan, np.float32)):
         with pytest.raises(ValueError):
             check_waveform(bad)
-    check_waveform(np.zeros(161, np.float32))
+    check_waveform(np.zeros(MIN_FORWARD_SAMPLES, np.float32))
 
 
 @pytest.mark.parametrize("kind", [FILE, LIVE])

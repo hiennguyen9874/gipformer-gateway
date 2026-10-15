@@ -36,6 +36,7 @@ smoke_server.py     stdlib smoke of a running gateway (local or container) again
 benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metadata-only JSON, not a capacity claim
 demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
                       (audio/, results.json, static index.html with WER, word diff, clickable SRT cues)
+probe_limits.py     short-audio floor + latency/peak RSS/WER vs chunk length on the real recognizer -> JSON
 eval_alignment.py   R2b gate: words vs hand annotations in tests/fixtures/alignment/ (none exist yet)
 scoring.py          dependency-free WER, shared by both smoke scripts
 subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py and tests/live_server.py
@@ -63,6 +64,6 @@ Shared helpers:
 
 - `assets/manifest.json`: single source of model pins (repo id, commit, size + SHA256 per file).
 - `Dockerfile`, `.dockerignore`, `compose.yaml`: the image and how it runs.
-- `docs/baseline/*.json`: saved reports (offline baseline, server smoke, container gate, alignment probe).
+- `docs/baseline/*.json`: saved reports (offline baseline, server smoke, container gate, alignment probe, limits probe).
 - `models/`, `fixtures-large/`: staged assets and large fixtures (gitignored).
 - `references/`: read-only upstream sources (git submodules).

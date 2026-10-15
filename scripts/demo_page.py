@@ -12,7 +12,7 @@ the same cache. Cases, all deterministic:
 - FLEURS clips: clean, same sentence by two speakers, numbers, foreign names, shortest, longest;
 - one base clip degraded: white noise, babble, music, reverb, telephone (8 kHz mu-law), low-bitrate MP3/Opus,
   stereo 44.1 kHz AAC, fast/slow tempo, very quiet, clipped, long silence padding;
-- a > 1 min recording (several 30 s chunks), and edge cases: silence, pure noise, a tone, 200 ms and 80 ms cuts.
+- a > 1 min recording (several 20 s chunks), and edge cases: silence, pure noise, a tone, 200 ms and 80 ms cuts.
 
 Each case is sent as `verbose_json` (text, duration) and `srt` (cues). Request errors are recorded on the case, not
 raised. Output stays local: `outputs/` is gitignored (no audio or transcripts in commits).
@@ -388,7 +388,7 @@ def build_cases(cache: Path, audio_dir: Path, extra: list[Path]) -> list[dict]:
         np.concatenate([pad, x, pad]),
     )
 
-    # Long recording: several 30 s chunks, utterances separated by 1.5 s gaps
+    # Long recording: several 20 s chunks, utterances separated by 1.5 s gaps
     gap = np.zeros(int(1.5 * SR), np.float32)
     parts = []
     for r in sel["long"]:
@@ -398,7 +398,7 @@ def build_cases(cache: Path, audio_dir: Path, extra: list[Path]) -> list[dict]:
         "long_multi",
         "Bản ghi dài",
         f"Bản ghi dài {long_x.size / SR:.0f} s ({len(sel['long'])} câu)",
-        "Nối nhiều câu: server chia chunk ≤ 30 s ở điểm lặng; xem chỗ nối chunk có mất/lặp từ không.",
+        "Nối nhiều câu: server chia chunk ≤ 20 s ở điểm lặng; xem chỗ nối chunk có mất/lặp từ không.",
         " ".join(r["ref"] for r in sel["long"]),
         long_x,
     )

@@ -1,0 +1,285 @@
+{
+  "sherpa_onnx": "1.13.8",
+  "constants": {
+    "MIN_FORWARD_SAMPLES": 1360,
+    "MIN_AUDIO_SAMPLES": 1600,
+    "max_chunk_seconds_default": 20.0
+  },
+  "cpu": {
+    "count": 64,
+    "model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz"
+  },
+  "a_shortest_input": {
+    "fp32/modified_beam_search": {
+      "zeros": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      },
+      "noise": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      }
+    },
+    "fp32/greedy_search": {
+      "zeros": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      },
+      "noise": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      }
+    },
+    "int8/modified_beam_search": {
+      "zeros": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      },
+      "noise": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      }
+    },
+    "int8/greedy_search": {
+      "zeros": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      },
+      "noise": {
+        "first_accepted": 1360,
+        "accepted_below": [],
+        "checked_above": 447,
+        "rejected_above": []
+      }
+    }
+  },
+  "b_short_speech": {
+    "1360": {
+      "ms": 85,
+      "cuts": 40,
+      "with_text": 1
+    },
+    "1600": {
+      "ms": 100,
+      "cuts": 40,
+      "with_text": 1
+    },
+    "1601": {
+      "ms": 100,
+      "cuts": 40,
+      "with_text": 1
+    },
+    "2400": {
+      "ms": 150,
+      "cuts": 40,
+      "with_text": 20
+    },
+    "3200": {
+      "ms": 200,
+      "cuts": 40,
+      "with_text": 27
+    },
+    "4800": {
+      "ms": 300,
+      "cuts": 40,
+      "with_text": 28
+    },
+    "8000": {
+      "ms": 500,
+      "cuts": 40,
+      "with_text": 39
+    }
+  },
+  "c_chunk_length": {
+    "threads": 4,
+    "repeats": 3,
+    "rows": [
+      {
+        "seconds": 5.0,
+        "load_s": 1.845,
+        "warmup_s": 0.267,
+        "latency_median_s": 0.206,
+        "latency_max_s": 0.248,
+        "rtf": 0.0412,
+        "tokens": 13,
+        "rss_after_load_mb": 387,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 759
+      },
+      {
+        "seconds": 10.0,
+        "load_s": 1.853,
+        "warmup_s": 0.41,
+        "latency_median_s": 0.389,
+        "latency_max_s": 0.393,
+        "rtf": 0.0389,
+        "tokens": 27,
+        "rss_after_load_mb": 386,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 759
+      },
+      {
+        "seconds": 15.0,
+        "load_s": 1.858,
+        "warmup_s": 0.605,
+        "latency_median_s": 0.584,
+        "latency_max_s": 0.588,
+        "rtf": 0.0389,
+        "tokens": 36,
+        "rss_after_load_mb": 389,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 759
+      },
+      {
+        "seconds": 20.0,
+        "load_s": 1.785,
+        "warmup_s": 0.898,
+        "latency_median_s": 0.765,
+        "latency_max_s": 0.771,
+        "rtf": 0.0383,
+        "tokens": 52,
+        "rss_after_load_mb": 385,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 759
+      },
+      {
+        "seconds": 30.0,
+        "load_s": 1.899,
+        "warmup_s": 1.259,
+        "latency_median_s": 1.226,
+        "latency_max_s": 1.227,
+        "rtf": 0.0409,
+        "tokens": 83,
+        "rss_after_load_mb": 386,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 846
+      },
+      {
+        "seconds": 45.0,
+        "load_s": 1.995,
+        "warmup_s": 2.224,
+        "latency_median_s": 1.984,
+        "latency_max_s": 2.031,
+        "rtf": 0.0441,
+        "tokens": 125,
+        "rss_after_load_mb": 386,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 1317
+      },
+      {
+        "seconds": 60.0,
+        "load_s": 1.83,
+        "warmup_s": 2.861,
+        "latency_median_s": 2.845,
+        "latency_max_s": 2.85,
+        "rtf": 0.0474,
+        "tokens": 162,
+        "rss_after_load_mb": 388,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 2063
+      },
+      {
+        "seconds": 90.0,
+        "load_s": 1.876,
+        "warmup_s": 4.93,
+        "latency_median_s": 4.651,
+        "latency_max_s": 4.884,
+        "rtf": 0.0517,
+        "tokens": 239,
+        "rss_after_load_mb": 386,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 5118
+      },
+      {
+        "seconds": 120.0,
+        "load_s": 1.907,
+        "warmup_s": 7.526,
+        "latency_median_s": 7.28,
+        "latency_max_s": 8.091,
+        "rtf": 0.0607,
+        "tokens": 305,
+        "rss_after_load_mb": 385,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 8253
+      },
+      {
+        "seconds": 180.0,
+        "load_s": 1.904,
+        "warmup_s": 14.146,
+        "latency_median_s": 14.452,
+        "latency_max_s": 14.566,
+        "rtf": 0.0803,
+        "tokens": 468,
+        "rss_after_load_mb": 387,
+        "peak_rss_load_mb": 759,
+        "peak_rss_mb": 17814
+      }
+    ]
+  },
+  "d_chunk_wer_vi_long": [
+    {
+      "seconds": 5,
+      "chunks": 40,
+      "wer": 0.0956
+    },
+    {
+      "seconds": 10,
+      "chunks": 14,
+      "wer": 0.0478
+    },
+    {
+      "seconds": 15,
+      "chunks": 9,
+      "wer": 0.0515
+    },
+    {
+      "seconds": 20,
+      "chunks": 7,
+      "wer": 0.0404
+    },
+    {
+      "seconds": 30,
+      "chunks": 4,
+      "wer": 0.0478
+    },
+    {
+      "seconds": 45,
+      "chunks": 3,
+      "wer": 0.0551
+    },
+    {
+      "seconds": 60,
+      "chunks": 2,
+      "wer": 0.0515
+    },
+    {
+      "seconds": 90,
+      "chunks": 2,
+      "wer": 0.0625
+    },
+    {
+      "seconds": 120,
+      "chunks": 1,
+      "wer": 0.0662
+    },
+    {
+      "seconds": 180,
+      "chunks": 1,
+      "wer": 0.0662
+    }
+  ]
+}

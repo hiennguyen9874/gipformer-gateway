@@ -80,17 +80,52 @@ kernel launch, không bởi compute GPU:
 Trên gateway, REST còn cộng thêm decode FFmpeg (~69 ms/request trung bình, `quan_decode_seconds`), nên REST
 8.88 s ≈ 125 ms trong khi Realtime commit → completed ≈ 57 ms. Hệ quả cho tải: [roadmap.md](roadmap.md) §1, §4.
 
-## 5. Giới hạn frontend và clip ngắn
+## 5. Clip ngắn và độ dài chunk — gipformer1.5-68M-rnnt (CPU)
 
-| Số mẫu 16 kHz | Gọi model trực tiếp |
+Đo bằng `scripts/probe_limits.py` trên recognizer thật (sherpa-onnx 1.13.8, Xeon Silver 4216, 4 thread). Report chỉ
+có số đo và số đếm: [`baseline/limits_probe.json`](baseline/limits_probe.json).
+
+**Input ngắn nhất.** Với cả fp32/int8 × `modified_beam_search`/`greedy_search`, cả số 0 lẫn noise:
+
+| Số mẫu 16 kHz | Gọi recognizer trực tiếp |
 |---:|---|
-| 1 … 160 | **RuntimeError** (cần ≥ 161 mẫu cho một frame log-mel) |
-| 161 … 3,200 | `""` |
-| 8,000 (0.5 s) | `"có thể"` |
+| 0 … 1,359 | **RuntimeError** của onnxruntime (conv đầu vào của encoder cần ≥ 7 frame fbank) |
+| ≥ 1,360 (85 ms) | Chạy được (kiểm tra mọi độ dài 1,360 … 1,759 và lưới tới 3 s) |
 
-Policy của gateway: không bao giờ forward waveform < 161 mẫu; audio ≤ 1,600 mẫu (100 ms) → `""` không gọi model.
-Silence dài vẫn qua model và cho `""` (không dùng ngưỡng biên độ). Splitter giữ cả phần đuôi ngắn (khác
-`split_quiet` của reference, vốn bỏ đuôi ≤ 100 ms).
+**Speech ngắn** (40 đoạn cắt từ `vi_a`/`vi_b` mỗi độ dài, fp32 beam 4): số đoạn có text khác rỗng là 1/40 ở 85 ms,
+1/40 ở 100 ms, 20/40 ở 150 ms, 27/40 ở 200 ms, 39/40 ở 500 ms.
+
+**Policy (từ report):**
+
+- `MIN_FORWARD_SAMPLES = 1360` (`app/engine.py`): sàn an toàn cứng, đúng bằng giá trị đo; ngắn hơn không bao giờ tới
+  model (`ValueError`). `tests/model/test_engine.py` kiểm tra 1,359 lỗi và 1,360/1,361 chạy được trên model thật.
+- Audio ≤ 1,600 mẫu (100 ms) → `""` không gọi model (`app/chunking.py`, giữ nguyên): 85–100 ms gần như không bao giờ
+  cho text, và sàn này cách sàn cứng 240 mẫu. Mọi chunk > 1,600 mẫu nên luôn ≥ 1,360.
+- Silence dài vẫn qua model (không dùng ngưỡng biên độ). Splitter giữ cả phần đuôi ngắn.
+
+**Độ dài chunk** (fp32, beam 4, 4 thread; mỗi độ dài một process mới, warm-up bằng độ dài đó như gateway, decode
+speech `vi_long.wav` cắt/lặp tới độ dài đó, median 3 lần). WER: `vi_long.wav` (106.6 s, 272 từ) cắt bằng
+`chunking.split` ở giới hạn đó.
+
+| Chunk | Latency median | RTF | Peak RSS | WER `vi_long` |
+|---:|---:|---:|---:|---:|
+| 5 s | 0.21 s | 0.041 | 759 MB | 9.6% |
+| 10 s | 0.39 s | 0.039 | 759 MB | 4.8% |
+| 15 s | 0.58 s | 0.039 | 759 MB | 5.1% |
+| **20 s** | **0.77 s** | **0.038** | **759 MB** | **4.0%** |
+| 30 s | 1.23 s | 0.041 | 846 MB | 4.8% |
+| 45 s | 1.98 s | 0.044 | 1,317 MB | 5.5% |
+| 60 s | 2.85 s | 0.047 | 2,063 MB | 5.1% |
+| 90 s | 4.65 s | 0.052 | 5,118 MB | 6.3% |
+| 120 s | 7.28 s | 0.061 | 8,253 MB | 6.6% |
+| 180 s | 14.45 s | 0.080 | 17,814 MB | 6.6% |
+
+RSS sau load ≈ 387 MB; peak lúc load (759 MB) là peak của cả process tới 20 s. Trên 30 s, RAM tăng siêu tuyến tính
+(attention theo độ dài) và RTF tăng; dưới 10 s, WER tăng do cắt giữa câu nhiều hơn.
+
+**Mặc định `GIPFORMER_MAX_CHUNK_SECONDS = 20`**: chunk dài nhất mà peak RSS vẫn bằng peak lúc load, latency mỗi
+chunk < 1 s (cũng là thời gian tối đa một job LIVE phải chờ một chunk FILE đang chạy), WER thấp nhất trong bảng. WER
+trên một file 272 từ chỉ để loại các giá trị tệ, không phân biệt được 10–30 s.
 
 ## 6. Tái tạo
 
@@ -104,6 +139,13 @@ CUDA_VISIBLE_DEVICES=<gpu> HF_HOME=$(mktemp -d) uv run --extra cu126 --offline s
 
 `--no-network` đặt `HF_HUB_OFFLINE=1` và chặn mọi `socket.connect`/`getaddrinfo` trong process.
 
+Probe §5 (Gipformer, CPU, ~6 phút; cần model đã stage và `fixtures-large/vi_long.wav`; exit 1 nếu sàn đo được khác
+`MIN_FORWARD_SAMPLES` hoặc sàn clip ngắn thấp hơn nó):
+
+```bash
+uv run scripts/probe_limits.py --out docs/baseline/limits_probe.json
+```
+
 ## 7. Reports trong `docs/baseline/`
 
 | File | Nội dung |
@@ -112,5 +154,6 @@ CUDA_VISIBLE_DEVICES=<gpu> HF_HOME=$(mktemp -d) uv run --extra cu126 --offline s
 | `server.json` | Smoke gateway local trên GPU: mọi format + Realtime |
 | `server-container-cu128.json` | Smoke trong GPU container gate (chỉ metadata) |
 | `alignment_probe.json` | Hình học frame CTC và độ trễ spike, căn cứ cho timestamps `srt`/`vtt` |
+| `limits_probe.json` | Gipformer: input ngắn nhất, speech ngắn, latency/RSS/WER theo độ dài chunk (§5) |
 
 Chưa đo: LM/KenLM, Python 3.11, cold load khi page cache lạnh, tải đồng thời (xem [roadmap.md](roadmap.md)).

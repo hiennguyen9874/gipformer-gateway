@@ -8,7 +8,7 @@ another aligner:
     {"audio": "<path relative to the repo>", "sha256": "<of the audio file>", "split": "dev" | "test",
      "speaker": "<optional, e.g. female/male>", "words": [{"word": "các", "start": 0.95, "end": 1.21}, ...]}
 
-Words are whitespace units of the transcript (A3). Hypothesis words (real QuanEngine, server chunking, app.alignment)
+Words are whitespace units of the transcript (A3). Hypothesis words (real GipformerEngine, server chunking, app.alignment)
 are matched to reference words by an edit alignment of the word strings; unmatched words are ASR errors, reported
 apart and not counted in the timing error. The thresholds below were fixed before measuring; do not tune them.
 The gate is computed on the `test` split only (`dev` is for choosing at most one end-extension rule). Exit 1 if

@@ -1,7 +1,7 @@
 """Build a listening page: Vietnamese test audio (clean, hard and edge cases) sent through a running gateway, with
 the transcripts, WER and word diffs in one static HTML file.
 
-    OPENAI_API_KEY=<gateway key> uv run --extra cu126 scripts/demo_page.py --base-url http://127.0.0.1:18000
+    OPENAI_API_KEY=<gateway key> uv run scripts/demo_page.py --base-url http://127.0.0.1:18000
     # -> outputs/demo/index.html  (open it in a browser; audio/ and results.json sit next to it)
 
     # add your own files (a sidecar <name>.txt next to the audio is used as the reference, if present)

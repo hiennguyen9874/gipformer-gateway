@@ -1,15 +1,16 @@
-# Kiến trúc triển khai QUAN-Transcribe-1.0
+# Kiến trúc triển khai gipformer1.5-68M-rnnt
 
 Cách chạy: [README](../README.md). Payload: [api-contract.vi.md](api-contract.vi.md). Việc chưa làm: [roadmap.md](roadmap.md).
 
 ## 1. Lựa chọn
 
-**Inference Python gốc (`quan_transcribe`, commit đã pin) + một gateway FastAPI mỏng, đóng gói Docker.**
+**sherpa-onnx (offline transducer recognizer, CPU, version đã pin) + một gateway FastAPI mỏng, đóng gói Docker.**
+Lý do chọn Gipformer trên CPU thay cho model CTC trên GPU trước đây: [ADR 0001](adr/0001-transducer-on-cpu-replaces-quan-ctc-on-gpu.md).
 
-- Không port model sang GGUF/C++, không dùng vLLM/Triton/Redis/Celery.
+- Dùng export ONNX chính thức của model qua sherpa-onnx; không torch, CUDA, icefall/k2, không vLLM/Triton/Redis/Celery.
 - REST, SSE và Realtime WebSocket dùng chung một engine, mỗi giao thức có adapter riêng.
 - Một container = một process = một recognizer = một worker thread, chạy trên CPU.
-- Phạm vi: *OpenAI Audio Transcriptions và Realtime transcription trong phạm vi công bố*. QUAN là ASR tiếng Việt;
+- Phạm vi: *OpenAI Audio Transcriptions và Realtime transcription trong phạm vi công bố*. Gipformer là ASR tiếng Việt;
   dịch, TTS, chat hay Realtime hội thoại cần engine khác, không thuộc gateway này.
 
 ## 2. Kiến trúc
@@ -28,17 +29,17 @@ OpenAI SDK / curl / WebSocket client
    ├─ scheduler: queue có giới hạn, công bằng giữa lane         app/scheduler.py
    └─ EngineWorker: thread duy nhất gọi model                   app/engine.py
                  |
-   QUAN (greedy CTC) + base google/embeddinggemma-2            app/quan_loader.py
+   GipformerEngine: sherpa-onnx OfflineRecognizer (transducer)  app/engine.py
    load từ /models (read-only, đã pin + SHA256), không truy cập Hub
 ```
 
 ### Quy tắc cốt lõi
 
-- **Mọi inference được serialize.** `QuanCTC._acts` là state mutable của forward hooks: chỉ `EngineWorker` (một
-  thread) gọi model. Endpoint không gọi model hay worker trực tiếp; mỗi request/session là một *lane* trong
+- **Mọi inference được serialize.** Một `OfflineRecognizer` duy nhất, chỉ `EngineWorker` (một thread) gọi nó, mỗi lần
+  một chunk; song song nằm trong onnxruntime (`GIPFORMER_NUM_THREADS` intra-op thread), nên CPU và RAM có giới hạn. Endpoint không gọi model hay worker trực tiếp; mỗi request/session là một *lane* trong
   scheduler, mỗi chunk là một *job*.
 - **Event loop chỉ làm I/O.** FFmpeg chạy subprocess, inference chạy trên worker thread.
-- **Fairness:** round-robin giữa lane; lane live (Realtime) được ưu tiên có hạn mức để file dài không chiếm GPU.
+- **Fairness:** round-robin giữa lane; lane live (Realtime) được ưu tiên có hạn mức để file dài không chiếm worker.
   Mỗi request chỉ giữ tối đa 2 chunk trong queue; không enqueue sẵn toàn bộ file dài.
 - **Mọi tài nguyên có giới hạn:** body upload, spool disk, audio đã decode trong RAM, số lane/session/job, thời
   lượng, deadline tổng mỗi request. Vượt → 413/429/503 với envelope OpenAI.
@@ -75,13 +76,15 @@ xử lý FIFO qua cùng `split`/`run_chunks`/`Joiner` như REST. Gửi có giớ
 
 ## 4. Model và dữ liệu
 
-- Model nạp bằng `app/quan_loader.load_quan` từ thư mục đã stage, không dùng `QuanTranscribe.from_pretrained` (hàm
-  này resolve base model theo Hub `main`). Parity với loader reference đã kiểm chứng (`torch.equal` logits).
+- `GipformerEngine.load` nạp encoder/decoder/joiner (`fp32` hoặc `.int8`, `GIPFORMER_PRECISION`) và `tokens.txt` từ
+  thư mục đã stage, chỉ đường dẫn local, không truy cập Hub. Text giống hệt `references/gipformer/infer_onnx.py` trên
+  cùng audio và setting (`tests/model/test_engine.py`, fp32/int8 × beam/greedy). Kết quả mỗi chunk: text + token +
+  thời điểm phát token (mẫu, tính từ đầu chunk).
 - Pins duy nhất: `assets/manifest.json` (repo, commit, size, SHA256 từng file); `scripts/stage_models.py` tải và
   kiểm tra. Chi tiết: [baseline.vi.md](baseline.vi.md).
 - Decode `modified_beam_search` beam 4 (mặc định, hoặc `greedy_search`), không KenLM. Output giữ nguyên: chữ IN HOA,
   không dấu câu, số viết bằng chữ.
-- Peak đo được: ~2.4 GB VRAM, ~2.5 GB RSS lúc load.
+- Peak RSS đo được (chunk 20 s, 4 thread): ~0.8 GB fp32, ~0.46 GB int8 (baseline §4, §5).
 
 ## 5. Đóng gói
 

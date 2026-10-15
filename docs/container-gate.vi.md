@@ -8,8 +8,6 @@ Gate phải đạt trước khi phát hành một image: `tests/container/test_i
 |---|---|---|---|
 | `gipformer-gateway` (CPU) | sherpa-onnx (pin trong `uv.lock`), không torch/CUDA | **Chưa đạt: chưa chạy** (môi trường phát triển không có Docker) | `docs/baseline/server-container.json` (chưa có) |
 
-Report của image QUAN (`server-container-cu128.json`) đã xoá cùng QUAN; không dùng làm bằng chứng cho image này.
-
 Kiểm tra thay thế đã chạy (chỉ chẩn đoán, **không thay gate**, không commit report): venv dựng như builder
 (`uv sync --frozen --no-dev`, Python 3.12.14, ~166 MB, không có `torch`/`transformers`) + chỉ `app/`, model copy
 read-only, key qua file, `HF_HUB_OFFLINE=1`, chạy trên host không có network namespace riêng. Các script của gate

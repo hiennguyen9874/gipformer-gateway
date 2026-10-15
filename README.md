@@ -15,7 +15,7 @@ Giới hạn cần biết:
 - `srt`/`vtt` có thời gian từ thời điểm model phát từng token (bước 40 ms; cue có thể bắt đầu sớm tới ~1 s sau khoảng
   lặng, xem [baseline §6](docs/baseline.vi.md)). `verbose_json` không có `segments`; word timestamps chưa bật.
 - Realtime: transcript chỉ có sau `input_audio_buffer.commit`; không có partial, không có VAD.
-- Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model Gipformer. Model id cũ `gipformer1.5-68M-rnnt` trả 404 `model_not_found`.
+- Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model Gipformer. Mọi model id khác trả 404 `model_not_found`.
 
 Tài liệu: [kiến trúc](docs/deployment-design.vi.md) · [API contract](docs/api-contract.vi.md) ·
 [baseline và pins](docs/baseline.vi.md) · [kiểm định image](docs/container-gate.vi.md) ·

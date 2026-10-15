@@ -1,6 +1,6 @@
 """Bounded, closed-loop capacity probe of a running gateway; never records text/audio/keys.
 
-OPENAI_API_KEY=... uv run --extra cu128 scripts/benchmark.py --out report.json
+OPENAI_API_KEY=... uv run scripts/benchmark.py --engine cpu --hardware <label> --out report.json
 Capacity gate and how to run it: docs/roadmap.md (R4). A report is not a capacity claim.
 """
 

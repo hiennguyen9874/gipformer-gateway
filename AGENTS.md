@@ -1,6 +1,6 @@
-# Deploy QUAN-Transcribe-1.0
+# Deploy gipformer1.5-68M-rnnt
 
-Docker-only gateway serving QUAN-Transcribe-1.0 (Vietnamese CTC ASR) through a scoped OpenAI API: REST/SSE (R1),
+Docker-only gateway serving gipformer1.5-68M-rnnt (Vietnamese RNN-T ASR, sherpa-onnx on CPU) through a scoped OpenAI API: REST/SSE (R1),
 verbose_json/srt/vtt (R2a), Realtime with explicit commit (R3a). Pre-release `v0.1.0-rc.1`. TLS, CORS and
 per-client rate limits belong to the operator's infrastructure in front of it.
 
@@ -35,10 +35,8 @@ per-client rate limits belong to the operator's infrastructure in front of it.
 
 ## References
 
-- references/gipformer
-- references/gipformer1.5-68M-rnnt
-- references/QUAN-Transcribe
-- references/QUAN-Transcribe-1.0
+- references/gipformer (inference scripts, sherpa-onnx usage; `infer_onnx.py` is the parity reference)
+- references/gipformer1.5-68M-rnnt (config, tokens, model card; weights are Git LFS pointers, stage them instead)
 
 ## Agent skills
 

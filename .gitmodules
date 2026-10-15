@@ -1,15 +1,6 @@
 [submodule "references/audio.cpp"]
 	path = references/audio.cpp
 	url = git@github.com:0xShug0/audio.cpp.git
-[submodule "references/QUAN-Transcribe"]
-	path = references/QUAN-Transcribe
-	url = git@github.com:qnguyen3/QUAN-Transcribe.git
-[submodule "references/QUAN-Transcribe-1.0"]
-	path = references/QUAN-Transcribe-1.0
-	url = https://huggingface.co/qnguyen3/QUAN-Transcribe-1.0
-[submodule "references/Qwen3-ASR-1.7B"]
-	path = references/Qwen3-ASR-1.7B
-	url = https://huggingface.co/Qwen/Qwen3-ASR-1.7B
 [submodule "references/WhisperLiveKit"]
 	path = references/WhisperLiveKit
 	url = git@github.com:QuentinFuxa/WhisperLiveKit.git

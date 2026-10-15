@@ -40,7 +40,7 @@ Không có endpoint nào trả `logprobs`, `avg_logprob`, `no_speech_prob`, conf
 
 - Id: `gipformer1.5-68M-rnnt`. Alias `whisper-1` chỉ khi bật cấu hình (mặc định tắt); khi bật, `whisper-1` được chấp
   nhận ở mọi field `model` và được liệt kê trong `/v1/models` như một model riêng (cùng backend Gipformer, output khác
-  Whisper; ghi rõ trong README). Mọi id khác (kể cả `quan-transcribe-1.0` cũ): 404 `model_not_found`.
+  Whisper; ghi rõ trong README). Mọi id khác: 404 `model_not_found`.
 - Object: `{"id", "object": "model", "created", "owned_by": "g-group-ai-lab"}`. `created` = commit time của revision
   weights đã pin (`dd9227d…` → `1789615207`). Ví dụ: `examples/models.json`, `examples/model.json`.
 
@@ -262,7 +262,7 @@ từ envelope. `examples/service_errors.json` được kiểm thử bằng cả 
 ## 8. Kiểm tra contract
 
 ```bash
-uv run --extra cu126 pytest tests/contract tests/unit
+uv run pytest tests/contract tests/unit
 (cd tests/contract/js && npm ci && npm test)
 ```
 

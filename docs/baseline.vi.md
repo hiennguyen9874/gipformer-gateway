@@ -1,4 +1,4 @@
-# Baseline inference và pins — QUAN-Transcribe-1.0
+# Baseline inference và pins — gipformer1.5-68M-rnnt
 
 Số đo nền của model (ngoài gateway), các pin tái lập và giới hạn frontend. Đây là smoke/baseline trên vài fixture,
 **không phải benchmark năng lực phục vụ** và không phải đánh giá WER.
@@ -7,27 +7,26 @@ Số đo nền của model (ngoài gateway), các pin tái lập và giới hạ
 
 | Thành phần | Pin |
 |---|---|
-| Code `quan-transcribe` | `github.com/qnguyen3/QUAN-Transcribe@88ddcd2130a3c355d081bc002439f29e5e849060` (`pyproject.toml`, `uv.lock`) |
-| Weights `qnguyen3/QUAN-Transcribe-1.0` | `a08726d9fffeb5f16fc1ab05eecc8ad0b86af5a0` (không stage `best.pt`) |
-| Base `google/embeddinggemma-2` | `914f7f89142e33e77833254d9c9b90c3cef7303b` (encoder, feature extractor, tokenizer) |
+| Model `g-group-ai-lab/gipformer1.5-68M-rnnt` | Hub revision `dd9227dcd8705c13f33bdbe59728d546ab94480f`: encoder/decoder/joiner fp32 + int8, `tokens.txt`, `config.json`, `README.md` (không stage `model.pt`, `bpe.model`) |
+| Runtime `sherpa-onnx` | `1.13.8` (cùng `sherpa-onnx-core`; `pyproject.toml`, `uv.lock`) |
 | Fixtures `google/fleurs` | `70bb2e84b976b7e960aa89f1c648e09c59f894dd` (vi_vn dev, CC BY 4.0) |
-| Python / transformers | 3.12.14 / 5.19.0 |
-| torch | `cu126`: 2.14.1+cu126 · `cu128`: 2.11.0+cu128 |
+| Python | 3.12.14 (image) |
 | OpenAI SDK (contract) | Python `openai==3.31.0`, JS `openai@7.33.0` |
 
-`assets/manifest.json` là nguồn pin duy nhất cho model (repo, commit, size, SHA256 từng file);
-`tests/unit/test_manifests.py` kiểm tra commit QUAN trong `pyproject.toml` khớp manifest. Đổi pin: sửa manifest rồi
+`assets/manifest.json` là nguồn pin duy nhất cho model (repo, revision, size, SHA256 từng file) và giữ version
+sherpa-onnx; `tests/unit/test_manifests.py` kiểm tra version đó khớp `pyproject.toml` và `uv.lock`. Pin lấy từ Hub, không
+từ submodule `references/gipformer1.5-68M-rnnt` (weights trong đó là con trỏ Git LFS). Đổi pin: sửa manifest rồi
 chạy `scripts/stage_models.py --update-manifest`.
 
-**License:** weights QUAN và base theo [Gemma Terms of Use](https://ai.google.dev/gemma/terms); repo không phân phối
-weights. Lúc staging, cả hai repo đều không bị gate (không cần `HF_TOKEN`); `stage_models.py` vẫn đọc `HF_TOKEN` nếu có.
+**License:** model MIT; repo không phân phối weights. Repo trên Hub không bị gate (không cần `HF_TOKEN`);
+`stage_models.py` vẫn đọc `HF_TOKEN` nếu có.
 
-## 2. Loader offline
+## 2. Engine offline
 
-`app/quan_loader.load_quan(models_dir, device)` lặp lại các bước của `QuanTranscribe.from_pretrained` (dùng lại
-`QuanCTC`, `load_encoder`, `LogMel` của reference, không sửa reference) nhưng trỏ base model/tokenizer vào thư mục đã
-stage. Lý do: `from_pretrained` resolve base theo Hub `main`, không pin được. Parity
-(`tests/gpu/test_loader_parity.py`, cần GPU + mạng): state dict, token pieces, logits full/streaming `torch.equal`.
+`app/engine.GipformerEngine` tạo một `sherpa_onnx.OfflineRecognizer.from_transducer` từ file local đã stage (không
+truy cập Hub), 16 kHz, 80 fbank, `GIPFORMER_DECODING_METHOD`/`GIPFORMER_BEAM_SIZE` như reference. Parity
+(`tests/model/test_engine.py`, CPU, cần model đã stage): text giống hệt `references/gipformer/infer_onnx.py` cho
+fp32/int8 × `modified_beam_search`/`greedy_search`; thời điểm phát token tăng dần, nằm trong chunk và khớp text.
 
 ## 3. Fixtures
 
@@ -83,7 +82,7 @@ và fp32 hơn int8 đúng một từ của `vi_long`; int8 giảm RAM ~40%, gree
   0.55 / 0.35 ở 4 / 8 thread; trên host khác nên đo lại.
 - `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS` 900 → **600**: một chunk đã vào queue có thể phải chờ toàn bộ audio đã buffer
   trước nó; thời gian đó phải ≤ `GIPFORMER_QUEUE_TIMEOUT_SECONDS` (30 s). Với RTF xấu nhất của mặc định (0.045, max
-  qua các lần lặp) giới hạn là 668 s (lần đo trước: 721 s); 600 s chờ tối đa ~27 s. 900 s cũ (đặt cho GPU) sẽ là ~40 s.
+  qua các lần lặp) giới hạn là 668 s (lần đo trước: 721 s); 600 s chờ tối đa ~27 s. 900 s cũ (mặc định trước khi đo) sẽ là ~40 s.
 - `GIPFORMER_INFER_HANG_SECONDS = 120` giữ nguyên: ≥ 20 × lời gọi chậm nhất đo được (1.8 s, chunk 20 s ở 1 thread).
 - Giữ nguyên, kiểm tra với số đo: một job LIVE chờ tối đa một chunk FILE đang chạy (≤ 0.9 s); file dài nhất (1,800 s)
   chạy một mình mất ~81 s, nên `GIPFORMER_REQUEST_TIMEOUT_SECONDS` 600 s đủ cho ~7 file dài tối đa cùng chia worker.

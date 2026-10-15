@@ -1,7 +1,7 @@
 {
-  "created": "2026-10-15 04:05 UTC",
+  "created": "2026-10-15 09:56 UTC",
   "base_url": "http://127.0.0.1:18071",
-  "model": "quan-transcribe-1.0",
+  "model": "gipformer1.5-68M-rnnt",
   "fleurs_revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
   "cases": [
     {
@@ -13,22 +13,22 @@
       "file": "clean_base.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 10282809127467658620.wav (sentence 1628)",
-      "latency_s": 0.158,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.466,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.78,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0178,
+      "rtf": 0.0525,
       "diff": [
         [
           "eq",
@@ -81,9 +81,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -119,11 +119,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -196,7 +191,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -208,32 +203,22 @@
       "file": "clean_1.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 10364262111328509853.wav (sentence 1513)",
-      "latency_s": 0.137,
-      "hypothesis": "argentina nổi tiếng có một trong những đội bóng polo và cầu thủ giỏi nhất thế giới",
+      "latency_s": 0.441,
+      "hypothesis": "ARGENTINA NỔI TIẾNG CÓ MỘT TRONG NHỮNG ĐỘI BÓNG POLO VÀ CẦU THỦ GIỎI NHẤT THẾ GIỚI",
       "duration_s": 9.06,
       "cues": [
         [
-          1.5,
-          1.54,
-          "argentina"
+          0.0,
+          6.8,
+          "ARGENTINA NỔI TIẾNG CÓ MỘT TRONG NHỮNG ĐỘI BÓNG POLO VÀ"
         ],
         [
-          2.46,
-          2.74,
-          "nổi tiếng"
-        ],
-        [
-          3.98,
-          5.7,
-          "có một trong những đội bóng polo"
-        ],
-        [
-          6.94,
-          8.22,
-          "và cầu thủ giỏi nhất thế giới"
+          6.8,
+          8.56,
+          "CẦU THỦ GIỎI NHẤT THẾ GIỚI"
         ]
       ],
-      "rtf": 0.0151,
+      "rtf": 0.0487,
       "diff": [
         [
           "eq",
@@ -333,22 +318,22 @@
       "file": "clean_2.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 10467396475561744099.wav (sentence 1517)",
-      "latency_s": 0.14,
-      "hypothesis": "nghiên cứu trí tuệ nhân tạo bao gồm tạo ra những cỗ máy tự động hóa các tác dụ đòi hỏi hành vi thông minh",
+      "latency_s": 0.401,
+      "hypothesis": "NGHIÊN CỨU TRÍ TUỆ NHÂN TẠO BAO GỒM TẠO RA NHỮNG CỖ MÁY TỰ ĐỘNG HÓA CÁC TÁC DỤNG ĐÒI HỎI HÀNH VI THÔNG MINH",
       "duration_s": 8.46,
       "cues": [
         [
-          0.86,
-          4.54,
-          "nghiên cứu trí tuệ nhân tạo bao gồm tạo ra những cỗ máy tự động hóa"
+          0.0,
+          6.12,
+          "NGHIÊN CỨU TRÍ TUỆ NHÂN TẠO BAO GỒM TẠO RA NHỮNG CỖ MÁY TỰ ĐỘNG HÓA CÁC TÁC DỤNG"
         ],
         [
-          5.46,
-          7.5,
-          "các tác dụ đòi hỏi hành vi thông minh"
+          6.12,
+          7.84,
+          "ĐÒI HỎI HÀNH VI THÔNG MINH"
         ]
       ],
-      "rtf": 0.0165,
+      "rtf": 0.0474,
       "diff": [
         [
           "eq",
@@ -443,7 +428,7 @@
         [
           "sub",
           "vụ",
-          "dụ"
+          "dụng"
         ],
         [
           "eq",
@@ -488,22 +473,22 @@
       "file": "clean_3.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 10574881695268175717.wav (sentence 1623)",
-      "latency_s": 0.142,
-      "hypothesis": "điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem nhẹ chính quyền trung ương đến mức đại diện bang thường xuyên vắng mặt",
+      "latency_s": 0.445,
+      "hypothesis": "ĐIỀU LỆ CẦN CÓ SỰ NHẤT TRÍ TỪ TẤT CẢ CÁC BANG TRƯỚC KHI SỬA ĐỔI VÀ CÁC BANG XEM NHẸ CHÍNH QUYỀN TRUNG ƯƠNG ĐẾN MỨC ĐẠI DIỆN BANG THƯỜNG XUYÊN VẮNG MẶT",
       "duration_s": 9.42,
       "cues": [
         [
-          1.18,
-          5.46,
-          "điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem"
+          0.0,
+          5.4,
+          "ĐIỀU LỆ CẦN CÓ SỰ NHẤT TRÍ TỪ TẤT CẢ CÁC BANG TRƯỚC KHI SỬA ĐỔI VÀ CÁC BANG XEM"
         ],
         [
-          5.62,
-          8.62,
-          "nhẹ chính quyền trung ương đến mức đại diện bang thường xuyên vắng mặt"
+          5.4,
+          8.8,
+          "NHẸ CHÍNH QUYỀN TRUNG ƯƠNG ĐẾN MỨC ĐẠI DIỆN BANG THƯỜNG XUYÊN VẮNG MẶT"
         ]
       ],
-      "rtf": 0.0151,
+      "rtf": 0.0472,
       "diff": [
         [
           "eq",
@@ -688,37 +673,22 @@
       "file": "pair_1.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 1703310497318542579.wav (sentence 1510)",
-      "latency_s": 0.142,
-      "hypothesis": "liên hiệp quốc cũng hy vọng thông qua một khoản ngân sách để hỗ trợ các quốc gia đang chịu ảnh hưởng của sự nóng lên toàn cầu và chống chọi với tác động",
+      "latency_s": 0.544,
+      "hypothesis": "LIÊN HIỆP QUỐC CŨNG HY VỌNG THÔNG QUA MỘT KHOẢN NGÂN SÁCH ĐỂ HỖ TRỢ CÁC QUỐC GIA ĐANG CHỊU ẢNH HƯỞNG CỦA SỰ NÓNG LÊN TOÀN CẦU VÀ CHỐNG CHỌI VỚI TÁC ĐỘNG",
       "duration_s": 11.16,
       "cues": [
         [
-          1.38,
-          2.46,
-          "liên hiệp quốc cũng hy"
+          0.0,
+          6.48,
+          "LIÊN HIỆP QUỐC CŨNG HY VỌNG THÔNG QUA MỘT KHOẢN NGÂN SÁCH ĐỂ HỖ TRỢ CÁC QUỐC GIA"
         ],
         [
-          3.1,
-          3.14,
-          "vọng"
-        ],
-        [
-          3.66,
-          4.74,
-          "thông qua một khoản ngân sách"
-        ],
-        [
-          5.54,
-          8.94,
-          "để hỗ trợ các quốc gia đang chịu ảnh hưởng của sự nóng lên toàn cầu và chống"
-        ],
-        [
-          9.06,
-          10.1,
-          "chọi với tác động"
+          6.48,
+          10.32,
+          "ĐANG CHỊU ẢNH HƯỞNG CỦA SỰ NÓNG LÊN TOÀN CẦU VÀ CHỐNG CHỌI VỚI TÁC ĐỘNG"
         ]
       ],
-      "rtf": 0.0127,
+      "rtf": 0.0487,
       "diff": [
         [
           "eq",
@@ -903,32 +873,22 @@
       "file": "pair_2.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 288972552359107972.wav (sentence 1510)",
-      "latency_s": 0.14,
-      "hypothesis": "liên hiệp quốc cũng hy vọng thông qua một khoản ngân sách để hỗ trợ các quốc gia đang chịu ảnh hưởng của sự nóng lên toàn cầu và chống chọi với tác động",
+      "latency_s": 0.506,
+      "hypothesis": "LIÊN HIỆP QUỐC CŨNG HY VỌNG THÔNG QUA MỘT KHOẢN NGÂN SÁCH ĐỂ HỖ TRỢ CÁC QUỐC GIA ĐANG CHỊU ẢNH HƯỞNG CỦA SỰ NÓNG LÊN TOÀN CẦU VÀ CHỐNG CHỌI VỚI TÁC ĐỘNG",
       "duration_s": 11.4,
       "cues": [
         [
-          1.42,
-          2.66,
-          "liên hiệp quốc cũng hy vọng"
+          0.0,
+          5.8,
+          "LIÊN HIỆP QUỐC CŨNG HY VỌNG THÔNG QUA MỘT KHOẢN NGÂN SÁCH ĐỂ HỖ TRỢ CÁC QUỐC GIA"
         ],
         [
-          3.18,
-          7.22,
-          "thông qua một khoản ngân sách để hỗ trợ các quốc gia đang chịu ảnh hưởng của sự"
-        ],
-        [
-          7.38,
-          8.02,
-          "nóng lên toàn cầu"
-        ],
-        [
-          8.82,
-          10.14,
-          "và chống chọi với tác động"
+          5.8,
+          10.44,
+          "ĐANG CHỊU ẢNH HƯỞNG CỦA SỰ NÓNG LÊN TOÀN CẦU VÀ CHỐNG CHỌI VỚI TÁC ĐỘNG"
         ]
       ],
-      "rtf": 0.0123,
+      "rtf": 0.0444,
       "diff": [
         [
           "eq",
@@ -1114,37 +1074,22 @@
       "preview": null,
       "raw": "Tỷ số chung cuộc là chiến thắng với cách biệt chỉ một điểm, 21 - 20, chấm dứt chuỗi 15 trận toàn thắng của All Blacks.",
       "source": "FLEURS vi_vn dev 1037921397326591554.wav (sentence 1523)",
-      "latency_s": 0.156,
-      "hypothesis": "tỷ số chung cuộc là chiến thắng với cách biệt chỉ một điểm hai mươi mốt hai mươi chấm dứt chuỗi mười lăm trận toàn thắng của all tắc",
+      "latency_s": 0.497,
+      "hypothesis": "TỶ SỐ CHUNG CUỘC LÀ CHIẾN THẮNG VỚI CÁCH BIỆT CHỈ MỘT ĐIỂM HAI MƯƠI MỐT HAI MƯƠI CHẤM DỨT CHUỖI MƯỜI LĂM TRẬN TOÀN THẮNG CỦA ONTAX",
       "duration_s": 10.8,
       "cues": [
         [
-          0.94,
-          3.3,
-          "tỷ số chung cuộc là chiến thắng với cách biệt chỉ một điểm"
+          0.0,
+          5.8,
+          "TỶ SỐ CHUNG CUỘC LÀ CHIẾN THẮNG VỚI CÁCH BIỆT CHỈ MỘT ĐIỂM HAI MƯƠI MỐT HAI MƯƠI"
         ],
         [
-          3.82,
-          4.26,
-          "hai mươi mốt"
-        ],
-        [
-          4.9,
-          5.18,
-          "hai mươi"
-        ],
-        [
-          6.66,
-          6.9,
-          "chấm dứt"
-        ],
-        [
-          7.66,
-          9.5,
-          "chuỗi mười lăm trận toàn thắng của all tắc"
+          5.8,
+          9.28,
+          "CHẤM DỨT CHUỖI MƯỜI LĂM TRẬN TOÀN THẮNG CỦA ONTAX"
         ]
       ],
-      "rtf": 0.0144,
+      "rtf": 0.046,
       "diff": [
         [
           "eq",
@@ -1282,17 +1227,17 @@
           "của"
         ],
         [
-          "eq",
+          "del",
           "all",
-          "all"
+          ""
         ],
         [
           "sub",
           "blacks",
-          "tắc"
+          "ontax"
         ]
       ],
-      "wer": 0.3077,
+      "wer": 0.3462,
       "verdict": "warn"
     },
     {
@@ -1305,42 +1250,22 @@
       "preview": null,
       "raw": "Phần phía bắc của Dãy núi Sentinel có những ngọn núi cao nhất Bắc Băng Dương, Vinson Massif, có Đỉnh Vinson cao 4892 m.",
       "source": "FLEURS vi_vn dev 10699438014069845122.wav (sentence 1618)",
-      "latency_s": 0.144,
-      "hypothesis": "phần phía bắc của dãy núi sant có những ngọn núi cao nhất bắc băng dương vincent có đỉnh cao vincent cao bốn nghìn tám trăm chín mươi hai mét",
+      "latency_s": 0.61,
+      "hypothesis": "PHẦN PHÍA BẮC CỦA DÃY NÚI CENTINEL CÓ NHỮNG NGỌN NÚI CAO NHẤT BẮC BĂNG DƯƠNG VINSON MASIP CÓ ĐỈNH CAO VINSON CAO BỐN NGÀN TÁM TRĂM CHÍN MƯƠI HAI MÉT",
       "duration_s": 13.86,
       "cues": [
         [
-          1.38,
-          2.82,
-          "phần phía bắc của dãy núi sant"
+          0.0,
+          6.48,
+          "PHẦN PHÍA BẮC CỦA DÃY NÚI CENTINEL CÓ NHỮNG NGỌN NÚI CAO NHẤT BẮC BĂNG DƯƠNG"
         ],
         [
-          3.58,
-          5.9,
-          "có những ngọn núi cao nhất bắc băng dương"
-        ],
-        [
-          6.86,
-          7.14,
-          "vincent"
-        ],
-        [
-          8.1,
-          9.1,
-          "có đỉnh cao vincent"
-        ],
-        [
-          10.3,
-          10.34,
-          "cao"
-        ],
-        [
-          11.1,
-          12.9,
-          "bốn nghìn tám trăm chín mươi hai mét"
+          6.48,
+          13.16,
+          "VINSON MASIP CÓ ĐỈNH CAO VINSON CAO BỐN NGÀN TÁM TRĂM CHÍN MƯƠI HAI MÉT"
         ]
       ],
-      "rtf": 0.0104,
+      "rtf": 0.044,
       "diff": [
         [
           "eq",
@@ -1375,7 +1300,7 @@
         [
           "sub",
           "sentinel",
-          "sant"
+          "centinel"
         ],
         [
           "eq",
@@ -1423,14 +1348,14 @@
           "dương"
         ],
         [
-          "del",
+          "eq",
           "vinson",
-          ""
+          "vinson"
         ],
         [
           "sub",
           "massif",
-          "vincent"
+          "masip"
         ],
         [
           "eq",
@@ -1448,9 +1373,9 @@
           "cao"
         ],
         [
-          "sub",
+          "eq",
           "vinson",
-          "vincent"
+          "vinson"
         ],
         [
           "eq",
@@ -1465,7 +1390,7 @@
         [
           "ins",
           "",
-          "nghìn"
+          "ngàn"
         ],
         [
           "ins",
@@ -1498,7 +1423,7 @@
           "mét"
         ]
       ],
-      "wer": 0.5417,
+      "wer": 0.4583,
       "verdict": "fail"
     },
     {
@@ -1511,37 +1436,27 @@
       "preview": null,
       "raw": "Công viên có diện tích trên 19.500 km² và được chia thành 14 khu sinh thái khác nhau, mỗi khu là nơi ở của một hệ động vật hoang dã.",
       "source": "FLEURS vi_vn dev 11157776223844529887.wav (sentence 1643)",
-      "latency_s": 0.141,
-      "hypothesis": "công viên có diện tích trên mười chín nghìn năm trăm km vuông và được chia thành mười bốn khu sinh thái khác nhau mỗi khu là nơi ở của một loài động vật hoang dã",
+      "latency_s": 0.578,
+      "hypothesis": "CÔNG VIÊN CÓ DIỆN TÍCH TRÊN MƯỜI CHÍN NGÀN NĂM TRĂM KI LÔ MÉT VUÔNG VÀ ĐƯỢC CHIA THÀNH MƯỜI BỐN KHU SINH THÁI KHÁC NHAU MỖI KHU LÀ NƠI Ở CỦA MỘT LOÀI ĐỘNG VẬT HOANG DÃ",
       "duration_s": 13.02,
       "cues": [
         [
-          1.18,
-          2.1,
-          "công viên có diện tích"
+          0.0,
+          5.84,
+          "CÔNG VIÊN CÓ DIỆN TÍCH TRÊN MƯỜI CHÍN NGÀN NĂM TRĂM KI LÔ MÉT VUÔNG VÀ ĐƯỢC CHIA"
         ],
         [
-          2.62,
-          4.82,
-          "trên mười chín nghìn năm trăm km vuông"
+          5.84,
+          11.88,
+          "THÀNH MƯỜI BỐN KHU SINH THÁI KHÁC NHAU MỖI KHU LÀ NƠI Ở CỦA MỘT LOÀI ĐỘNG VẬT"
         ],
         [
-          5.62,
-          7.54,
-          "và được chia thành mười bốn khu sinh thái khác nhau"
-        ],
-        [
-          8.34,
-          9.62,
-          "mỗi khu là nơi ở"
-        ],
-        [
-          10.78,
-          12.22,
-          "của một loài động vật hoang dã"
+          11.88,
+          12.48,
+          "HOANG DÃ"
         ]
       ],
-      "rtf": 0.0108,
+      "rtf": 0.0444,
       "diff": [
         [
           "eq",
@@ -1586,7 +1501,7 @@
         [
           "ins",
           "",
-          "nghìn"
+          "ngàn"
         ],
         [
           "ins",
@@ -1599,9 +1514,19 @@
           "trăm"
         ],
         [
+          "ins",
+          "",
+          "ki"
+        ],
+        [
+          "ins",
+          "",
+          "lô"
+        ],
+        [
           "sub",
           "19.500",
-          "km"
+          "mét"
         ],
         [
           "sub",
@@ -1724,7 +1649,7 @@
           "dã"
         ]
       ],
-      "wer": 0.3333,
+      "wer": 0.4,
       "verdict": "warn"
     },
     {
@@ -1737,42 +1662,22 @@
       "preview": null,
       "raw": "Sau đó, Lakkha Singh giữ vai trò chính khi hát các bài hát bhajan.",
       "source": "FLEURS vi_vn dev 10330493063020763016.wav (sentence 1578)",
-      "latency_s": 0.137,
-      "hypothesis": "sau đó la singh giữa vai trò chính khi hát các bài hát he",
+      "latency_s": 0.405,
+      "hypothesis": "SAU ĐÓ LA KHA SINH GIỮ VAI TRÒ CHÍNH KHI HÁT CÁC BÀI HÁT HAZAN",
       "duration_s": 8.52,
       "cues": [
         [
-          0.78,
-          1.1,
-          "sau đó"
+          0.0,
+          7.0,
+          "SAU ĐÓ LA KHA SINH GIỮ VAI TRÒ CHÍNH KHI HÁT CÁC BÀI HÁT"
         ],
         [
-          1.86,
-          1.9,
-          "la"
-        ],
-        [
-          2.5,
-          2.54,
-          "singh"
-        ],
-        [
-          3.1,
-          3.74,
-          "giữa vai trò chính"
-        ],
-        [
-          4.62,
-          5.82,
-          "khi hát các bài hát"
-        ],
-        [
-          7.34,
-          7.38,
-          "he"
+          7.0,
+          7.28,
+          "HAZAN"
         ]
       ],
-      "rtf": 0.0161,
+      "rtf": 0.0475,
       "diff": [
         [
           "eq",
@@ -1785,19 +1690,24 @@
           "đó"
         ],
         [
-          "sub",
-          "lakkha",
+          "ins",
+          "",
           "la"
         ],
         [
-          "eq",
-          "singh",
-          "singh"
+          "sub",
+          "lakkha",
+          "kha"
         ],
         [
           "sub",
+          "singh",
+          "sinh"
+        ],
+        [
+          "eq",
           "giữ",
-          "giữa"
+          "giữ"
         ],
         [
           "eq",
@@ -1842,10 +1752,10 @@
         [
           "sub",
           "bhajan",
-          "he"
+          "hazan"
         ]
       ],
-      "wer": 0.2143,
+      "wer": 0.2857,
       "verdict": "warn"
     },
     {
@@ -1858,22 +1768,17 @@
       "preview": null,
       "raw": "Lúc đầu trang phục chịu ảnh hưởng nặng nề của nền văn hóa Byzantine ở phía đông.",
       "source": "FLEURS vi_vn dev 10571565832044041622.wav (sentence 1621)",
-      "latency_s": 0.142,
-      "hypothesis": "lúc đầu trang phục chịu ảnh hưởng nặng nề của nền văn hóa bine ở phía đông",
+      "latency_s": 0.349,
+      "hypothesis": "LÚC ĐẦU TRANG PHỤC CHỊU ẢNH HƯỞNG NẶNG NỀ CỦA NỀN VĂN HÓA BIZANTIN Ở PHÍA ĐÔNG",
       "duration_s": 6.9,
       "cues": [
         [
-          1.66,
-          4.22,
-          "lúc đầu trang phục chịu ảnh hưởng nặng nề của nền văn hóa"
-        ],
-        [
-          4.9,
-          5.94,
-          "bine ở phía đông"
+          0.0,
+          6.24,
+          "LÚC ĐẦU TRANG PHỤC CHỊU ẢNH HƯỞNG NẶNG NỀ CỦA NỀN VĂN HÓA BIZANTIN Ở PHÍA ĐÔNG"
         ]
       ],
-      "rtf": 0.0206,
+      "rtf": 0.0506,
       "diff": [
         [
           "eq",
@@ -1943,7 +1848,7 @@
         [
           "sub",
           "byzantine",
-          "bine"
+          "bizantin"
         ],
         [
           "eq",
@@ -1973,17 +1878,17 @@
       "file": "shortest.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 17757384667472487467.wav (sentence 1656)",
-      "latency_s": 0.136,
-      "hypothesis": "cảnh sát cho biết thi thể nạn nhân đã ở đó được khoảng một ngày",
+      "latency_s": 0.25,
+      "hypothesis": "CẢNH SÁT CHO BIẾT THI THỂ NẠN NHÂN ĐÃ Ở ĐÓ ĐƯỢC KHOẢNG MỘT NGÀY",
       "duration_s": 4.32,
       "cues": [
         [
-          0.58,
-          3.54,
-          "cảnh sát cho biết thi thể nạn nhân đã ở đó được khoảng một ngày"
+          0.0,
+          3.88,
+          "CẢNH SÁT CHO BIẾT THI THỂ NẠN NHÂN ĐÃ Ở ĐÓ ĐƯỢC KHOẢNG MỘT NGÀY"
         ]
       ],
-      "rtf": 0.0315,
+      "rtf": 0.0579,
       "diff": [
         [
           "eq",
@@ -2073,102 +1978,37 @@
       "file": "longest.wav",
       "preview": null,
       "source": "FLEURS vi_vn dev 1139741953038979336.wav (sentence 1546)",
-      "latency_s": 0.147,
-      "hypothesis": "cấu trúc của lông vũ g gợi gần bộ lông này không dùng để bay mà để kiểm soát nhiệt độ cơ thể để khoe mẻ các nhà nghiên cứu cho rằng mặc dù đây là đuôi của một con khủng long non mẫu gi vật thể hiện một bộ lông trưởng thành chứ không phải là lông tơ",
+      "latency_s": 1.213,
+      "hypothesis": "CẤU TRÚC CỦA LONG VŨ GỢI Ý RẰNG BỘ LÔNG NÀY KHÔNG DÙNG ĐỂ BAY MÀ ĐỂ KIỂM SOÁT NHIỆT ĐỘ CƠ THỂ HOẶC ĐỂ KHOE MẼ CÁC NHÀ NGHIÊN CỨU CHO RẰNG MẶC DÙ ĐÂY LÀ ĐUÔI CỦA MỘT CON KHỦNG LONG NON MẪU VẬT THỂ HIỆN MỘT BỘ LÔNG TRƯỞNG THÀNH CHỨ KHÔNG PHẢI LÀ LÔNG TƠ",
       "duration_s": 29.94,
       "cues": [
         [
-          1.06,
-          1.94,
-          "cấu trúc của lông vũ"
+          0.0,
+          6.76,
+          "CẤU TRÚC CỦA LONG VŨ GỢI Ý RẰNG BỘ LÔNG NÀY KHÔNG DÙNG ĐỂ BAY"
         ],
         [
-          2.58,
-          3.1,
-          "g gợi gần"
+          6.76,
+          13.76,
+          "MÀ ĐỂ KIỂM SOÁT NHIỆT ĐỘ CƠ THỂ HOẶC ĐỂ KHOE MẼ CÁC NHÀ"
         ],
         [
-          3.62,
-          4.14,
-          "bộ lông này"
+          13.76,
+          20.25,
+          "NGHIÊN CỨU CHO RẰNG MẶC DÙ ĐÂY LÀ ĐUÔI CỦA MỘT CON KHỦNG LONG"
         ],
         [
-          5.1,
-          5.14,
-          "không"
+          20.25,
+          26.93,
+          "NON MẪU VẬT THỂ HIỆN MỘT BỘ LÔNG TRƯỞNG THÀNH"
         ],
         [
-          5.82,
-          6.38,
-          "dùng để bay"
-        ],
-        [
-          7.34,
-          8.94,
-          "mà để kiểm soát nhiệt độ cơ thể"
-        ],
-        [
-          10.54,
-          11.22,
-          "để khoe mẻ"
-        ],
-        [
-          13.5,
-          14.18,
-          "các nhà nghiên cứu"
-        ],
-        [
-          15.22,
-          15.5,
-          "cho rằng"
-        ],
-        [
-          16.54,
-          16.86,
-          "mặc dù"
-        ],
-        [
-          17.38,
-          17.82,
-          "đây là đuôi"
-        ],
-        [
-          18.78,
-          18.82,
-          "của"
-        ],
-        [
-          19.34,
-          20.42,
-          "một con khủng long non"
-        ],
-        [
-          21.42,
-          21.9,
-          "mẫu gi vật thể"
-        ],
-        [
-          22.7,
-          22.74,
-          "hiện"
-        ],
-        [
-          23.7,
-          24.54,
-          "một bộ lông"
-        ],
-        [
-          25.7,
-          25.98,
-          "trưởng thành"
-        ],
-        [
-          27.46,
-          28.82,
-          "chứ không phải là lông tơ"
+          26.93,
+          28.97,
+          "CHỨ KHÔNG PHẢI LÀ LÔNG TƠ"
         ]
       ],
-      "rtf": 0.0049,
+      "rtf": 0.0405,
       "diff": [
         [
           "eq",
@@ -2186,9 +2026,9 @@
           "của"
         ],
         [
-          "eq",
+          "sub",
           "lông",
-          "lông"
+          "long"
         ],
         [
           "eq",
@@ -2196,19 +2036,19 @@
           "vũ"
         ],
         [
-          "sub",
+          "eq",
           "gợi",
-          "g"
-        ],
-        [
-          "sub",
-          "ý",
           "gợi"
         ],
         [
-          "sub",
+          "eq",
+          "ý",
+          "ý"
+        ],
+        [
+          "eq",
           "rằng",
-          "gần"
+          "rằng"
         ],
         [
           "eq",
@@ -2286,9 +2126,9 @@
           "thể"
         ],
         [
-          "del",
+          "eq",
           "hoặc",
-          ""
+          "hoặc"
         ],
         [
           "eq",
@@ -2301,9 +2141,9 @@
           "khoe"
         ],
         [
-          "sub",
+          "eq",
           "mẽ",
-          "mẻ"
+          "mẽ"
         ],
         [
           "eq",
@@ -2396,11 +2236,6 @@
           "mẫu"
         ],
         [
-          "ins",
-          "",
-          "gi"
-        ],
-        [
           "eq",
           "vật",
           "vật"
@@ -2471,7 +2306,7 @@
           "tơ"
         ]
       ],
-      "wer": 0.1017,
+      "wer": 0.0169,
       "verdict": "pass"
     },
     {
@@ -2482,22 +2317,22 @@
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
       "file": "white_noise_10db.wav",
       "preview": null,
-      "latency_s": 0.131,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đội của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.415,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đội của chúng"
+          0.0,
+          6.04,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.78,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.04,
+          8.6,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0148,
+      "rtf": 0.0467,
       "diff": [
         [
           "eq",
@@ -2550,9 +2385,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -2575,9 +2410,9 @@
           "tuổi"
         ],
         [
-          "sub",
+          "eq",
           "đời",
-          "đội"
+          "đời"
         ],
         [
           "eq",
@@ -2590,14 +2425,770 @@
           "chúng"
         ],
         [
+          "eq",
+          "trẻ",
+          "trẻ"
+        ],
+        [
+          "eq",
+          "hơn",
+          "hơn"
+        ],
+        [
+          "eq",
+          "rất",
+          "rất"
+        ],
+        [
+          "eq",
+          "nhiều",
+          "nhiều"
+        ],
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "tương",
+          "tương"
+        ],
+        [
+          "eq",
+          "tự",
+          "tự"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "xuất",
+          "xuất"
+        ],
+        [
+          "eq",
+          "hàng",
+          "hàng"
+        ],
+        [
+          "eq",
+          "loạt",
+          "loạt"
+        ]
+      ],
+      "wer": 0.0,
+      "verdict": "pass"
+    },
+    {
+      "id": "white_noise_0db",
+      "category": "Biến thể (nhiễu, kênh, tốc độ)",
+      "title": "Nhiễu trắng SNR 0 dB",
+      "note": "Nhiễu Gauss cộng vào câu gốc.",
+      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "file": "white_noise_0db.wav",
+      "preview": null,
+      "latency_s": 0.414,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ CHỦ ĐỜI CỦA CHÚNG GIẢ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
+      "duration_s": 8.88,
+      "cues": [
+        [
+          0.0,
+          6.04,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ CHỦ ĐỜI CỦA CHÚNG GIẢ HƠN"
+        ],
+        [
+          6.04,
+          8.56,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
+        ]
+      ],
+      "rtf": 0.0466,
+      "diff": [
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "thủ",
+          "thủ"
+        ],
+        [
+          "eq",
+          "công",
+          "công"
+        ],
+        [
+          "eq",
+          "có",
+          "có"
+        ],
+        [
+          "eq",
+          "thể",
+          "thể"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "coi",
+          "coi"
+        ],
+        [
+          "eq",
+          "là",
+          "là"
+        ],
+        [
+          "eq",
+          "đồ",
+          "đồ"
+        ],
+        [
+          "eq",
+          "cổ",
+          "cổ"
+        ],
+        [
+          "eq",
+          "mặc",
+          "mặc"
+        ],
+        [
+          "eq",
+          "dù",
+          "dù"
+        ],
+        [
+          "sub",
+          "tuổi",
+          "chủ"
+        ],
+        [
+          "eq",
+          "đời",
+          "đời"
+        ],
+        [
+          "eq",
+          "của",
+          "của"
+        ],
+        [
+          "eq",
+          "chúng",
+          "chúng"
+        ],
+        [
+          "sub",
+          "trẻ",
+          "giả"
+        ],
+        [
+          "eq",
+          "hơn",
+          "hơn"
+        ],
+        [
+          "eq",
+          "rất",
+          "rất"
+        ],
+        [
+          "eq",
+          "nhiều",
+          "nhiều"
+        ],
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "tương",
+          "tương"
+        ],
+        [
+          "eq",
+          "tự",
+          "tự"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "xuất",
+          "xuất"
+        ],
+        [
+          "eq",
+          "hàng",
+          "hàng"
+        ],
+        [
+          "eq",
+          "loạt",
+          "loạt"
+        ]
+      ],
+      "wer": 0.0625,
+      "verdict": "pass"
+    },
+    {
+      "id": "babble_5db",
+      "category": "Biến thể (nhiễu, kênh, tốc độ)",
+      "title": "Nhiều người nói nền (babble) SNR 5 dB",
+      "note": "Ba câu FLEURS khác chồng lên làm nền: model có thể chép cả giọng nền.",
+      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "file": "babble_5db.wav",
+      "preview": null,
+      "latency_s": 0.413,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỘ THỎA MẬT KHẨU CHO TUỔI ĐỜI CỦA CHÚNG VỀ CÁC SẢN PHẨM TƯƠNG TỰ TỪ SẢN XUẤT HÀNG LOẠT",
+      "duration_s": 8.88,
+      "cues": [
+        [
+          0.0,
+          6.24,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỘ THỎA MẬT KHẨU CHO TUỔI ĐỜI CỦA CHÚNG"
+        ],
+        [
+          6.24,
+          8.52,
+          "VỀ CÁC SẢN PHẨM TƯƠNG TỰ TỪ SẢN XUẤT HÀNG LOẠT"
+        ]
+      ],
+      "rtf": 0.0465,
+      "diff": [
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "thủ",
+          "thủ"
+        ],
+        [
+          "eq",
+          "công",
+          "công"
+        ],
+        [
+          "eq",
+          "có",
+          "có"
+        ],
+        [
+          "eq",
+          "thể",
+          "thể"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "coi",
+          "coi"
+        ],
+        [
+          "eq",
+          "là",
+          "là"
+        ],
+        [
           "ins",
           "",
-          "ch"
+          "độ"
+        ],
+        [
+          "sub",
+          "đồ",
+          "thỏa"
+        ],
+        [
+          "sub",
+          "cổ",
+          "mật"
+        ],
+        [
+          "sub",
+          "mặc",
+          "khẩu"
+        ],
+        [
+          "sub",
+          "dù",
+          "cho"
+        ],
+        [
+          "eq",
+          "tuổi",
+          "tuổi"
+        ],
+        [
+          "eq",
+          "đời",
+          "đời"
+        ],
+        [
+          "eq",
+          "của",
+          "của"
+        ],
+        [
+          "eq",
+          "chúng",
+          "chúng"
+        ],
+        [
+          "del",
+          "trẻ",
+          ""
+        ],
+        [
+          "del",
+          "hơn",
+          ""
+        ],
+        [
+          "del",
+          "rất",
+          ""
+        ],
+        [
+          "sub",
+          "nhiều",
+          "về"
+        ],
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "tương",
+          "tương"
+        ],
+        [
+          "eq",
+          "tự",
+          "tự"
+        ],
+        [
+          "sub",
+          "được",
+          "từ"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "xuất",
+          "xuất"
+        ],
+        [
+          "eq",
+          "hàng",
+          "hàng"
+        ],
+        [
+          "eq",
+          "loạt",
+          "loạt"
+        ]
+      ],
+      "wer": 0.3125,
+      "verdict": "warn"
+    },
+    {
+      "id": "music_5db",
+      "category": "Biến thể (nhiễu, kênh, tốc độ)",
+      "title": "Nhạc nền SNR 5 dB",
+      "note": "Hợp âm tổng hợp + nhịp trống.",
+      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "file": "music_5db.wav",
+      "preview": null,
+      "latency_s": 0.426,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
+      "duration_s": 8.88,
+      "cues": [
+        [
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
+        ],
+        [
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
+        ]
+      ],
+      "rtf": 0.048,
+      "diff": [
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "thủ",
+          "thủ"
+        ],
+        [
+          "eq",
+          "công",
+          "công"
+        ],
+        [
+          "eq",
+          "có",
+          "có"
+        ],
+        [
+          "eq",
+          "thể",
+          "thể"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "coi",
+          "coi"
+        ],
+        [
+          "eq",
+          "là",
+          "là"
+        ],
+        [
+          "eq",
+          "đồ",
+          "đồ"
+        ],
+        [
+          "eq",
+          "cổ",
+          "cổ"
+        ],
+        [
+          "eq",
+          "mặc",
+          "mặc"
+        ],
+        [
+          "eq",
+          "dù",
+          "dù"
+        ],
+        [
+          "eq",
+          "tuổi",
+          "tuổi"
+        ],
+        [
+          "eq",
+          "đời",
+          "đời"
+        ],
+        [
+          "eq",
+          "của",
+          "của"
+        ],
+        [
+          "eq",
+          "chúng",
+          "chúng"
         ],
         [
           "eq",
           "trẻ",
           "trẻ"
+        ],
+        [
+          "eq",
+          "hơn",
+          "hơn"
+        ],
+        [
+          "eq",
+          "rất",
+          "rất"
+        ],
+        [
+          "eq",
+          "nhiều",
+          "nhiều"
+        ],
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "tương",
+          "tương"
+        ],
+        [
+          "eq",
+          "tự",
+          "tự"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "xuất",
+          "xuất"
+        ],
+        [
+          "eq",
+          "hàng",
+          "hàng"
+        ],
+        [
+          "eq",
+          "loạt",
+          "loạt"
+        ]
+      ],
+      "wer": 0.0,
+      "verdict": "pass"
+    },
+    {
+      "id": "reverb_0.8s",
+      "category": "Biến thể (nhiễu, kênh, tốc độ)",
+      "title": "Vang phòng RT60 ≈ 0.8 s",
+      "note": "Đáp ứng xung tổng hợp (phòng họp lớn, hội trường).",
+      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "file": "reverb_0.8s.wav",
+      "preview": null,
+      "latency_s": 0.432,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TỤ TẬP CỦA CHÚNG CHỈ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
+      "duration_s": 8.88,
+      "cues": [
+        [
+          0.0,
+          6.04,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TỤ TẬP CỦA CHÚNG CHỈ HƠN"
+        ],
+        [
+          6.04,
+          8.6,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
+        ]
+      ],
+      "rtf": 0.0486,
+      "diff": [
+        [
+          "eq",
+          "các",
+          "các"
+        ],
+        [
+          "eq",
+          "sản",
+          "sản"
+        ],
+        [
+          "eq",
+          "phẩm",
+          "phẩm"
+        ],
+        [
+          "eq",
+          "thủ",
+          "thủ"
+        ],
+        [
+          "eq",
+          "công",
+          "công"
+        ],
+        [
+          "eq",
+          "có",
+          "có"
+        ],
+        [
+          "eq",
+          "thể",
+          "thể"
+        ],
+        [
+          "eq",
+          "được",
+          "được"
+        ],
+        [
+          "eq",
+          "coi",
+          "coi"
+        ],
+        [
+          "eq",
+          "là",
+          "là"
+        ],
+        [
+          "eq",
+          "đồ",
+          "đồ"
+        ],
+        [
+          "eq",
+          "cổ",
+          "cổ"
+        ],
+        [
+          "eq",
+          "mặc",
+          "mặc"
+        ],
+        [
+          "eq",
+          "dù",
+          "dù"
+        ],
+        [
+          "sub",
+          "tuổi",
+          "tụ"
+        ],
+        [
+          "sub",
+          "đời",
+          "tập"
+        ],
+        [
+          "eq",
+          "của",
+          "của"
+        ],
+        [
+          "eq",
+          "chúng",
+          "chúng"
+        ],
+        [
+          "sub",
+          "trẻ",
+          "chỉ"
         ],
         [
           "eq",
@@ -2669,223 +3260,29 @@
       "verdict": "pass"
     },
     {
-      "id": "white_noise_0db",
+      "id": "quiet_-35db",
       "category": "Biến thể (nhiễu, kênh, tốc độ)",
-      "title": "Nhiễu trắng SNR 0 dB",
-      "note": "Nhiễu Gauss cộng vào câu gốc.",
+      "title": "Rất nhỏ (−35 dB)",
+      "note": "Giảm biên độ 35 dB, không chuẩn hoá lại.",
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "file": "white_noise_0db.wav",
+      "file": "quiet_-35db.wav",
       "preview": null,
-      "latency_s": 0.132,
-      "hypothesis": "các sản phẩm tử công có thể được coi là độ cổ mặc dù chủ đại cổ chứng sẽ hơn rất nhiều các sản phẩm tương tự của sản xuất hàng loạt",
+      "latency_s": 0.408,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG CÒN TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm tử công có thể được coi là độ cổ mặc dù chủ đại cổ chứng"
+          0.04,
+          5.8,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG CÒN TRẺ"
         ],
         [
-          5.82,
-          8.42,
-          "sẽ hơn rất nhiều các sản phẩm tương tự của sản xuất hàng loạt"
+          5.8,
+          8.52,
+          "HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0149,
-      "diff": [
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "sub",
-          "thủ",
-          "tử"
-        ],
-        [
-          "eq",
-          "công",
-          "công"
-        ],
-        [
-          "eq",
-          "có",
-          "có"
-        ],
-        [
-          "eq",
-          "thể",
-          "thể"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "coi",
-          "coi"
-        ],
-        [
-          "eq",
-          "là",
-          "là"
-        ],
-        [
-          "sub",
-          "đồ",
-          "độ"
-        ],
-        [
-          "eq",
-          "cổ",
-          "cổ"
-        ],
-        [
-          "eq",
-          "mặc",
-          "mặc"
-        ],
-        [
-          "eq",
-          "dù",
-          "dù"
-        ],
-        [
-          "sub",
-          "tuổi",
-          "chủ"
-        ],
-        [
-          "sub",
-          "đời",
-          "đại"
-        ],
-        [
-          "sub",
-          "của",
-          "cổ"
-        ],
-        [
-          "sub",
-          "chúng",
-          "chứng"
-        ],
-        [
-          "sub",
-          "trẻ",
-          "sẽ"
-        ],
-        [
-          "eq",
-          "hơn",
-          "hơn"
-        ],
-        [
-          "eq",
-          "rất",
-          "rất"
-        ],
-        [
-          "eq",
-          "nhiều",
-          "nhiều"
-        ],
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "eq",
-          "tương",
-          "tương"
-        ],
-        [
-          "eq",
-          "tự",
-          "tự"
-        ],
-        [
-          "sub",
-          "được",
-          "của"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "xuất",
-          "xuất"
-        ],
-        [
-          "eq",
-          "hàng",
-          "hàng"
-        ],
-        [
-          "eq",
-          "loạt",
-          "loạt"
-        ]
-      ],
-      "wer": 0.25,
-      "verdict": "warn"
-    },
-    {
-      "id": "babble_5db",
-      "category": "Biến thể (nhiễu, kênh, tốc độ)",
-      "title": "Nhiều người nói nền (babble) SNR 5 dB",
-      "note": "Ba câu FLEURS khác chồng lên làm nền: model có thể chép cả giọng nền.",
-      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "file": "babble_5db.wav",
-      "preview": null,
-      "latency_s": 0.131,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ rõ là sự dụng cho điện tuổi đã của chúng dễ hóaười cho sản phẩm tương tự từ sản xuất hàng loạt",
-      "duration_s": 8.88,
-      "cues": [
-        [
-          1.18,
-          5.06,
-          "các sản phẩm thủ công có thể được coi là độ rõ là sự dụng cho điện tuổi đã của"
-        ],
-        [
-          5.22,
-          5.26,
-          "chúng"
-        ],
-        [
-          5.82,
-          8.38,
-          "dễ hóaười cho sản phẩm tương tự từ sản xuất hàng loạt"
-        ]
-      ],
-      "rtf": 0.0148,
+      "rtf": 0.0459,
       "diff": [
         [
           "eq",
@@ -2906,210 +3303,6 @@
           "eq",
           "thủ",
           "thủ"
-        ],
-        [
-          "eq",
-          "công",
-          "công"
-        ],
-        [
-          "eq",
-          "có",
-          "có"
-        ],
-        [
-          "eq",
-          "thể",
-          "thể"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "coi",
-          "coi"
-        ],
-        [
-          "ins",
-          "",
-          "là"
-        ],
-        [
-          "ins",
-          "",
-          "độ"
-        ],
-        [
-          "ins",
-          "",
-          "rõ"
-        ],
-        [
-          "eq",
-          "là",
-          "là"
-        ],
-        [
-          "sub",
-          "đồ",
-          "sự"
-        ],
-        [
-          "sub",
-          "cổ",
-          "dụng"
-        ],
-        [
-          "sub",
-          "mặc",
-          "cho"
-        ],
-        [
-          "sub",
-          "dù",
-          "điện"
-        ],
-        [
-          "eq",
-          "tuổi",
-          "tuổi"
-        ],
-        [
-          "sub",
-          "đời",
-          "đã"
-        ],
-        [
-          "eq",
-          "của",
-          "của"
-        ],
-        [
-          "eq",
-          "chúng",
-          "chúng"
-        ],
-        [
-          "del",
-          "trẻ",
-          ""
-        ],
-        [
-          "del",
-          "hơn",
-          ""
-        ],
-        [
-          "sub",
-          "rất",
-          "dễ"
-        ],
-        [
-          "sub",
-          "nhiều",
-          "hóaười"
-        ],
-        [
-          "sub",
-          "các",
-          "cho"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "eq",
-          "tương",
-          "tương"
-        ],
-        [
-          "eq",
-          "tự",
-          "tự"
-        ],
-        [
-          "sub",
-          "được",
-          "từ"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "xuất",
-          "xuất"
-        ],
-        [
-          "eq",
-          "hàng",
-          "hàng"
-        ],
-        [
-          "eq",
-          "loạt",
-          "loạt"
-        ]
-      ],
-      "wer": 0.4375,
-      "verdict": "fail"
-    },
-    {
-      "id": "music_5db",
-      "category": "Biến thể (nhiễu, kênh, tốc độ)",
-      "title": "Nhạc nền SNR 5 dB",
-      "note": "Hợp âm tổng hợp + nhịp trống.",
-      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "file": "music_5db.wav",
-      "preview": null,
-      "latency_s": 0.129,
-      "hypothesis": "các sản phẩm tu công có thể được coi là đồ cổ mặc dù tuổi đời cổ chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "duration_s": 8.88,
-      "cues": [
-        [
-          1.18,
-          5.26,
-          "các sản phẩm tu công có thể được coi là đồ cổ mặc dù tuổi đời cổ chúng"
-        ],
-        [
-          5.82,
-          8.42,
-          "trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
-        ]
-      ],
-      "rtf": 0.0145,
-      "diff": [
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "sub",
-          "thủ",
-          "tu"
         ],
         [
           "eq",
@@ -3172,384 +3365,6 @@
           "đời"
         ],
         [
-          "sub",
-          "của",
-          "cổ"
-        ],
-        [
-          "eq",
-          "chúng",
-          "chúng"
-        ],
-        [
-          "eq",
-          "trẻ",
-          "trẻ"
-        ],
-        [
-          "eq",
-          "hơn",
-          "hơn"
-        ],
-        [
-          "eq",
-          "rất",
-          "rất"
-        ],
-        [
-          "eq",
-          "nhiều",
-          "nhiều"
-        ],
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "eq",
-          "tương",
-          "tương"
-        ],
-        [
-          "eq",
-          "tự",
-          "tự"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "xuất",
-          "xuất"
-        ],
-        [
-          "eq",
-          "hàng",
-          "hàng"
-        ],
-        [
-          "eq",
-          "loạt",
-          "loạt"
-        ]
-      ],
-      "wer": 0.0625,
-      "verdict": "pass"
-    },
-    {
-      "id": "reverb_0.8s",
-      "category": "Biến thể (nhiễu, kênh, tốc độ)",
-      "title": "Vang phòng RT60 ≈ 0.8 s",
-      "note": "Đáp ứng xung tổng hợp (phòng họp lớn, hội trường).",
-      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "file": "reverb_0.8s.wav",
-      "preview": null,
-      "latency_s": 0.132,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tủ đoàn của chúng trẻ hơn gấp nhiều các sản phẩm tranh tượng được sản xuất hàng loạt",
-      "duration_s": 8.88,
-      "cues": [
-        [
-          1.18,
-          5.3,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tủ đoàn của chúng"
-        ],
-        [
-          5.86,
-          8.46,
-          "trẻ hơn gấp nhiều các sản phẩm tranh tượng được sản xuất hàng loạt"
-        ]
-      ],
-      "rtf": 0.0149,
-      "diff": [
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "eq",
-          "thủ",
-          "thủ"
-        ],
-        [
-          "eq",
-          "công",
-          "công"
-        ],
-        [
-          "eq",
-          "có",
-          "có"
-        ],
-        [
-          "eq",
-          "thể",
-          "thể"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "coi",
-          "coi"
-        ],
-        [
-          "eq",
-          "là",
-          "là"
-        ],
-        [
-          "sub",
-          "đồ",
-          "độ"
-        ],
-        [
-          "eq",
-          "cổ",
-          "cổ"
-        ],
-        [
-          "eq",
-          "mặc",
-          "mặc"
-        ],
-        [
-          "eq",
-          "dù",
-          "dù"
-        ],
-        [
-          "sub",
-          "tuổi",
-          "tủ"
-        ],
-        [
-          "sub",
-          "đời",
-          "đoàn"
-        ],
-        [
-          "eq",
-          "của",
-          "của"
-        ],
-        [
-          "eq",
-          "chúng",
-          "chúng"
-        ],
-        [
-          "eq",
-          "trẻ",
-          "trẻ"
-        ],
-        [
-          "eq",
-          "hơn",
-          "hơn"
-        ],
-        [
-          "sub",
-          "rất",
-          "gấp"
-        ],
-        [
-          "eq",
-          "nhiều",
-          "nhiều"
-        ],
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "sub",
-          "tương",
-          "tranh"
-        ],
-        [
-          "sub",
-          "tự",
-          "tượng"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "xuất",
-          "xuất"
-        ],
-        [
-          "eq",
-          "hàng",
-          "hàng"
-        ],
-        [
-          "eq",
-          "loạt",
-          "loạt"
-        ]
-      ],
-      "wer": 0.1875,
-      "verdict": "warn"
-    },
-    {
-      "id": "quiet_-35db",
-      "category": "Biến thể (nhiễu, kênh, tốc độ)",
-      "title": "Rất nhỏ (−35 dB)",
-      "note": "Giảm biên độ 35 dB, không chuẩn hoá lại.",
-      "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "file": "quiet_-35db.wav",
-      "preview": null,
-      "latency_s": 0.137,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
-      "duration_s": 8.88,
-      "cues": [
-        [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
-        ],
-        [
-          5.82,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
-        ]
-      ],
-      "rtf": 0.0154,
-      "diff": [
-        [
-          "eq",
-          "các",
-          "các"
-        ],
-        [
-          "eq",
-          "sản",
-          "sản"
-        ],
-        [
-          "eq",
-          "phẩm",
-          "phẩm"
-        ],
-        [
-          "eq",
-          "thủ",
-          "thủ"
-        ],
-        [
-          "eq",
-          "công",
-          "công"
-        ],
-        [
-          "eq",
-          "có",
-          "có"
-        ],
-        [
-          "eq",
-          "thể",
-          "thể"
-        ],
-        [
-          "eq",
-          "được",
-          "được"
-        ],
-        [
-          "eq",
-          "coi",
-          "coi"
-        ],
-        [
-          "eq",
-          "là",
-          "là"
-        ],
-        [
-          "sub",
-          "đồ",
-          "độ"
-        ],
-        [
-          "eq",
-          "cổ",
-          "cổ"
-        ],
-        [
-          "eq",
-          "mặc",
-          "mặc"
-        ],
-        [
-          "eq",
-          "dù",
-          "dù"
-        ],
-        [
-          "eq",
-          "tuổi",
-          "tuổi"
-        ],
-        [
-          "eq",
-          "đời",
-          "đời"
-        ],
-        [
           "eq",
           "của",
           "của"
@@ -3562,7 +3377,7 @@
         [
           "ins",
           "",
-          "ch"
+          "còn"
         ],
         [
           "eq",
@@ -3635,7 +3450,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0312,
       "verdict": "pass"
     },
     {
@@ -3646,22 +3461,22 @@
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
       "file": "clipped.wav",
       "preview": null,
-      "latency_s": 0.13,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.403,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.78,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0146,
+      "rtf": 0.0454,
       "diff": [
         [
           "eq",
@@ -3714,9 +3529,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -3752,11 +3567,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -3829,7 +3639,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -3840,22 +3650,22 @@
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
       "file": "tempo_1.5x.wav",
       "preview": null,
-      "latency_s": 0.14,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.315,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 5.930875,
       "cues": [
         [
-          0.82,
-          4.14,
-          "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn"
+          0.0,
+          3.96,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          4.22,
-          5.66,
-          "rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          3.96,
+          5.92,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0236,
+      "rtf": 0.0531,
       "diff": [
         [
           "eq",
@@ -4029,32 +3839,22 @@
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
       "file": "tempo_0.7x.wav",
       "preview": null,
-      "latency_s": 0.139,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.557,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 12.6663125,
       "cues": [
         [
-          1.58,
-          4.86,
-          "các sản phẩm thủ công có thể được coi là độ cổ"
+          0.0,
+          6.88,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI"
         ],
         [
-          5.58,
-          5.9,
-          "mặc dù"
-        ],
-        [
-          6.5,
-          7.42,
-          "tuổi đời của chúng"
-        ],
-        [
-          8.18,
-          11.94,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.88,
+          12.08,
+          "CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.011,
+      "rtf": 0.044,
       "diff": [
         [
           "eq",
@@ -4107,9 +3907,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -4145,11 +3945,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -4222,7 +4017,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -4234,22 +4029,22 @@
       "file": "telephone_8k_mulaw.wav",
       "preview": "telephone_8k_mulaw.preview.wav",
       "format": "wav pcm_mulaw 8 kHz",
-      "latency_s": 0.122,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.396,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.82,
-          8.42,
-          "trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0137,
+      "rtf": 0.0446,
       "diff": [
         [
           "eq",
@@ -4302,9 +4097,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -4412,7 +4207,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0312,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -4424,22 +4219,22 @@
       "file": "mp3_16kbps.mp3",
       "preview": null,
       "format": "mp3 16 kbps",
-      "latency_s": 0.124,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.407,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.78,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.014,
+      "rtf": 0.0458,
       "diff": [
         [
           "eq",
@@ -4492,9 +4287,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -4530,11 +4325,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -4607,7 +4397,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -4619,22 +4409,22 @@
       "file": "opus_8kbps.ogg",
       "preview": null,
       "format": "ogg opus 8 kbps",
-      "latency_s": 0.132,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.414,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.88,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.04,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.82,
-          8.42,
-          "trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.04,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0149,
+      "rtf": 0.0466,
       "diff": [
         [
           "eq",
@@ -4687,9 +4477,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -4797,7 +4587,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0312,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -4809,22 +4599,22 @@
       "file": "stereo_44k.m4a",
       "preview": null,
       "format": "m4a aac stereo 44.1 kHz",
-      "latency_s": 0.141,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.418,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 8.89325,
       "cues": [
         [
-          1.18,
-          5.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          6.0,
+          "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN"
         ],
         [
-          5.78,
-          8.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          6.0,
+          8.64,
+          "RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0159,
+      "rtf": 0.047,
       "diff": [
         [
           "eq",
@@ -4877,9 +4667,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -4915,11 +4705,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -4992,7 +4777,7 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
@@ -5003,22 +4788,27 @@
       "reference": "các sản phẩm thủ công có thể được coi là đồ cổ mặc dù tuổi đời của chúng trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
       "file": "silence_pad_5s.wav",
       "preview": null,
-      "latency_s": 0.155,
-      "hypothesis": "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt",
+      "latency_s": 0.777,
+      "hypothesis": "CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT",
       "duration_s": 18.88,
       "cues": [
         [
-          6.18,
-          10.26,
-          "các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng"
+          0.0,
+          7.0,
+          "CÁC SẢN PHẨM THỦ CÔNG"
         ],
         [
-          10.78,
-          13.42,
-          "ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt"
+          7.0,
+          11.76,
+          "CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ MẶC DÙ TUỔI ĐỜI CỦA CHÚNG TRẺ HƠN RẤT NHIỀU CÁC SẢN"
+        ],
+        [
+          11.76,
+          13.64,
+          "PHẨM TƯƠNG TỰ ĐƯỢC SẢN XUẤT HÀNG LOẠT"
         ]
       ],
-      "rtf": 0.0082,
+      "rtf": 0.0412,
       "diff": [
         [
           "eq",
@@ -5071,9 +4861,9 @@
           "là"
         ],
         [
-          "sub",
+          "eq",
           "đồ",
-          "độ"
+          "đồ"
         ],
         [
           "eq",
@@ -5109,11 +4899,6 @@
           "eq",
           "chúng",
           "chúng"
-        ],
-        [
-          "ins",
-          "",
-          "ch"
         ],
         [
           "eq",
@@ -5186,233 +4971,118 @@
           "loạt"
         ]
       ],
-      "wer": 0.0625,
+      "wer": 0.0,
       "verdict": "pass"
     },
     {
       "id": "long_multi",
       "category": "Bản ghi dài",
       "title": "Bản ghi dài 112 s (8 câu)",
-      "note": "Nối nhiều câu: server chia chunk ≤ 30 s ở điểm lặng; xem chỗ nối chunk có mất/lặp từ không.",
+      "note": "Nối nhiều câu: server chia chunk ≤ 20 s ở điểm lặng; xem chỗ nối chunk có mất/lặp từ không.",
       "reference": "bản báo cáo mở đầu bằng lời biện hộ cho cuộc tranh luận mở và tạo lập sự đồng thuận của hoa kỳ về chính sách đối với trung đông nó sử dụng công nghệ vệ tinh cơ sở trái ngược với công nghệ ra đa mặt đất cơ sở cho phép kiểm soát viên không lưu định vị máy bay với độ chính xác cao hơn và cho phép phi công những thông tin chính xác hơn điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem nhẹ chính quyền trung ương đến mức đại diện bang thường xuyên vắng mặt tôi bị lạc em gái và bạn của cô ấy và khi đang trên đường có hai người khuyết tật ngồi xe lăn mọi người cứ chồm lên và xô đẩy họ armand versace nói về nguyên tắc phật giáo tây tạng rất đơn giản nó bao gồm kundalini yoga thiền pháp và con đường bao trùm tình yêu tám mươi phần trăm hàng hóa của chúng ta bị đánh thuế thông qua thuế xuất nhập khẩu tại các nước trung mỹ chúng tôi đối xử với bạn những lý thuyết này gợi ý rằng con người có một số nhu cầu và/hoặc ham muốn nhất định được tiếp thu từ bên ngoài khi họ trưởng thành người bệnh cũng đã từng tới nigeria nơi một số ca mắc bệnh ebola xảy ra",
       "file": "long_multi.wav",
       "preview": null,
-      "latency_s": 0.356,
-      "hypothesis": "bản báo cáo mở đầu bằng lời biện hộ cho cuộc trên luận mở và tạo lập sự đồng thuận của hoa kỳ về chính sách đối với trung đồng nó sử dụng công nghệ vệ tinh cơ sở trái ngược với công nghệ radar mặt đất cơ sở cho các kiểm sát viên không lưu định bị máy bay với độ chính xác cao hơn và cho phép phi công những thông tin chính xác hơn điều lệ cần có sự nhất trí từ tất cả các bang trước khi sửa đổi và các bang xem nhẹ chính quyền trung ương đến mức đại diện ban thường xuyên vắng mặt tôi bị lạc em gái và bạn của cô ấy và khi trên đường có hai người khuyết tật ngồi xe lăn mọi người cứ chầm lên và xô đẩy họ armmann versase nói về nguyên tắc phật giáo tây tạng rất đơn giản nó bao gồm yoga thiện pháp và con đường bao trùm tình yêu tám mươi phần trăm hàng hóa của chúng ta bị đánh thế thông qua thế xuất nhập khẩu tại các nước trung mỹ chúng tôi đối xử với bạn những lý thuyết này gợi yến rằng có người có một số nhu cầu và ham muốn nhất định được tiếp thu từ bên ngoài khi họ trưởng thành người bệnh cũng đã từng tới nege nơi một số ca mắc bệnh nặng se",
+      "latency_s": 4.293,
+      "hypothesis": "BẢN BÁO CÁO MỞ ĐẦU BẰNG LỜI BIỆN HỘ CHO CUỘC TRANH LUẬN MỞ VÀ TẠO LẬP SỰ ĐỒNG THUẬN CỦA HOA KỲ VỀ CHÍNH SÁCH ĐỐI VỚI TRUNG ĐÔNG NÓ SỬ DỤNG CÔNG NGHỆ VỆ TINH CƠ SỞ TRÁI NGƯỢC VỚI CÔNG NGHỆ RADAR MẶT ĐẤT CƠ SỞ CHO PHÉP KIỂM SOÁT VIÊN KHÔNG LƯU ĐỊNH VỊ MÁY BAY VỚI ĐỘ CHÍNH XÁC CAO HƠN VÀ CHO PHÉP PHI CÔNG NHỮNG THÔNG TIN CHÍNH XÁC HƠN ĐIỀU LỆ CẦN CÓ SỰ NHẤT TRÍ TỪ TẤT CẢ CÁC BANG TRƯỚC KHI SỬA ĐỔI VÀ CÁC BANG XEM NHẸ CHÍNH QUYỀN TRUNG ƯƠNG ĐẾN MỨC ĐẠI DIỆN BAN THƯỜNG XUYÊN VẮNG MẶT TÔI BỊ LẠC EM GÁI VÀ BẠN CỦA CÔ ẤY VÀ KHI ĐANG TRÊN ĐƯỜNG CÓ HAI NGƯỜI KHUYẾT TẬT NGỒI XE LĂN MỌI NGƯỜI CỨ CHẦM LÊN VÀ XÔ ĐẨY HỌ AMAN VASAY NÓI VỀ NGUYÊN TẮC PHẬT GIÁO TÂY TẠNG RẤT ĐƠN GIẢN NÓ BAO GỒM KUNDA LINI YOGA THIỀN PHÁP VÀ CON ĐƯỜNG BAO TRÙM TÌNH YÊU TÁM MƯƠI PHẦN TRĂM HÀNG HÓA CỦA CHÚNG TA BỊ ĐÁNH THUẾ THÔNG QUA THUẾ XUẤT NHẬP KHẨU TẠI CÁC NƯỚC TRUNG MỸ CHÚNG TÔI ĐỐI XỬ VỚI BẠN NHỮNG LÝ THUYẾT NÀY GỢI Ý RẰNG CON NGƯỜI CÓ MỘT SỐ NHU CẦU VÀ HOẶC HAM MUỐN NHẤT ĐỊNH ĐƯỢC TIẾP THU TỪ BÊN NGOÀI KHI HỌ TRƯỞNG THÀNH NGƯỜI BỆNH CŨNG ĐÃ TỪNG TỚI NIGE NƠI MỘT SỐ CA MẮC BỆNH NEBOLA XẢY RA",
       "duration_s": 112.08,
       "cues": [
         [
-          1.34,
-          1.82,
-          "bản báo cáo"
+          0.0,
+          6.64,
+          "BẢN BÁO CÁO MỞ ĐẦU BẰNG LỜI BIỆN HỘ CHO CUỘC TRANH LUẬN"
         ],
         [
-          2.42,
-          4.58,
-          "mở đầu bằng lời biện hộ cho cuộc"
+          6.64,
+          12.92,
+          "MỞ VÀ TẠO LẬP SỰ ĐỒNG THUẬN CỦA HOA KỲ VỀ CHÍNH SÁCH ĐỐI VỚI TRUNG ĐÔNG"
         ],
         [
-          6.26,
-          6.82,
-          "trên luận mở"
+          16.097,
+          21.417,
+          "NÓ SỬ DỤNG CÔNG NGHỆ VỆ TINH CƠ SỞ TRÁI NGƯỢC VỚI CÔNG NGHỆ RADAR MẶT ĐẤT CƠ SỞ"
         ],
         [
-          8.06,
-          8.1,
-          "và"
+          21.417,
+          25.817,
+          "CHO PHÉP KIỂM SOÁT VIÊN KHÔNG LƯU ĐỊNH VỊ MÁY BAY VỚI ĐỘ CHÍNH XÁC CAO HƠN VÀ"
         ],
         [
-          8.74,
-          10.62,
-          "tạo lập sự đồng thuận của hoa kỳ"
+          25.817,
+          29.577,
+          "CHO PHÉP PHI CÔNG NHỮNG THÔNG TIN CHÍNH XÁC HƠN"
         ],
         [
-          11.22,
-          12.62,
-          "về chính sách đối với trung đồng"
+          32.918,
+          39.678,
+          "ĐIỀU LỆ CẦN CÓ SỰ NHẤT TRÍ TỪ TẤT CẢ CÁC BANG TRƯỚC KHI SỬA ĐỔI VÀ"
         ],
         [
-          16.34,
-          21.58,
-          "nó sử dụng công nghệ vệ tinh cơ sở trái ngược với công nghệ radar mặt đất cơ sở"
+          39.678,
+          44.878,
+          "CÁC BANG XEM NHẸ CHÍNH QUYỀN TRUNG ƯƠNG ĐẾN MỨC ĐẠI DIỆN BAN THƯỜNG XUYÊN VẮNG"
         ],
         [
-          21.74,
-          25.18,
-          "cho các kiểm sát viên không lưu định bị máy bay với độ chính xác cao hơn"
+          44.878,
+          45.158,
+          "MẶT"
         ],
         [
-          25.98,
-          26.82,
-          "và cho phép phi công"
+          48.138,
+          54.378,
+          "TÔI BỊ LẠC EM GÁI VÀ BẠN CỦA CÔ ẤY VÀ KHI ĐANG TRÊN"
         ],
         [
-          28.229,
-          29.309,
-          "những thông tin chính xác hơn"
+          54.378,
+          61.218,
+          "ĐƯỜNG CÓ HAI NGƯỜI KHUYẾT TẬT NGỒI XE LĂN MỌI NGƯỜI CỨ CHẦM LÊN VÀ XÔ ĐẨY"
         ],
         [
-          34.349,
-          35.349,
-          "điều lệ cần có sự"
+          61.218,
+          63.578,
+          "HỌ AMAN VASAY NÓI"
         ],
         [
-          36.109,
-          36.389,
-          "nhất trí"
+          66.039,
+          72.599,
+          "VỀ NGUYÊN TẮC PHẬT GIÁO TÂY TẠNG RẤT ĐƠN GIẢN NÓ BAO GỒM KUNDA LINI YOGA THIỀN"
         ],
         [
-          36.949,
-          38.709,
-          "từ tất cả các bang trước khi sửa đổi"
+          72.599,
+          79.399,
+          "PHÁP VÀ CON ĐƯỜNG BAO TRÙM TÌNH YÊU TÁM MƯƠI PHẦN"
         ],
         [
-          39.789,
-          41.949,
-          "và các bang xem nhẹ chính quyền trung ương"
+          79.399,
+          83.599,
+          "TRĂM HÀNG HÓA CỦA CHÚNG TA BỊ ĐÁNH THUẾ THÔNG QUA THUẾ XUẤT NHẬP KHẨU TẠI CÁC"
         ],
         [
-          42.629,
-          43.349,
-          "đến mức đại diện"
+          83.599,
+          90.149,
+          "NƯỚC TRUNG MỸ CHÚNG TÔI ĐỐI XỬ VỚI BẠN NHỮNG"
         ],
         [
-          43.869,
-          44.949,
-          "ban thường xuyên vắng mặt"
+          90.149,
+          96.909,
+          "LÝ THUYẾT NÀY GỢI Ý RẰNG CON NGƯỜI CÓ MỘT SỐ NHU CẦU VÀ HOẶC HAM"
         ],
         [
-          48.349,
-          49.309,
-          "tôi bị lạc em gái"
+          96.909,
+          100.749,
+          "MUỐN NHẤT ĐỊNH ĐƯỢC TIẾP THU TỪ BÊN NGOÀI KHI HỌ TRƯỞNG THÀNH"
         ],
         [
-          50.189,
-          51.189,
-          "và bạn của cô ấy"
+          102.455,
+          109.335,
+          "NGƯỜI BỆNH CŨNG ĐÃ TỪNG TỚI NIGE NƠI"
         ],
         [
-          52.149,
-          52.469,
-          "và khi"
-        ],
-        [
-          54.309,
-          54.589,
-          "trên đường"
-        ],
-        [
-          56.276,
-          57.396,
-          "có hai người khuyết tật ngồi"
-        ],
-        [
-          57.996,
-          58.276,
-          "xe lăn"
-        ],
-        [
-          59.276,
-          61.316,
-          "mọi người cứ chầm lên và xô đẩy họ"
-        ],
-        [
-          62.196,
-          63.356,
-          "armmann versase nói"
-        ],
-        [
-          67.076,
-          67.556,
-          "về nguyên tắc"
-        ],
-        [
-          68.236,
-          70.516,
-          "phật giáo tây tạng rất đơn giản nó bao gồm"
-        ],
-        [
-          71.636,
-          71.676,
-          "yoga"
-        ],
-        [
-          72.596,
-          74.476,
-          "thiện pháp và con đường bao trùm tình yêu"
-        ],
-        [
-          79.196,
-          82.396,
-          "tám mươi phần trăm hàng hóa của chúng ta bị đánh thế thông qua thế xuất nhập"
-        ],
-        [
-          82.516,
-          82.596,
-          "khẩu"
-        ],
-        [
-          83.516,
-          84.316,
-          "tại các nước trung mỹ"
-        ],
-        [
-          85.009,
-          85.929,
-          "chúng tôi đối xử với bạn"
-        ],
-        [
-          90.409,
-          91.329,
-          "những lý thuyết này"
-        ],
-        [
-          91.889,
-          92.409,
-          "gợi yến rằng"
-        ],
-        [
-          92.969,
-          94.609,
-          "có người có một số nhu cầu"
-        ],
-        [
-          95.209,
-          95.249,
-          "và"
-        ],
-        [
-          97.009,
-          100.449,
-          "ham muốn nhất định được tiếp thu từ bên ngoài khi họ trưởng thành"
-        ],
-        [
-          103.609,
-          103.889,
-          "người bệnh"
-        ],
-        [
-          104.569,
-          104.609,
-          "cũng"
-        ],
-        [
-          105.289,
-          106.249,
-          "đã từng tới"
-        ],
-        [
-          107.249,
-          107.889,
-          "nege"
-        ],
-        [
-          109.489,
-          111.329,
-          "nơi một số ca mắc bệnh nặng se"
+          109.335,
+          111.735,
+          "MỘT SỐ CA MẮC BỆNH NEBOLA XẢY RA"
         ]
       ],
-      "rtf": 0.0032,
+      "rtf": 0.0383,
       "diff": [
         [
           "eq",
@@ -5470,9 +5140,9 @@
           "cuộc"
         ],
         [
-          "sub",
+          "eq",
           "tranh",
-          "trên"
+          "tranh"
         ],
         [
           "eq",
@@ -5560,9 +5230,9 @@
           "trung"
         ],
         [
-          "sub",
+          "eq",
           "đông",
-          "đồng"
+          "đông"
         ],
         [
           "eq",
@@ -5670,9 +5340,9 @@
           "cho"
         ],
         [
-          "sub",
+          "eq",
           "phép",
-          "các"
+          "phép"
         ],
         [
           "eq",
@@ -5680,9 +5350,9 @@
           "kiểm"
         ],
         [
-          "sub",
+          "eq",
           "soát",
-          "sát"
+          "soát"
         ],
         [
           "eq",
@@ -5705,9 +5375,9 @@
           "định"
         ],
         [
-          "sub",
+          "eq",
           "vị",
-          "bị"
+          "vị"
         ],
         [
           "eq",
@@ -6035,9 +5705,9 @@
           "khi"
         ],
         [
-          "del",
+          "eq",
           "đang",
-          ""
+          "đang"
         ],
         [
           "eq",
@@ -6137,12 +5807,12 @@
         [
           "sub",
           "armand",
-          "armmann"
+          "aman"
         ],
         [
           "sub",
           "versace",
-          "versase"
+          "vasay"
         ],
         [
           "eq",
@@ -6215,9 +5885,14 @@
           "gồm"
         ],
         [
-          "del",
+          "ins",
+          "",
+          "kunda"
+        ],
+        [
+          "sub",
           "kundalini",
-          ""
+          "lini"
         ],
         [
           "eq",
@@ -6225,9 +5900,9 @@
           "yoga"
         ],
         [
-          "sub",
+          "eq",
           "thiền",
-          "thiện"
+          "thiền"
         ],
         [
           "eq",
@@ -6325,9 +6000,9 @@
           "đánh"
         ],
         [
-          "sub",
+          "eq",
           "thuế",
-          "thế"
+          "thuế"
         ],
         [
           "eq",
@@ -6340,9 +6015,9 @@
           "qua"
         ],
         [
-          "sub",
+          "eq",
           "thuế",
-          "thế"
+          "thuế"
         ],
         [
           "eq",
@@ -6440,9 +6115,9 @@
           "gợi"
         ],
         [
-          "sub",
+          "eq",
           "ý",
-          "yến"
+          "ý"
         ],
         [
           "eq",
@@ -6450,9 +6125,9 @@
           "rằng"
         ],
         [
-          "sub",
+          "eq",
           "con",
-          "có"
+          "con"
         ],
         [
           "eq",
@@ -6485,9 +6160,14 @@
           "cầu"
         ],
         [
+          "ins",
+          "",
+          "và"
+        ],
+        [
           "sub",
           "và/hoặc",
-          "và"
+          "hoặc"
         ],
         [
           "eq",
@@ -6592,7 +6272,7 @@
         [
           "sub",
           "nigeria",
-          "nege"
+          "nige"
         ],
         [
           "eq",
@@ -6625,22 +6305,22 @@
           "bệnh"
         ],
         [
-          "del",
+          "sub",
           "ebola",
-          ""
+          "nebola"
         ],
         [
-          "sub",
+          "eq",
           "xảy",
-          "nặng"
+          "xảy"
         ],
         [
-          "sub",
+          "eq",
           "ra",
-          "se"
+          "ra"
         ]
       ],
-      "wer": 0.0939,
+      "wer": 0.049,
       "verdict": "pass"
     },
     {
@@ -6651,12 +6331,18 @@
       "reference": "",
       "file": "silence_3s.wav",
       "preview": null,
-      "latency_s": 0.149,
-      "hypothesis": "",
+      "latency_s": 0.214,
+      "hypothesis": "Ừ",
       "duration_s": 3.0,
-      "cues": [],
-      "rtf": 0.0497,
-      "verdict": "pass"
+      "cues": [
+        [
+          0.0,
+          0.28,
+          "Ừ"
+        ]
+      ],
+      "rtf": 0.0713,
+      "verdict": "fail"
     },
     {
       "id": "noise_3s",
@@ -6666,12 +6352,18 @@
       "reference": "",
       "file": "noise_3s.wav",
       "preview": null,
-      "latency_s": 0.129,
-      "hypothesis": "",
+      "latency_s": 0.21,
+      "hypothesis": "ĐÂY",
       "duration_s": 3.0,
-      "cues": [],
-      "rtf": 0.043,
-      "verdict": "pass"
+      "cues": [
+        [
+          0.0,
+          0.28,
+          "ĐÂY"
+        ]
+      ],
+      "rtf": 0.07,
+      "verdict": "fail"
     },
     {
       "id": "tone_2s",
@@ -6681,12 +6373,18 @@
       "reference": "",
       "file": "tone_2s.wav",
       "preview": null,
-      "latency_s": 0.131,
-      "hypothesis": "",
+      "latency_s": 0.17,
+      "hypothesis": "Ừ",
       "duration_s": 2.0,
-      "cues": [],
-      "rtf": 0.0655,
-      "verdict": "pass"
+      "cues": [
+        [
+          0.0,
+          0.28,
+          "Ừ"
+        ]
+      ],
+      "rtf": 0.085,
+      "verdict": "fail"
     },
     {
       "id": "cut_200ms",
@@ -6696,11 +6394,17 @@
       "reference": null,
       "file": "cut_200ms.wav",
       "preview": null,
-      "latency_s": 0.131,
-      "hypothesis": "",
+      "latency_s": 0.094,
+      "hypothesis": "CON",
       "duration_s": 0.2,
-      "cues": [],
-      "rtf": 0.655,
+      "cues": [
+        [
+          0.08,
+          0.2,
+          "CON"
+        ]
+      ],
+      "rtf": 0.47,
       "verdict": "info"
     },
     {
@@ -6711,11 +6415,11 @@
       "reference": "",
       "file": "cut_80ms.wav",
       "preview": null,
-      "latency_s": 0.061,
+      "latency_s": 0.063,
       "hypothesis": "",
       "duration_s": 0.08,
       "cues": [],
-      "rtf": 0.7625,
+      "rtf": 0.7875,
       "verdict": "pass"
     }
   ]

@@ -523,7 +523,7 @@ def transcribe(gw: Gateway, case: dict, audio_dir: Path) -> None:
     elif ref == "":
         case["verdict"] = "pass" if not case["hypothesis"].strip() else "fail"
     else:
-        ops, edits = align(ref, case["hypothesis"])
+        ops, edits = align(ref, case["hypothesis"].lower())  # the model's vocabulary is upper case
         case["diff"] = ops
         case["wer"] = round(edits / max(len(ref.split()), 1), 4)
         case["verdict"] = (
@@ -571,8 +571,8 @@ footer{padding:10px 28px 30px;color:var(--mute);font-size:12px}
 <header><h1>Gipformer: nghe thử kết quả</h1><div class="meta" id="meta"></div><div class="stats" id="stats"></div>
 <div class="filters" id="filters"></div></header>
 <main id="cards"></main>
-<footer>Âm thanh: FLEURS vi_vn (CC BY 4.0) và biến thể tổng hợp. Model xuất chữ thường, không dấu câu, số bằng chữ;
-reference FLEURS đã chuẩn hoá nhưng giữ chữ số. Ngưỡng màu: WER ≤ 15% xanh, ≤ 40% vàng, còn lại đỏ. Click một cue để
+<footer>Âm thanh: FLEURS vi_vn (CC BY 4.0) và biến thể tổng hợp. Model xuất chữ HOA, không dấu câu, số bằng chữ (WER
+tính sau khi hạ về chữ thường); reference FLEURS đã chuẩn hoá nhưng giữ chữ số. Ngưỡng màu: WER ≤ 15% xanh, ≤ 40% vàng, còn lại đỏ. Click một cue để
 nhảy tới thời điểm đó.</footer>
 <script id="data" type="application/json">__DATA__</script>
 <script>

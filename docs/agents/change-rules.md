@@ -2,15 +2,18 @@
 
 Read the section for each area you touch before editing it. File roles: [code-map.md](code-map.md).
 
-## Inference path (`engine.py`, `scheduler.py`, `quan_loader.py`)
+## Inference path (`engine.py`, `scheduler.py`)
 
-- Load the model only through `app/quan_loader.load_quan`. `QuanTranscribe.from_pretrained` resolves the base
-  model at Hub `main`, so its result is unpinned.
-- `EngineWorker` is the single thread that calls QUAN (`QuanCTC._acts` is mutable hook state). Work reaches it as
-  jobs (one per chunk) on `Scheduler` lanes (one per request or realtime session).
+- `GipformerEngine` is the only code that touches sherpa-onnx: one `OfflineRecognizer`, files from the staged
+  local directory only (never the Hub), one chunk per call. Settings: `GIPFORMER_PRECISION`,
+  `GIPFORMER_DECODING_METHOD`, `GIPFORMER_BEAM_SIZE` (-> `max_active_paths`), `GIPFORMER_NUM_THREADS`.
+- `EngineWorker` is the single thread that calls the recognizer. Work reaches it as jobs (one per chunk) on
+  `Scheduler` lanes (one per request or realtime session).
+- Engine text must equal `references/gipformer/infer_onnx.py` for the same audio, precision and decoding
+  (`tests/model/test_engine.py`). Do not post-process the text.
 - A lane holds at most `GIPFORMER_QUEUE_MAX_JOBS_PER_LANE` (2) queued chunks; long files are fed incrementally. LIVE
   lanes get bounded priority (`live_priority_ratio`).
-- Cancel drops queued chunks and discards the running chunk's result. A running kernel finishes; the worker and
+- Cancel drops queued chunks and discards the running chunk's result. A running decode finishes; the worker and
   budgets are released only when the real call returns.
 
 ## Audio (`audio.py`, `chunking.py`)
@@ -18,7 +21,7 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - Decode client audio only with `AudioIngress.decode`; chunk only with `chunking.split`.
 - FFmpeg gets fixed argv, the `file` protocol and the demuxer/decoder allowlists; client filenames, paths and URLs
   stay out of its arguments, out of disk paths and out of logs.
-- The frontend crashes below 161 samples at 16 kHz. Audio <= 100 ms (1,600 samples) yields `""` without a model
+- The engine refuses fewer than 161 samples (`MIN_FORWARD_SAMPLES`, a QUAN-era floor pending the probe). Audio <= 100 ms (1,600 samples) yields `""` without a model
   call (docs/baseline.vi.md §5).
 - Every resource is budgeted: body limit before the multipart parser, spool bytes, decoded audio in RAM (`hold`,
   realtime pending audio via `reserve`). Exceeding one returns 413/429/503 in the OpenAI envelope.
@@ -49,8 +52,8 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 
 ## Config (`config.py`)
 
-- Every `GIPFORMER_*` variable is a server setting, and unknown ones abort startup.  Leftover `QUAN_*` variables abort too. `GIPFORMER_GPU`, `GIPFORMER_BUILD_CUDA`
-  (compose) and `GIPFORMER_TEST_*` (JS server test) are therefore kept out of the server's environment.
+- Every `GIPFORMER_*` variable is a server setting, and unknown ones abort startup. Leftover `QUAN_*` variables abort
+  too. `GIPFORMER_TEST_*` (JS server test) is therefore kept out of the server's environment.
 - Each limit is finite and validated at startup. A new setting also gets a row in the README config table.
 
 ## Pins, dependencies, image
@@ -58,10 +61,7 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 - Change a model pin only in `assets/manifest.json`, then run `scripts/stage_models.py --update-manifest`. The
   `sherpa-onnx` version in `pyproject.toml` and `uv.lock` must equal the manifest's `code` pin
   (`tests/unit/test_manifests.py`).
-- CUDA profiles are mutually exclusive extras with identical model/code pins: cu126 = torch 2.14.1, cu128 = torch
-  2.11.0 (the latest published cu128 wheel). Profile selectors: Docker `--build-arg TORCH_CUDA=cu128`, Compose
-  `GIPFORMER_BUILD_CUDA=cu128`, tests `--container-cuda=cu128`.
 - The image contains only `app/` and the venv; models are mounted read-only, keys come from a Docker secret.
-- After changing torch, CUDA, the base image or FFmpeg pins: rerun unit + contract tests and the full container
-  gate for the target profile with no skips (docs/container-gate.vi.md).
+- No torch or CUDA dependency: the image is CPU only. After changing the base image, sherpa-onnx or FFmpeg pins:
+  rerun unit + contract tests and the full container gate with no skips (docs/container-gate.vi.md).
 - `docs/baseline/*.json` reports hold metadata only. CPU-diagnostic container reports stay uncommitted.

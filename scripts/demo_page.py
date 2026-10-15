@@ -536,7 +536,7 @@ def transcribe(gw: Gateway, case: dict, audio_dir: Path) -> None:
 
 PAGE = """<!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QUAN-Transcribe: nghe thử</title>
+<title>Gipformer: nghe thử</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#6b7385;--line:#e3e6ec;--ok:#1f9d55;--warn:#d68a00;--bad:#d64545;
 --info:#3b6fd6;--sub:#fde2e2;--ins:#dff5e6;--del:#eceef2;--hl:#fff3c4}
@@ -568,7 +568,7 @@ audio{width:100%}.tags{display:flex;gap:6px;flex-wrap:wrap}.tags span{font-size:
 details summary{cursor:pointer;font-size:13px;color:var(--mute)}
 footer{padding:10px 28px 30px;color:var(--mute);font-size:12px}
 </style></head><body>
-<header><h1>QUAN-Transcribe: nghe thử kết quả</h1><div class="meta" id="meta"></div><div class="stats" id="stats"></div>
+<header><h1>Gipformer: nghe thử kết quả</h1><div class="meta" id="meta"></div><div class="stats" id="stats"></div>
 <div class="filters" id="filters"></div></header>
 <main id="cards"></main>
 <footer>Âm thanh: FLEURS vi_vn (CC BY 4.0) và biến thể tổng hợp. Model xuất chữ thường, không dấu câu, số bằng chữ;
@@ -643,7 +643,9 @@ def main() -> int:
         "--add", type=Path, action="append", default=[], help="extra audio file or directory"
     )
     ap.add_argument("--only", help="comma-separated case ids or categories to run")
-    ap.add_argument("--cache", type=Path, default=Path.home() / ".cache" / "quan-deploy-fixtures")
+    ap.add_argument(
+        "--cache", type=Path, default=Path.home() / ".cache" / "gipformer-gateway-fixtures"
+    )
     ap.add_argument("--timeout", type=float, default=600.0, help="per HTTP request")
     ap.add_argument("--ready-timeout", type=float, default=60.0)
     args = ap.parse_args()

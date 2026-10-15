@@ -14,14 +14,17 @@ def test_defaults_with_one_key():
     assert cfg.api_keys == (KEY,) and cfg.whisper_alias is False
     assert cfg.queue_max_buffered_samples == int(cfg.queue_max_buffered_seconds * 16000)
     assert KEY not in repr(cfg)
+    assert (cfg.precision, cfg.decoding_method, cfg.beam_size, cfg.num_threads) == ("fp32", "modified_beam_search", 4, 4)
 
 
 def test_parses_typed_values():
     cfg = Config.from_env({
         "GIPFORMER_API_KEYS": f" {KEY} , {'j' * 20} ", "GIPFORMER_WHISPER_ALIAS": "true", "GIPFORMER_QUEUE_MAX_JOBS": "8",
         "GIPFORMER_MAX_CHUNK_SECONDS": "20.5", "GIPFORMER_MODELS_DIR": "/srv/models", "GIPFORMER_LOG_LEVEL": "debug",
-        "GIPFORMER_SPOOL_DIR": "/var/spool/gipformer",
+        "GIPFORMER_SPOOL_DIR": "/var/spool/gipformer", "GIPFORMER_PRECISION": "int8",
+        "GIPFORMER_DECODING_METHOD": "greedy_search", "GIPFORMER_BEAM_SIZE": "8", "GIPFORMER_NUM_THREADS": "2",
     })
+    assert (cfg.precision, cfg.decoding_method, cfg.beam_size, cfg.num_threads) == ("int8", "greedy_search", 8, 2)
     assert cfg.api_keys == (KEY, "j" * 20) and cfg.whisper_alias is True and cfg.queue_max_jobs == 8
     assert cfg.max_chunk_seconds == 20.5 and cfg.models_dir == Path("/srv/models") and cfg.log_level == "DEBUG"
     assert cfg.max_chunk_samples == 328000 and cfg.spool_dir == Path("/var/spool/gipformer")
@@ -48,6 +51,12 @@ def test_api_keys_file(tmp_path):
     {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_QUEUE_MAX_JOB": "4"},  # typo
     {"GIPFORMER_API_KEYS": KEY, "QUAN_QUEUE_MAX_JOBS": "4"},  # leftover pre-rename variable
     {"GIPFORMER_API_KEYS": KEY, "QUAN_GPU": "0"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_PRECISION": "fp16"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_DECODING_METHOD": "ctc"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_BEAM_SIZE": "0"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_BEAM_SIZE": "four"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_NUM_THREADS": "0"},
+    {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_DEVICE": "cuda"},  # removed setting
     {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_QUEUE_MAX_JOBS": "many"},
     {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_QUEUE_MAX_JOBS": "0"},
     {"GIPFORMER_API_KEYS": KEY, "GIPFORMER_MAX_AUDIO_SECONDS": "inf"},

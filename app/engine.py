@@ -1,10 +1,9 @@
-"""The only code that calls QUAN, and the single thread allowed to run it.
+"""The only code that calls the model, and the single thread allowed to run it.
 
-`QuanCTC._acts` is mutable hook state, so every load/warm-up/inference on the model instance runs on one dedicated
-worker thread (`EngineWorker`). Endpoints and sessions never touch the model; they go through `app.scheduler`, which
+Every load/warm-up/inference on the recognizer runs on one dedicated worker thread (`EngineWorker`). Endpoints and sessions never touch the model; they go through `app.scheduler`, which
 hands the worker at most one job at a time.
 
-Cancellation is soft: a call that has started always runs to completion (a CUDA kernel cannot be interrupted safely);
+Cancellation is soft: a call that has started always runs to completion (a native decode cannot be interrupted safely);
 the caller discards the result. A call running longer than `hang_seconds` marks the worker hung: `/health` then fails
 so the supervisor restarts the process.
 """
@@ -28,6 +27,9 @@ from app.observability import log, Metrics
 # The log-mel frontend crashes below 161 samples (docs/baseline.vi.md §7). Audio policy for short clips (return ""
 # without inference) belongs to the callers; this is the hard safety floor.
 MIN_FORWARD_SAMPLES = 161
+MODEL_DIR = "gipformer1.5-68M-rnnt"  # under the staging root of scripts/stage_models.py
+FEATURE_DIM = 80
+WORD_START = "\u2581"
 
 
 class ChunkResult(NamedTuple):
@@ -48,29 +50,67 @@ class Engine(Protocol):
     def transcribe(self, wav: np.ndarray) -> ChunkResult: ...
 
 
-class QuanEngine:
-    """Greedy, full-context decoding of one 16 kHz mono chunk (the M0 baseline decoder settings, no LM)."""
+class GipformerEngine:
+    """One sherpa-onnx offline transducer recognizer on CPU; one 16 kHz mono chunk per call (the reference's settings)."""
 
-    def __init__(self, models_dir: Path, device: str, warmup_seconds: float):
-        self._models_dir, self._device, self._warmup_seconds = models_dir, device, warmup_seconds
-        self._asr = None
+    def __init__(
+        self,
+        models_dir: Path,
+        precision: str,
+        decoding_method: str,
+        beam_size: int,
+        num_threads: int,
+        warmup_seconds: float,
+    ):
+        self._dir = Path(models_dir) / MODEL_DIR
+        self._precision, self._decoding_method = precision, decoding_method
+        self._beam_size, self._num_threads, self._warmup_seconds = (
+            beam_size,
+            num_threads,
+            warmup_seconds,
+        )
+        self._recognizer = None
 
     def load(self) -> None:
-        from app.quan_loader import load_quan
+        """Local files only: nothing is resolved against the Hub."""
+        import sherpa_onnx
 
-        self._asr = load_quan(self._models_dir, self._device)
+        suffix = ".int8" if self._precision == "int8" else ""
+        paths = {n: self._dir / f"{n}{suffix}.onnx" for n in ("encoder", "decoder", "joiner")}
+        paths["tokens"] = self._dir / "tokens.txt"
+        for path in paths.values():
+            if not path.is_file():
+                raise FileNotFoundError(
+                    f"model file not staged: {path} (run scripts/stage_models.py)"
+                )
+        self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
+            encoder=str(paths["encoder"]),
+            decoder=str(paths["decoder"]),
+            joiner=str(paths["joiner"]),
+            tokens=str(paths["tokens"]),
+            num_threads=self._num_threads,
+            sample_rate=SAMPLE_RATE,
+            feature_dim=FEATURE_DIM,
+            decoding_method=self._decoding_method,
+            max_active_paths=self._beam_size,
+        )
 
     def warmup(self) -> None:
         """Also used to recover after a failed call. Running the longest allowed chunk reserves its peak memory."""
-        import torch
-
-        if self._asr.device.type == "cuda":
-            torch.cuda.empty_cache()
         self.transcribe(np.zeros(int(self._warmup_seconds * SAMPLE_RATE), dtype=np.float32))
 
     def transcribe(self, wav: np.ndarray) -> ChunkResult:
-        # CTC has no token emission times; this engine is deleted with the real Gipformer engine.
-        raise NotImplementedError("QuanEngine does not produce token times")
+        stream = self._recognizer.create_stream()
+        stream.accept_waveform(SAMPLE_RATE, wav)
+        self._recognizer.decode_streams([stream])
+        result = stream.result
+        # sherpa-onnx renders the word marker "▁" as a leading space; times are seconds from the chunk start.
+        tokens = tuple(t.replace(" ", WORD_START) for t in result.tokens)
+        times, last = [], 0
+        for t in result.timestamps:
+            last = max(last, min(round(t * SAMPLE_RATE), len(wav)))
+            times.append(last)
+        return ChunkResult(result.text.strip(), tokens, tuple(times))
 
 
 def check_waveform(wav: np.ndarray) -> None:

@@ -125,8 +125,8 @@ def test_sdk_models_json_text_and_stream(tmp_path):
     with serve(max_chunk_seconds=1.0) as srv:
         assert [m.id for m in srv.sdk.models.list()] == [MODEL_ID]
         m = srv.sdk.models.retrieve(MODEL_ID)
-        assert (m.id, m.object, m.created, m.owned_by) == (MODEL_ID, "model", 1791950390, "qnguyen3")
-        for missing in ("whisper-1", "org/model"):
+        assert (m.id, m.object, m.created, m.owned_by) == (MODEL_ID, "model", 1789615207, "g-group-ai-lab")
+        for missing in ("whisper-1", "org/model", "quan-transcribe-1.0"):
             with pytest.raises(openai.NotFoundError) as e:
                 srv.sdk.models.retrieve(missing)
             assert e.value.code == "model_not_found"

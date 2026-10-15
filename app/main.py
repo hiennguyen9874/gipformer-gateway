@@ -1,6 +1,6 @@
 """FastAPI gateway: lifespan (load/warm-up, drain), health/readiness, auth, request ids, error envelope.
 
-Run with one worker process per GPU (the model instance lives in this process):
+Run with exactly one worker process (the single model instance lives in this process):
     uvicorn --factory app.main:create_app --workers 1 --no-access-log --timeout-graceful-shutdown 30
 """
 
@@ -19,7 +19,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.audio import AudioIngress
 from app.config import Config, ConfigError
-from app.engine import Engine, EngineWorker, QuanEngine
+from app.engine import Engine, EngineWorker, GipformerEngine
 from app.errors import (
     APIError,
     install_handlers,
@@ -57,8 +57,13 @@ def create_app(config: Config | None = None, engine: Engine | None = None) -> Fa
             raise ConfigError(
                 f"GIPFORMER_MODELS_DIR is not a directory (run scripts/stage_models.py): {config.models_dir}"
             )
-        engine = QuanEngine(
-            config.models_dir, config.device, warmup_seconds=config.max_chunk_seconds
+        engine = GipformerEngine(
+            config.models_dir,
+            config.precision,
+            config.decoding_method,
+            config.beam_size,
+            config.num_threads,
+            warmup_seconds=config.max_chunk_seconds,
         )
 
     if not config.spool_dir.is_dir():

@@ -13,9 +13,11 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
-SAMPLE_RATE = 16000  # QUAN input rate; queue budgets are counted in 16 kHz samples
+SAMPLE_RATE = 16000  # model input rate; queue budgets are counted in 16 kHz samples
 PREFIX = "GIPFORMER_"
 OLD_PREFIX = "QUAN_"  # pre-rename settings: a leftover one means a half-migrated deployment
+PRECISIONS = ("fp32", "int8")
+DECODING_METHODS = ("modified_beam_search", "greedy_search")
 MIN_API_KEY_LENGTH = 16
 MIN_CHUNK_SECONDS = 1.0
 
@@ -28,7 +30,10 @@ class ConfigError(ValueError):
 class Config:
     api_keys: tuple[str, ...] = dataclasses.field(repr=False)
     models_dir: Path = Path("models")
-    device: str = "cuda"
+    precision: str = "fp32"  # fp32 | int8 weights
+    decoding_method: str = "modified_beam_search"  # or greedy_search
+    beam_size: int = 4  # active paths of modified_beam_search; ignored by greedy_search
+    num_threads: int = 4  # intra-op threads of the one recognizer
     whisper_alias: bool = False  # opt-in alias `whisper-1` (docs/api-contract.vi.md §3)
     log_level: str = "INFO"
 
@@ -82,7 +87,9 @@ class Config:
 
     def __post_init__(self) -> None:
         if not self.api_keys:
-            raise ConfigError("GIPFORMER_API_KEYS (or GIPFORMER_API_KEYS_FILE) must define at least one key")
+            raise ConfigError(
+                "GIPFORMER_API_KEYS (or GIPFORMER_API_KEYS_FILE) must define at least one key"
+            )
         for key in self.api_keys:
             if len(key) < MIN_API_KEY_LENGTH or not all("!" <= c <= "~" for c in key):
                 raise ConfigError(
@@ -94,8 +101,14 @@ class Config:
             raise ConfigError(
                 f"GIPFORMER_LOG_LEVEL must be DEBUG, INFO, WARNING or ERROR, got {self.log_level!r}"
             )
-        if not self.device:
-            raise ConfigError("GIPFORMER_DEVICE must not be empty")
+        if self.precision not in PRECISIONS:
+            raise ConfigError(
+                f"GIPFORMER_PRECISION must be one of {', '.join(PRECISIONS)}, got {self.precision!r}"
+            )
+        if self.decoding_method not in DECODING_METHODS:
+            raise ConfigError(
+                f"GIPFORMER_DECODING_METHOD must be one of {', '.join(DECODING_METHODS)}, got {self.decoding_method!r}"
+            )
         for f in dataclasses.fields(self):
             value = getattr(self, f.name)
             if f.type in (int, float) and not (math.isfinite(value) and value > 0):
@@ -108,7 +121,9 @@ class Config:
             # The splitter needs room to cut at a quiet point and keep every chunk above the short-clip floor.
             raise ConfigError(f"GIPFORMER_MAX_CHUNK_SECONDS must be >= {MIN_CHUNK_SECONDS}")
         if self.max_decoded_seconds < self.max_audio_seconds:
-            raise ConfigError("GIPFORMER_MAX_DECODED_SECONDS must be >= GIPFORMER_MAX_AUDIO_SECONDS")
+            raise ConfigError(
+                "GIPFORMER_MAX_DECODED_SECONDS must be >= GIPFORMER_MAX_AUDIO_SECONDS"
+            )
         if self.max_spool_bytes < self.max_upload_bytes:
             raise ConfigError("GIPFORMER_MAX_SPOOL_BYTES must be >= GIPFORMER_MAX_UPLOAD_BYTES")
         # A single job must fit the queue budget, otherwise it could never be admitted.
@@ -118,7 +133,9 @@ class Config:
                     f"{PREFIX}{name.upper()} must be <= GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS"
                 )
         if self.queue_max_jobs_per_lane > self.queue_max_jobs:
-            raise ConfigError("GIPFORMER_QUEUE_MAX_JOBS_PER_LANE must be <= GIPFORMER_QUEUE_MAX_JOBS")
+            raise ConfigError(
+                "GIPFORMER_QUEUE_MAX_JOBS_PER_LANE must be <= GIPFORMER_QUEUE_MAX_JOBS"
+            )
         if self.max_sessions > self.queue_max_lanes:
             raise ConfigError("GIPFORMER_MAX_SESSIONS must be <= GIPFORMER_QUEUE_MAX_LANES")
 

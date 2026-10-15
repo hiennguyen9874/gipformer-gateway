@@ -105,7 +105,7 @@ def samples_bound(samples_in: int) -> int:
 class TurnBuffer:
     """Pending (uncommitted) audio of one session: PCM16 LE 24 kHz in, float32 16 kHz out.
 
-    Resampling is streamed at append (soxr HQ, the rate converter of `quan_transcribe.audio.to_16k_mono`); the
+    Resampling is streamed at append (soxr HQ); the
     committed waveform equals one-shot `soxr.resample` of the whole turn, whatever the packetization. A trailing
     odd byte waits for the next append; at commit it is dropped (half a sample). The turn limit counts whole input
     samples; an append over it is refused whole and leaves the buffer unchanged.

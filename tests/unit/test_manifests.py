@@ -36,31 +36,19 @@ def test_pyproject_and_lockfile_pin_sherpa_onnx_to_manifest_version():
         assert locked[name] == version
 
 
-def test_cuda_profiles_are_exclusive_and_locked():
+def test_no_torch_or_cuda_dependencies():
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())
-    expected = {"cu126": "2.14.1", "cu128": "2.11.0"}
-    assert project["tool"]["uv"]["conflicts"] == [[{"extra": "cu126"}, {"extra": "cu128"}]]
-    indexes = {i["name"]: i for i in project["tool"]["uv"]["index"]}
-    sources = {s["extra"]: s["index"] for s in project["tool"]["uv"]["sources"]["torch"]}
-    locked = tomllib.loads((ROOT / "uv.lock").read_text())["package"]
-    for cuda, version in expected.items():
-        assert project["project"]["optional-dependencies"][cuda] == [f"torch=={version}"]
-        index = indexes[sources[cuda]]
-        assert index["explicit"] is True
-        assert index["url"] == f"https://download.pytorch.org/whl/{cuda}"
-        wheels = [p for p in locked if p["name"] == "torch" and p["version"] == f"{version}+{cuda}"]
-        assert len(wheels) == 1
-        assert wheels[0]["source"]["registry"] == index["url"]
-        assert any("cp312-cp312" in w["url"] and "x86_64" in w["url"] for w in wheels[0]["wheels"])
+    assert "optional-dependencies" not in project["project"]
+    assert not any(d.split("=")[0].split("@")[0].strip() in ("torch", "transformers", "quan-transcribe")
+                   for d in project["project"]["dependencies"])
+    locked = {p["name"] for p in tomllib.loads((ROOT / "uv.lock").read_text())["package"]}
+    assert not locked & {"torch", "transformers", "quan-transcribe"}
 
 
-def test_docker_cuda_profile_selection():
-    dockerfile = (ROOT / "Dockerfile").read_text()
-    assert "ARG TORCH_CUDA=cu126" in dockerfile
-    assert 'case "$TORCH_CUDA" in cu126|cu128)' in dockerfile
-    assert 'uv sync --frozen --no-dev --extra "$TORCH_CUDA"' in dockerfile
-    compose = (ROOT / "compose.yaml").read_text()
-    assert 'TORCH_CUDA: "${GIPFORMER_BUILD_CUDA:-cu126}"' in compose
+def test_docker_files_have_no_cuda_concerns():
+    for name in ("Dockerfile", "compose.yaml"):
+        text = (ROOT / name).read_text().lower()
+        assert "cuda" not in text and "nvidia" not in text and "torch" not in text
 
 
 def test_small_fixtures_match_manifest():

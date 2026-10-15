@@ -1,6 +1,6 @@
 """M7 fault injection: real probes/traffic, simulated OOM/hang, restart, bounded mixed soak.
 
-These tests prove control-plane semantics, not real CUDA allocator recovery or GPU capacity.
+These tests prove control-plane semantics, not real model memory recovery or CPU capacity.
 """
 
 import concurrent.futures
@@ -24,7 +24,7 @@ def test_strict_base64_rejects_noncanonical_packets(audio):
 
 
 def request(srv, clip):
-    return srv.client.post("/v1/audio/transcriptions", data={"model": "quan-transcribe-1.0"},
+    return srv.client.post("/v1/audio/transcriptions", data={"model": "gipformer1.5-68M-rnnt"},
                            files={"file": ("input.wav", clip, "audio/wav")})
 
 
@@ -101,7 +101,7 @@ def test_logs_exclude_transcript_filename_query_and_arbitrary_paths(tmp_path, ca
     private = "private-" + secrets.token_hex(8)
     clip = wav_file(tmp_path / "input.wav", noise(.3, 204)).read_bytes()
     with serve(FakeEngine(text_fn=lambda _: private)) as srv:
-        response = srv.client.post("/v1/audio/transcriptions", data={"model": "quan-transcribe-1.0"},
+        response = srv.client.post("/v1/audio/transcriptions", data={"model": "gipformer1.5-68M-rnnt"},
                                    files={"file": (private + ".wav", clip, "audio/wav")})
         assert response.json()["text"] == private
         srv.client.get("/" + private + "?token=" + private)

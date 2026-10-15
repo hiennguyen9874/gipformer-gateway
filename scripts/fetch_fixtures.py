@@ -150,7 +150,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--cache", type=Path, default=Path.home() / ".cache" / "quan-deploy-fixtures")
+    ap.add_argument(
+        "--cache", type=Path, default=Path.home() / ".cache" / "gipformer-gateway-fixtures"
+    )
     ap.add_argument(
         "--verify", action="store_true", help="only verify existing files (no download)"
     )

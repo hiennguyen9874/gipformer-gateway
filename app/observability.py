@@ -62,7 +62,7 @@ class HistogramState:
 class Metrics:
     """Thread-safe counters, gauges and histograms rendered in Prometheus text format (0.0.4)."""
 
-    def __init__(self, prefix: str = "quan_"):
+    def __init__(self, prefix: str = "gipformer_"):
         self._prefix = prefix
         self._lock = threading.Lock()
         self._help: dict[str, tuple[str, str]] = {}  # name -> (type, help)

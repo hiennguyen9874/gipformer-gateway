@@ -23,11 +23,9 @@ per-client rate limits belong to the operator's infrastructure in front of it.
 
 ## Always
 
-- Pass exactly one `--extra cu126` or `--extra cu128` to every `uv sync` / `uv run`; bare uv can pull the
-  upstream's unprofiled PyPI torch.
-- The host is shared: set `CUDA_VISIBLE_DEVICES` to a GPU that `nvidia-smi` shows free, and run local servers on a
-  free port (8000 is taken).
-- One model instance, one thread: only `app/engine.py` calls QUAN, fed through `Scheduler` lanes. Endpoints reach
+- The runtime is CPU only (sherpa-onnx): plain `uv sync` / `uv run`, no `--extra`.
+- The host is shared: run local servers on a free port (8000 is taken).
+- One model instance, one thread: only `app/engine.py` calls the model, fed through `Scheduler` lanes. Endpoints reach
   it via `run_chunks` + `Joiner`.
 - A feature ships only after its gate passes with recorded evidence; until then it stays switched off.
 - Treat `references/` (upstream submodules) as read-only: read it for behaviour; app code and images stay

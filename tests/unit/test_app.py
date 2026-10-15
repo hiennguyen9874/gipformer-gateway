@@ -136,7 +136,7 @@ def test_metrics_and_logs_carry_no_secrets(capfd):
     with serve(FakeEngine()) as (client, _):
         client.get("/metrics", headers={"Authorization": "Bearer wrong-key-0123456789"})
         text = client.get("/metrics", headers=AUTH).text
-    assert "quan_ready 1.0" in text and 'quan_http_requests_total{status="401"}' in text
+    assert "gipformer_ready 1.0" in text and 'gipformer_http_requests_total{status="401"}' in text
     logs = capfd.readouterr().err
     entries = [json.loads(line) for line in logs.splitlines() if line.startswith("{")]
     requests = [e for e in entries if e["event"] == "http.request"]

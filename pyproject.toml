@@ -1,17 +1,13 @@
 [project]
 name = "gipformer-gateway"
 version = "0.0.0"
-description = "OpenAI-compatible (scoped) serving for QUAN-Transcribe-1.0"
+description = "OpenAI-compatible (scoped) serving for gipformer1.5-68M-rnnt (CPU, sherpa-onnx)"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    # Inference code pinned to an exact commit (docs/baseline.vi.md, assets/manifest.json).
-    "quan-transcribe @ git+https://github.com/qnguyen3/QUAN-Transcribe@88ddcd2130a3c355d081bc002439f29e5e849060",
     # Pinned together with the model in assets/manifest.json (tests/unit/test_manifests.py).
     "sherpa-onnx==1.13.8",
     "sherpa-onnx-core==1.13.8",
-    "transformers==5.19.0",
     "huggingface_hub",
-    "safetensors",
     "numpy",
     "soundfile>=0.12",
     "soxr",
@@ -20,12 +16,6 @@ dependencies = [
     "python-multipart>=0.0.20",
     "websockets>=13,<16",
 ]
-
-# Select exactly one runtime profile: uv sync --extra cu126 (baseline) or --extra cu128 (Blackwell).
-# PyTorch does not publish 2.14.1 cu128 wheels; keep the existing cu126 baseline unchanged.
-[project.optional-dependencies]
-cu126 = ["torch==2.14.1"]
-cu128 = ["torch==2.11.0"]
 
 [dependency-groups]
 dev = [
@@ -37,28 +27,11 @@ dev = [
 
 [tool.uv]
 package = false
-conflicts = [[{ extra = "cu126" }, { extra = "cu128" }]]
-
-[tool.uv.sources]
-torch = [
-    { index = "pytorch-cu126", extra = "cu126" },
-    { index = "pytorch-cu128", extra = "cu128" },
-]
-
-[[tool.uv.index]]
-name = "pytorch-cu126"
-url = "https://download.pytorch.org/whl/cu126"
-explicit = true
-
-[[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
-explicit = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
 markers = [
-    "gpu: needs a CUDA GPU and staged model assets (scripts/stage_models.py)",
-    "container: needs docker (runtime checks: NVIDIA Container Toolkit, GIPFORMER_GPU, staged models)",
+    "model: needs the staged model assets (scripts/stage_models.py); runs on CPU",
+    "container: needs docker (runtime checks: staged models)",
 ]

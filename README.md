@@ -1,7 +1,7 @@
-# QUAN-Transcribe gateway
+# Gipformer gateway
 
-Server nhận dạng tiếng nói tiếng Việt cho [QUAN-Transcribe-1.0](https://huggingface.co/qnguyen3/QUAN-Transcribe-1.0),
-triển khai bằng Docker, với một **tập con** API OpenAI:
+Server nhận dạng tiếng nói tiếng Việt cho [gipformer1.5-68M-rnnt](https://huggingface.co/g-group-ai-lab/gipformer1.5-68M-rnnt)
+(RNN-T, sherpa-onnx, chạy trên CPU), triển khai bằng Docker, với một **tập con** API OpenAI:
 
 - `GET /v1/models`, `GET /v1/models/{id}`
 - `POST /v1/audio/transcriptions`: `json`, `text`, SSE (`stream=true`), `verbose_json`, `srt`, `vtt`
@@ -11,11 +11,11 @@ Không phải tương thích OpenAI đầy đủ. Payload, mã lỗi và capabil
 
 Giới hạn cần biết:
 
-- Output là text gốc của model: chữ thường, không dấu câu, số viết bằng chữ. Chỉ `language=vi`; không có logprobs.
-- `srt`/`vtt` có thời gian từ đường CTC greedy (start của cue có thể trễ ~1 âm tiết). `verbose_json` không có
+- Output là text gốc của model: chữ HOA, không dấu câu, số viết bằng chữ. Chỉ `language=vi`; không có logprobs.
+- `srt`/`vtt` có thời gian từ thời điểm model phát từng token (chưa có probe độ trễ; xem roadmap). `verbose_json` không có
   `segments`; word timestamps chưa bật.
 - Realtime: transcript chỉ có sau `input_audio_buffer.commit`; không có partial, không có VAD.
-- Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model QUAN.
+- Alias `whisper-1` (tắt mặc định, `GIPFORMER_WHISPER_ALIAS=true`) chỉ để client cũ chạy được: vẫn là model Gipformer. Model id cũ `gipformer1.5-68M-rnnt` trả 404 `model_not_found`.
 
 Tài liệu: [kiến trúc](docs/deployment-design.vi.md) · [API contract](docs/api-contract.vi.md) ·
 [baseline và pins](docs/baseline.vi.md) · [kiểm định image](docs/container-gate.vi.md) ·
@@ -23,34 +23,24 @@ Tài liệu: [kiến trúc](docs/deployment-design.vi.md) · [API contract](docs
 
 ## 1. Yêu cầu
 
-- Linux, Docker Engine + Compose v2, NVIDIA Container Toolkit, một GPU NVIDIA (~2.5 GB VRAM cho mỗi instance).
+- Linux, Docker Engine + Compose v2, CPU x86-64 (không cần GPU, CUDA hay torch).
 - [uv](https://docs.astral.sh/uv/) trên host, chỉ để tải model (staging) và chạy smoke test.
-- Chấp nhận [Gemma Terms of Use](https://ai.google.dev/gemma/terms) (weights QUAN và base `google/embeddinggemma-2`).
-
-Chọn **một** CUDA profile theo GPU:
-
-| Profile | PyTorch | GPU | Driver Linux tối thiểu |
-|---|---|---|---|
-| `cu126` (mặc định) | 2.14.1+cu126 | tới `sm_90` (A100, H100, …) | 560.28.03 |
-| `cu128` | 2.11.0+cu128 | thêm Blackwell `sm_120` (RTX 5090, …) | 570.26 |
-
-Model và code pins giống nhau ở cả hai profile. Không cần cài CUDA toolkit trên host.
+- Model MIT; chạy offline từ thư mục `./models` mount read-only.
 
 ## 2. Triển khai
 
 ```bash
 # 1. Tải model đã pin vào ./models và kiểm tra SHA256 (một lần, cần mạng)
-uv run --extra cu126 scripts/stage_models.py          # HF_TOKEN=<token> nếu repo yêu cầu
-uv run --extra cu126 scripts/stage_models.py --verify # kiểm tra lại, không cần mạng
+uv run scripts/stage_models.py          # HF_TOKEN=<token> nếu repo yêu cầu
+uv run scripts/stage_models.py --verify # kiểm tra lại, không cần mạng
 
 # 2. API key: một key mỗi dòng, ≥ 16 ký tự, đọc được bởi UID 10001 trong container
 mkdir -p secrets
 python3 -c "import secrets; print(secrets.token_urlsafe(32))" > secrets/gipformer_api_keys
 sudo chown 10001 secrets/gipformer_api_keys && sudo chmod 0400 secrets/gipformer_api_keys
 
-# 3. Build + chạy trên một GPU (nvidia-smi để chọn GPU trống)
-GIPFORMER_GPU=0 docker compose up -d --build                         # cu126
-GIPFORMER_BUILD_CUDA=cu128 GIPFORMER_GPU=0 docker compose up -d --build   # Blackwell
+# 3. Build + chạy (CPU)
+docker compose up -d --build
 
 # 4. Chờ sẵn sàng (load + warm-up)
 curl -s 127.0.0.1:18000/ready                                   # {"status":"ready"}
@@ -58,18 +48,15 @@ curl -s 127.0.0.1:18000/ready                                   # {"status":"rea
 # 5. Thử nhanh với file mẫu có sẵn trong repo (tests/fixtures/vi_a.wav, 8.9 s, FLEURS, CC BY 4.0)
 curl -s 127.0.0.1:18000/v1/audio/transcriptions \
     -H "Authorization: Bearer $(sudo head -1 secrets/gipformer_api_keys)" \
-    -F model=quan-transcribe-1.0 -F file=@tests/fixtures/vi_a.wav
-# {"text":"các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều ..."}
+    -F model=gipformer1.5-68M-rnnt -F file=@tests/fixtures/vi_a.wav
+# {"text":"CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ ..."}
 
 # 6. Smoke test (tùy chọn): mọi format + Realtime, so với baseline
 OPENAI_API_KEY=$(sudo cat secrets/gipformer_api_keys | head -1) \
-    uv run --extra cu126 scripts/smoke_server.py --base-url http://127.0.0.1:18000
+    uv run scripts/smoke_server.py --base-url http://127.0.0.1:18000
 ```
 
-`uv run` luôn kèm đúng một `--extra cu126` hoặc `--extra cu128` (không chạy `uv` trần, không `--all-extras`).
-`GIPFORMER_BUILD_CUDA` và `GIPFORMER_GPU` chỉ dùng cho compose.
-
-Image (`gipformer-gateway:r1-<profile>`): Ubuntu 24.04 (pin digest), Python 3.12.14, FFmpeg 6.1.1, user `10001`, chỉ
+Image (`gipformer-gateway:r1`): Ubuntu 24.04 (pin digest), Python 3.12.14, FFmpeg 6.1.1, user `10001`, chỉ
 chứa `app/` và venv. Không có model, `HF_TOKEN` hay API key trong image; server không truy cập Hub.
 `compose.yaml` chạy:
 
@@ -77,8 +64,8 @@ chứa `app/` và venv. Không có model, `HF_TOKEN` hay API key trong image; se
 - rootfs read-only, tmpfs `/tmp` 512 MiB (spool upload), `HF_HUB_OFFLINE=1`;
 - port chỉ bind `127.0.0.1:18000`; `restart: unless-stopped`; `stop_grace_period: 70s`.
 
-**Một container = một model = một GPU**, luôn một Uvicorn worker. Nhiều GPU: chạy nhiều container (mỗi container
-một `GIPFORMER_GPU`, một port host) sau load balancer; WebSocket cần sticky routing.
+**Một container = một recognizer = một worker thread**, luôn một Uvicorn worker. Mở rộng: chạy nhiều container
+(mỗi container một port host) sau load balancer; WebSocket cần sticky routing.
 
 **TLS:** gateway không làm TLS, rate limit theo client hay CORS. Khi expose ra ngoài localhost, đặt sau hạ tầng
 HTTPS của bạn với: SSE không buffer, hỗ trợ WebSocket upgrade, read timeout ≥ `GIPFORMER_REQUEST_TIMEOUT_SECONDS`
@@ -90,11 +77,11 @@ HTTPS của bạn với: SSE không buffer, hỗ trợ WebSocket upgrade, read t
 KEY=$(sudo cat secrets/gipformer_api_keys | head -1)
 curl -s 127.0.0.1:18000/v1/models -H "Authorization: Bearer $KEY"
 curl -s 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
-    -F model=quan-transcribe-1.0 -F file=@tests/fixtures/vi_a.wav
+    -F model=gipformer1.5-68M-rnnt -F file=@tests/fixtures/vi_a.wav
 curl -sN 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
-    -F model=quan-transcribe-1.0 -F stream=true -F file=@tests/fixtures/vi_a.wav
+    -F model=gipformer1.5-68M-rnnt -F stream=true -F file=@tests/fixtures/vi_a.wav
 curl -s 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
-    -F model=quan-transcribe-1.0 -F response_format=srt -F file=@tests/fixtures/vi_a.wav   # text, vtt, verbose_json
+    -F model=gipformer1.5-68M-rnnt -F response_format=srt -F file=@tests/fixtures/vi_a.wav   # text, vtt, verbose_json
 ```
 
 OpenAI Python SDK (đã kiểm thử `openai==3.31.0`; JS `openai@7.33.0`):
@@ -102,11 +89,11 @@ OpenAI Python SDK (đã kiểm thử `openai==3.31.0`; JS `openai@7.33.0`):
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="http://127.0.0.1:18000/v1", api_key="<QUAN key>")
+client = OpenAI(base_url="http://127.0.0.1:18000/v1", api_key="<API key>")
 with open("audio.mp3", "rb") as f:
-    print(client.audio.transcriptions.create(file=f, model="quan-transcribe-1.0").text)
+    print(client.audio.transcriptions.create(file=f, model="gipformer1.5-68M-rnnt").text)
 with open("audio.mp3", "rb") as f:
-    for event in client.audio.transcriptions.create(file=f, model="quan-transcribe-1.0", stream=True):
+    for event in client.audio.transcriptions.create(file=f, model="gipformer1.5-68M-rnnt", stream=True):
         print(event.type, getattr(event, "delta", None) or getattr(event, "text", ""))
 ```
 
@@ -116,7 +103,7 @@ một item với các `delta` (một mỗi chunk ≤ 30 s) rồi `completed`.
 ```python
 import base64
 
-with client.realtime.connect(model="quan-transcribe-1.0") as conn:
+with client.realtime.connect(model="gipformer1.5-68M-rnnt") as conn:
     conn.recv()                                            # session.created
     for packet in pcm16_24k_packets:                       # bytes, ví dụ 20–200 ms mỗi packet
         conn.input_audio_buffer.append(audio=base64.b64encode(packet).decode())
@@ -141,11 +128,15 @@ không nhất quán → container không start. Đầy đủ: `app/config.py`.
 | `GIPFORMER_API_KEYS_FILE` / `GIPFORMER_API_KEYS` | (bắt buộc) | Key Bearer (compose dùng file secret) |
 | `GIPFORMER_WHISPER_ALIAS` | `false` | Chấp nhận model id `whisper-1` |
 | `GIPFORMER_LOG_LEVEL` | `INFO` | Mức log |
+| `GIPFORMER_PRECISION` | `fp32` | Trọng số `fp32` hoặc `int8` (nhanh hơn, kém chính xác hơn); giá trị khác → không start |
+| `GIPFORMER_DECODING_METHOD` | `modified_beam_search` | Hoặc `greedy_search` (nhanh hơn, mặc định của reference là beam search) |
+| `GIPFORMER_BEAM_SIZE` | 4 | Số path của `modified_beam_search` (số nguyên > 0; bỏ qua khi greedy) |
+| `GIPFORMER_NUM_THREADS` | 4 | Số intra-op thread của recognizer duy nhất (số nguyên > 0) |
 | `GIPFORMER_MAX_UPLOAD_BYTES` | 25 MiB | Cả body multipart → 413 |
 | `GIPFORMER_MAX_AUDIO_SECONDS` | 1800 | Thời lượng sau decode → 400 `audio_too_long` |
 | `GIPFORMER_MAX_DECODED_SECONDS` | 3600 | Audio đã decode giữ trong RAM của mọi request (≈ 64 KB/s) → 429 |
 | `GIPFORMER_MAX_SPOOL_BYTES` | 200 MiB | File tạm của upload đang nhận (nằm trong tmpfs 512 MiB) → 429 |
-| `GIPFORMER_MAX_CHUNK_SECONDS` | 30 | Độ dài chunk (giữ 30 để giống baseline) |
+| `GIPFORMER_MAX_CHUNK_SECONDS` | 30 | Độ dài chunk tối đa (cũng là độ dài warm-up) |
 | `GIPFORMER_QUEUE_MAX_LANES` | 32 | Request/session đồng thời → 429 |
 | `GIPFORMER_QUEUE_TIMEOUT_SECONDS` | 30 | Chờ chỗ trong queue tối đa → 429 |
 | `GIPFORMER_REQUEST_TIMEOUT_SECONDS` | 600 | Tổng upload + decode + queue + infer + gửi → 503 `request_timeout` |
@@ -170,20 +161,20 @@ trên phần cứng của bạn trước khi tăng.
 - **Dừng/cập nhật:** `docker compose stop` (SIGTERM) ngừng nhận kết nối mới, request đang chạy được làm xong (≤ 30 s),
   drain queue (≤ 30 s); log `server.stopped` có `drained`. WebSocket **không** được drain: đóng với code 1012, item
   chưa `completed` bị mất, client kết nối lại và gửi lại audio. Rolling update: bỏ instance khỏi load balancer trước.
-- **Rollback:** giữ image digest + CUDA profile của bản tốt, chạy lại digest đó với cùng `./models`; chờ `/ready`
+- **Rollback:** giữ image digest của bản tốt, chạy lại digest đó với cùng `./models`; chờ `/ready`
   và chạy smoke trước khi mở traffic.
 - **Xoay vòng key** (key chỉ đọc lúc khởi động): thêm key mới vào file, restart, chuyển client, bỏ key cũ, restart.
 - **Log/metrics:** log JSON ra stderr (`docker compose logs`), chỉ metadata (`request_id`, thời lượng, outcome);
   không ghi audio, transcript, key, tên file. `/metrics` (Prometheus, cần API key; không expose public):
-  `quan_transcriptions_total`, `quan_queue_wait_seconds`, `quan_infer_seconds`, `quan_ready`, `quan_worker_hung`,
-  `quan_realtime_sessions`, `quan_realtime_commit_to_completed_seconds`, …
+  `gipformer_transcriptions_total`, `gipformer_queue_wait_seconds`, `gipformer_infer_seconds`, `gipformer_ready`, `gipformer_worker_hung`,
+  `gipformer_realtime_sessions`, `gipformer_realtime_commit_to_completed_seconds`, …
 - `HF_TOKEN` chỉ dùng lúc staging, không đưa vào container.
 
 ## 6. Kiểm thử
 
 ```bash
-uv run --extra cu126 pytest                                         # CPU: unit, scheduler, audio, contract
-GIPFORMER_GPU=0 uv run --extra cu128 pytest tests/container --container-cuda=cu128   # gate image trên GPU
+uv run pytest                                  # unit, scheduler, audio, contract; tests/model cần model đã stage
+uv run pytest tests/container                  # gate image (cần docker)
 ```
 
 Chi tiết gate image: [docs/container-gate.vi.md](docs/container-gate.vi.md). Lệnh phát triển: [docs/agents/commands.md](docs/agents/commands.md).

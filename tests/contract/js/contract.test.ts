@@ -17,9 +17,9 @@ const dir = new URL('../examples/', import.meta.url);
 const read = (name: string) => readFileSync(new URL(name, dir));
 const jsonl = (name: string) =>
   read(name).toString('utf8').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l));
-const MODEL = 'quan-transcribe-1.0';
+const MODEL = 'gipformer1.5-68M-rnnt';
 
-const model = { id: MODEL, object: 'model', created: 1791950390, owned_by: 'qnguyen3' } satisfies Model;
+const model = { id: MODEL, object: 'model', created: 1789615207, owned_by: 'g-group-ai-lab' } satisfies Model;
 
 const TEXT =
   'các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều các sản phẩm tương tự được sản xuất hàng loạt';

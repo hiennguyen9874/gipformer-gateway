@@ -1,6 +1,6 @@
 """M4 P4: evaluate word timestamps against hand-annotated boundaries (the R2b gate, docs/roadmap.md).
 
-    CUDA_VISIBLE_DEVICES=<free gpu> uv run scripts/eval_alignment.py --out docs/baseline/alignment_eval.json
+    uv run scripts/eval_alignment.py --out docs/baseline/alignment_eval.json
 
 Annotations: tests/fixtures/alignment/*.json, one utterance each, labelled by hand (Praat/Audacity), never by
 another aligner:
@@ -116,7 +116,9 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument(
-        "--models-dir", type=Path, default=Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models"))
+        "--models-dir",
+        type=Path,
+        default=Path(os.environ.get("GIPFORMER_MODELS_DIR", ROOT / "models")),
     )
     ap.add_argument("--annotations", type=Path, default=ANNOTATIONS)
     ap.add_argument("--max-chunk-seconds", type=float, default=30.0)
@@ -132,10 +134,12 @@ def main() -> int:
 
     from app.alignment import align
     from app.chunking import split
-    from app.engine import QuanEngine
+    from app.engine import GipformerEngine
     from app.formats import seconds
 
-    engine = QuanEngine(args.models_dir, "cuda", warmup_seconds=args.max_chunk_seconds)
+    engine = GipformerEngine(
+        args.models_dir, "fp32", "modified_beam_search", 4, 4, warmup_seconds=args.max_chunk_seconds
+    )
     engine.load()
     max_chunk = int(args.max_chunk_seconds * 16000)
     by_split: dict[str, list] = {}

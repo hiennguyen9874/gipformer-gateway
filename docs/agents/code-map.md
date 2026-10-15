@@ -5,9 +5,9 @@ Each file's job, and the tests that cover it. Area rules live in [change-rules.m
 ## app/ (the only code shipped in the image)
 
 ```text
-quan_loader.py    load QUAN from staged local dirs only (no Hub resolution); reuses quan_transcribe classes
 config.py         typed GIPFORMER_* env config, validated at startup; no default API key
-engine.py         QuanEngine adapter + EngineWorker, the single thread that runs the model;
+engine.py         GipformerEngine (sherpa-onnx offline transducer, CPU, local files only) + EngineWorker, the single
+                    thread that runs the model;
                     ChunkResult = text + tokens + token emission times (samples, relative to the chunk)
 scheduler.py      bounded fair queue (lanes = requests/sessions, jobs = chunks) feeding the worker
 audio.py          AudioIngress: multipart ingress (body limit before parser, bounded spool), sandboxed FFmpeg
@@ -32,7 +32,6 @@ observability.py  JSON logs + Prometheus-style metrics (metadata only)
 ```text
 stage_models.py     download pinned assets (assets/manifest.json) into ./models or $GIPFORMER_MODELS_DIR, verify SHA256
 fetch_fixtures.py   build fixtures from FLEURS vi_vn (CC BY 4.0) at a pinned revision, verify SHA256
-smoke_inference.py  model baseline (full/streaming, timings, RAM/VRAM, short-clip probe) -> JSON
 smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline -> JSON
 benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metadata-only JSON, not a capacity claim
 demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
@@ -50,8 +49,8 @@ subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py an
 | `scheduler/` | CPU | scheduler/worker gate with the fake engine: serialization, bounds, fairness, cancel |
 | `audio/` | CPU + ffmpeg | formats, hostile inputs, decode bounds, multipart limits, temp cleanup |
 | `contract/` | CPU (+ Node for `js/`) | `examples/` parsed by the pinned Python SDK (`test_python_sdk.py`) and JS SDK (`js/contract.test.ts`); `test_server_sdk.py` runs a real server against both SDKs (REST over http, Realtime over wss with a self-signed cert, JS via `js/server.test.ts`) |
-| `gpu/` | CUDA + staged models | loader parity with the reference (exact logits, needs network), real engine, decode -> chunk -> engine pipeline, `test_server.py` (R2a cue gate), `test_realtime.py` (R3a gate) |
-| `container/` | docker (+ NVIDIA toolkit, `GIPFORMER_GPU`) | image gate; skips without docker |
+| `model/` | CPU + staged models | real engine text vs the reference `infer_onnx.py` (`test_engine.py`, fp32/int8 x beam/greedy, token times), worker + lanes, `test_server.py` (json/text/SSE on the real model). Marked `model`; skipped when the model is not staged |
+| `container/` | docker + staged models | image gate; skips without docker |
 
 Shared helpers:
 

@@ -22,7 +22,7 @@ from openai.types.realtime import (
 
 EXAMPLES = Path(__file__).parent / "examples"
 FIXTURE = Path(__file__).parents[1] / "fixtures" / "vi_a.wav"
-MODEL = "quan-transcribe-1.0"
+MODEL = "gipformer1.5-68M-rnnt"
 
 
 def test_sdk_version_is_pinned():
@@ -61,7 +61,7 @@ def test_models_list_and_retrieve():
     assert [m.id for m in c.models.list()] == [MODEL]
     c = client_with(200, example("model.json"), "application/json", seen)
     m = c.models.retrieve(MODEL)
-    assert (m.id, m.object, m.owned_by, m.created) == (MODEL, "model", "qnguyen3", 1791950390)
+    assert (m.id, m.object, m.owned_by, m.created) == (MODEL, "model", "g-group-ai-lab", 1789615207)
     assert [r.url.path for r in seen] == ["/v1/models", f"/v1/models/{MODEL}"]
     assert all(r.headers["authorization"] == "Bearer sk-test" for r in seen)
 

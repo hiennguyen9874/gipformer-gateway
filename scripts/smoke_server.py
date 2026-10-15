@@ -38,7 +38,7 @@ from scripts.subtitles import parse_cues  # noqa: E402
 
 FIXTURES = ROOT / "tests/fixtures"
 LONG = ROOT / "fixtures-large/vi_long.wav"
-MODEL = "quan-transcribe-1.0"
+MODEL = "gipformer1.5-68M-rnnt"
 LONG_MAX_WER = 0.10
 SMALL = ("vi_a.wav", "vi_b.wav", "silence_2s.wav", "short_200ms.wav")
 REALTIME_WER_SLACK = 0.02
@@ -274,7 +274,10 @@ def main() -> int:
     ap.add_argument("--ready-timeout", type=float, default=600.0)
     ap.add_argument("--timeout", type=float, default=600.0, help="per HTTP request")
     ap.add_argument(
-        "--max-chunk-seconds", type=float, default=30.0, help="the server's GIPFORMER_MAX_CHUNK_SECONDS"
+        "--max-chunk-seconds",
+        type=float,
+        default=30.0,
+        help="the server's GIPFORMER_MAX_CHUNK_SECONDS",
     )
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
@@ -364,7 +367,12 @@ def main() -> int:
         line
         for line in gw.request("GET", "/metrics").read().decode().splitlines()
         if line.startswith(
-            ("quan_transcriptions_total", "quan_jobs_total", "quan_decodes_total", "quan_realtime_")
+            (
+                "gipformer_transcriptions_total",
+                "gipformer_jobs_total",
+                "gipformer_decodes_total",
+                "gipformer_realtime_",
+            )
         )
     ]
     report["failures"] = failures

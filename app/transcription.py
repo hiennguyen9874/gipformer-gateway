@@ -48,12 +48,14 @@ from app.errors import (
 from app.observability import log, Metrics
 from app.scheduler import JobKind, Lane, Scheduler
 
-MODEL_ID = "quan-transcribe-1.0"
-WHISPER_ALIAS = "whisper-1"  # opt-in (GIPFORMER_WHISPER_ALIAS); same QUAN backend, not Whisper output
-MODEL_CREATED = (
-    1791950390  # commit time of the pinned weights revision (docs/api-contract.vi.md §3)
+MODEL_ID = "gipformer1.5-68M-rnnt"
+WHISPER_ALIAS = (
+    "whisper-1"  # opt-in (GIPFORMER_WHISPER_ALIAS); same Gipformer backend, not Whisper output
 )
-MODEL_OWNER = "qnguyen3"
+MODEL_CREATED = (
+    1789615207  # commit time of the pinned weights revision (docs/api-contract.vi.md §3)
+)
+MODEL_OWNER = "g-group-ai-lab"
 
 SINGLE_FIELDS = frozenset(
     {"model", "language", "temperature", "prompt", "response_format", "stream"}
@@ -408,7 +410,7 @@ class TranscriptionEndpoint:
                 )  # before FFmpeg: a full server costs no CPU
                 watch = DisconnectWatch(receive)
                 wav = await watch.run(self._audio.decode(upload.path, deadline))
-            # The spool file is gone here; only the waveform is kept while waiting for the GPU.
+            # The spool file is gone here; only the waveform is kept while waiting for the model.
             audio_s = len(wav) / SAMPLE_RATE
             self._metrics.inc(
                 "transcription_audio_seconds_total",
@@ -423,9 +425,7 @@ class TranscriptionEndpoint:
                 await _until(deadline, watch.run(self._stream(out, results, started)))
             else:
                 chunks_done = await _until(deadline, watch.run(_collect(results)))
-                await _until(
-                    deadline, out.respond(_final(params, chunks_done, audio_s))
-                )
+                await _until(deadline, out.respond(_final(params, chunks_done, audio_s)))
             outcome = "ok"
         except APIError as e:
             outcome = e.code

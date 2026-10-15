@@ -16,7 +16,7 @@ const baseURL = process.env.GIPFORMER_TEST_BASE_URL;
 const apiKey = process.env.GIPFORMER_TEST_API_KEY;
 const audioDir = process.env.GIPFORMER_TEST_AUDIO_DIR ?? '';
 const skip = baseURL && apiKey && audioDir ? false : 'no gateway: run tests/contract/test_server_sdk.py';
-const MODEL = 'quan-transcribe-1.0';
+const MODEL = 'gipformer1.5-68M-rnnt';
 
 const examples = new URL('../examples/', import.meta.url);
 const example = (name: string) => JSON.parse(readFileSync(new URL(name, examples)).toString());

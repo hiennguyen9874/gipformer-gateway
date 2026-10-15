@@ -392,11 +392,11 @@ def stage(
             for name in sorted({r["kind"] + "_" + r["input"] for r in rows})
         },
         "server": {
-            "queue_wait": histogram(before, after, "quan_queue_wait_seconds"),
-            "decode_wall": histogram(before, after, "quan_decode_seconds"),
-            "infer": histogram(before, after, "quan_infer_seconds"),
+            "queue_wait": histogram(before, after, "gipformer_queue_wait_seconds"),
+            "decode_wall": histogram(before, after, "gipformer_decode_seconds"),
+            "infer": histogram(before, after, "gipformer_infer_seconds"),
             **{
-                n: metric_delta(before, after, "quan_" + n)
+                n: metric_delta(before, after, "gipformer_" + n)
                 for n in ("process_cpu_seconds_total", "children_cpu_seconds_total")
             },
             **sampler.report(),
@@ -434,7 +434,7 @@ def main() -> int:
     ap.add_argument(
         "--hardware", required=True, help="non-secret hardware/profile label; stored verbatim"
     )
-    ap.add_argument("--engine", choices=("gpu", "fake", "cpu"), required=True)
+    ap.add_argument("--engine", choices=("fake", "cpu"), required=True)
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args()
     try:

@@ -30,7 +30,7 @@ def pcm16(n: int, seed: int) -> bytes:
 
 
 def reference(pcm: bytes) -> np.ndarray:
-    """What quan_transcribe.audio.to_16k_mono does to the same samples (one-shot soxr HQ)."""
+    """What gipformer_transcribe.audio.to_16k_mono does to the same samples (one-shot soxr HQ)."""
     x = np.frombuffer(pcm, "<i2").astype(np.float32) / 32768
     return soxr.resample(x, PCM_RATE, 16000).astype(np.float32)
 

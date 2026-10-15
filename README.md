@@ -55,7 +55,13 @@ QUAN_BUILD_CUDA=cu128 QUAN_GPU=0 docker compose up -d --build   # Blackwell
 # 4. Chờ sẵn sàng (load + warm-up)
 curl -s 127.0.0.1:18000/ready                                   # {"status":"ready"}
 
-# 5. Smoke test (tùy chọn): mọi format + Realtime, so với baseline
+# 5. Thử nhanh với file mẫu có sẵn trong repo (tests/fixtures/vi_a.wav, 8.9 s, FLEURS, CC BY 4.0)
+curl -s 127.0.0.1:18000/v1/audio/transcriptions \
+    -H "Authorization: Bearer $(sudo head -1 secrets/quan_api_keys)" \
+    -F model=quan-transcribe-1.0 -F file=@tests/fixtures/vi_a.wav
+# {"text":"các sản phẩm thủ công có thể được coi là độ cổ mặc dù tuổi đời của chúng ch trẻ hơn rất nhiều ..."}
+
+# 6. Smoke test (tùy chọn): mọi format + Realtime, so với baseline
 OPENAI_API_KEY=$(sudo cat secrets/quan_api_keys | head -1) \
     uv run --extra cu126 scripts/smoke_server.py --base-url http://127.0.0.1:18000
 ```

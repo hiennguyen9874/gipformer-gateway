@@ -34,3 +34,11 @@ per-client rate limits belong to the operator's infrastructure in front of it.
   independent of it.
 - Keep `HF_TOKEN`, API keys, audio and transcripts out of commits, logs and reports.
 - A change is done when code, tests and the docs describing it agree.
+
+## References
+
+- references/gipformer
+- references/gipformer1.5-68M-rnnt
+- references/QUAN-Transcribe
+- references/QUAN-Transcribe-1.0
+

@@ -36,6 +36,8 @@ smoke_inference.py  model baseline (full/streaming, timings, RAM/VRAM, short-cli
 smoke_server.py     stdlib smoke of a running gateway (local or container) against the offline baseline -> JSON
 benchmark.py        R4 closed-loop REST/SSE/WS/mixed ramp + bounded soak; metadata-only JSON, not a capacity claim
 probe_alignment.py  frame geometry, shift, spike latency -> docs/baseline/alignment_probe.json
+demo_page.py        listening page: FLEURS clips + synthetic hard/edge cases -> running gateway -> outputs/<dir>/
+                      (audio/, results.json, static index.html with WER, word diff, clickable SRT cues)
 eval_alignment.py   R2b gate: words vs hand annotations in tests/fixtures/alignment/ (none exist yet)
 scoring.py          dependency-free WER, shared by both smoke scripts
 subtitles.py        dependency-free SRT/VTT parser, shared by smoke_server.py and tests/live_server.py

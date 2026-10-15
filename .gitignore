@@ -234,3 +234,4 @@ node_modules/
 
 # CPU container diagnostics (tests/container --container-device=cpu); not release evidence
 /docs/baseline/server-container-cpu*.json
+/outputs/

@@ -35,6 +35,16 @@ OPENAI_API_KEY=<key> uv run --extra cu126 scripts/smoke_server.py \
     --base-url http://127.0.0.1:<port> --out docs/baseline/server.json
 ```
 
+Listening page against a running gateway (writes `outputs/demo/index.html`; `outputs/` is gitignored):
+
+```bash
+OPENAI_API_KEY=<key> uv run --extra cu126 scripts/demo_page.py --base-url http://127.0.0.1:<port> \
+    [--add <audio file or dir>] [--only <case ids or categories>] [--out outputs/<name>]
+```
+
+If `uv run ... uvicorn` fails with `Failed to spawn`, the venv was created under another path (stale shebangs):
+use `uv run --extra cu126 python -m uvicorn ...` or recreate `.venv`.
+
 One process per GPU, always one worker. Start the server from a shell with no `QUAN_GPU`, `QUAN_BUILD_CUDA` or
 `QUAN_TEST_*` exported: unknown `QUAN_*` variables abort startup.
 

@@ -4,34 +4,43 @@ Gate phải đạt trước khi phát hành một image: `tests/container/test_i
 
 ## 1. Trạng thái
 
-| Profile | PyTorch | Kết quả | Bằng chứng |
+| Image | Runtime | Kết quả | Bằng chứng |
 |---|---|---|---|
-| `cu128` | 2.11.0+cu128 | **Đạt trên GPU** (RTX 5090, driver 575.64.03): 6 passed, không skip | [`baseline/server-container-cu128.json`](baseline/server-container-cu128.json) |
-| `cu126` | 2.14.1+cu126 | Chưa chạy GPU gate trong container (host chỉ có RTX 5090, wheel cu126 không có `sm_120`); 6 passed ở chế độ CPU diagnostic | — |
+| `gipformer-gateway` (CPU) | sherpa-onnx (pin trong `uv.lock`), không torch/CUDA | **Chưa đạt: chưa chạy** (môi trường phát triển không có Docker) | `docs/baseline/server-container.json` (chưa có) |
 
-cu126 cần chạy lại GPU gate trên GPU tương thích (ví dụ A100) trước khi phát hành image cu126. Chế độ CPU không
-thay thế GPU gate; report CPU (`server-container-cpu*.json`) không được commit.
+Report của image QUAN (`server-container-cu128.json`) đã xoá cùng QUAN; không dùng làm bằng chứng cho image này.
+
+Kiểm tra thay thế đã chạy (chỉ chẩn đoán, **không thay gate**, không commit report): venv dựng như builder
+(`uv sync --frozen --no-dev`, Python 3.12.14, ~166 MB, không có `torch`/`transformers`) + chỉ `app/`, model copy
+read-only, key qua file, `HF_HUB_OFFLINE=1`, chạy trên host không có network namespace riêng. Các script của gate
+(`smoke_server.py`, auth/lỗi/overload/isolation, SIGTERM khi đang stream → `done` + `drained: true`, restart → ready)
+đều đạt, key không xuất hiện trong log. Gate thật vẫn cần chạy trên host có Docker.
 
 ## 2. Chạy gate
 
-Cần Docker, NVIDIA Container Toolkit, một GPU trống, model đã stage (`./models`) và fixtures
-(`scripts/fetch_fixtures.py`, gồm `fixtures-large/vi_long.wav`).
+Cần Docker, model đã stage (`./models`, `scripts/stage_models.py`) và fixtures (`scripts/fetch_fixtures.py`, gồm
+`fixtures-large/vi_long.wav`). Không cần GPU.
 
 ```bash
-GIPFORMER_GPU=<gpu> uv run --extra cu128 --offline pytest tests/container --container-cuda=cu128 -v
-GIPFORMER_GPU=<gpu> uv run --extra cu126 --offline pytest tests/container -v                    # GPU sm_≤90
-uv run --extra cu126 --offline pytest tests/container --container-device=cpu -v           # chẩn đoán, không phải gate
+uv run pytest tests/container -v      # build gipformer-gateway:test rồi chạy cả gate; phải pass hết, không skip
 ```
 
-Report GPU ghi vào `docs/baseline/server-container[-cu128].json` (chỉ metadata, không transcript).
+Test chỉ skip khi không có `docker`; thiếu model hoặc `vi_long.wav` là fail. Smoke ghi report vào
+`docs/baseline/server-container.json` (chỉ metadata: thời gian, số cue, hash transcript, image id, commit; không có
+transcript, audio hay key). Commit report cùng bản cập nhật bảng §1 khi gate pass trên cây sạch
+(`source_dirty: false`).
 
 ## 3. Nội dung gate
 
 | Test | Kiểm tra |
 |---|---|
-| Image | Build với profile đích; chạy UID 10001; `/srv` chỉ có `app/` và `.venv`; không có references, models, tests, `.git`, secrets; Python 3.12.14, FFmpeg 6.1.1, đúng phiên bản torch/CUDA |
-| Offline + smoke | Container `--network none`, rootfs/models read-only, key qua file secret → `/ready`; `scripts/smoke_server.py` trên 5 fixture: json/text/SSE/verbose_json/SRT/VTT và Realtime khớp baseline |
-| Auth/lỗi/overload/isolation | 401, model 404, audio lỗi 400, 429 khi hết lane; hai request đồng thời không trộn transcript |
+| Image | Build; chạy UID 10001; `/srv` chỉ có `app/` và `.venv`; không có assets, references, models, tests, `.git`, fixtures; Python 3.12.14, FFmpeg 6.1.1; `import sherpa_onnx` được, không có `torch`/`transformers` |
+| Metadata | `docker inspect`/`history` không chứa `HF_TOKEN`, `GIPFORMER_API_KEYS*` hay giá trị `HF_TOKEN` |
+| Offline + smoke | Container `--network none`, rootfs read-only, model mount read-only, key qua file secret (như compose) → `/ready`; `scripts/smoke_server.py` trên 5 fixture: json/text/SSE/verbose_json/SRT/VTT và Realtime, hash transcript khớp `docs/baseline/offline.json` |
+| Auth/lỗi/overload/isolation | 401, model 404, audio lỗi 400, 429 khi hết lane; hai request đồng thời không trộn transcript; key không có trong log |
 | Shutdown + restart | SIGTERM khi đang stream 6 × `vi_long.wav` → SSE `done`, exit 0, `drained: true`; restart → ready |
 
-Khi đổi torch/CUDA/base image/FFmpeg pins: chạy lại unit/contract và toàn bộ gate với profile đích, không skip.
+`compose.yaml` không có cấu hình GPU; Dockerfile/compose không nhắc CUDA/torch (`tests/unit/test_manifests.py`).
+
+Khi đổi base image, sherpa-onnx, FFmpeg pins, Dockerfile hoặc compose: chạy lại unit/contract và toàn bộ gate, không
+skip.

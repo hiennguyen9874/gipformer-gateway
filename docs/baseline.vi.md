@@ -235,7 +235,7 @@ uv run pytest tests/model/test_realtime.py
 |---|---|
 | `offline.json` | Gipformer: RTF/WER theo precision × decoding, số thread, mặc định suy ra; hash transcript là chuẩn cho smoke (§4) |
 | `server.json` | Gipformer: smoke gateway local trên CPU, mọi format + Realtime, chỉ metadata (§4) |
-| `server-container-cu128.json` | Smoke trong GPU container gate (chỉ metadata) |
+| `server-container.json` | Gipformer: smoke trong container gate, chỉ metadata; chưa có, gate chưa chạy ([container-gate.vi.md](container-gate.vi.md)) |
 | `alignment_probe.json` | Gipformer: độ phân giải, dịch audio và độ trễ của thời điểm phát token; cue (§6) |
 | `r2a_gate.json` | Gipformer: R2a cue gate trên server với model thật, chỉ metadata (§6) |
 | `r3a_gate.json` | Gipformer: R3a realtime gate trên server với model thật, chỉ metadata (§7) |

@@ -74,4 +74,5 @@ Read the section for each area you touch before editing it. File roles: [code-ma
   rerun unit + contract tests and the full container gate with no skips (docs/container-gate.vi.md). After changing
   sherpa-onnx or the model pin, also rerun `scripts/probe_limits.py` (it exits 1 if the floor moved),
   `scripts/baseline_offline.py` and `scripts/smoke_server.py` (it checks transcripts against the baseline's hashes).
-- `docs/baseline/*.json` reports hold metadata only. CPU-diagnostic container reports stay uncommitted.
+- `docs/baseline/*.json` reports hold metadata only. Commit `docs/baseline/server-container.json` only from a
+  full container gate run with no skips; host emulations of the image are diagnostics, not gate evidence.

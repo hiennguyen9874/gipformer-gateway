@@ -7,7 +7,7 @@ Pre-release: tag `v0.1.0-rc.1`.
 
 | Release | Nội dung | Trạng thái |
 |---|---|---|
-| R1 — REST/SSE | models, transcription `json`/`text`, SSE, auth, lỗi OpenAI, giới hạn, Docker một GPU | **Xong** |
+| R1 — REST/SSE | models, transcription `json`/`text`, SSE, auth, lỗi OpenAI, giới hạn, Docker CPU | **Xong** (container gate Gipformer: chưa chạy, xem [container-gate.vi.md](container-gate.vi.md)) |
 | R2a — Rich output | `verbose_json` (không `segments`), `srt`, `vtt` với timestamps từ thời điểm phát token | **Xong** (gate Gipformer: `docs/baseline/r2a_gate.json`) |
 | R2b — Word timestamps | `timestamp_granularities[]=word` | Chưa: chờ bộ annotate tay |
 | R3a — Realtime explicit commit | WS `/v1/realtime`, PCM16 24 kHz, append/commit/clear | **Xong** (gate Gipformer: `docs/baseline/r3a_gate.json`) |
@@ -28,9 +28,9 @@ Pre-release: tag `v0.1.0-rc.1`.
 
 ## 3. Bằng chứng hiện có
 
-- **GPU container gate (cu128, RTX 5090):** 6 test pass, không skip; smoke 5 fixture khớp baseline, Realtime,
-  auth/lỗi/overload/isolation, SIGTERM khi đang stream → `done` + `drained: true`, restart → ready.
-  `docs/baseline/server-container-cu128.json`.
+- **Container gate (Gipformer, image CPU):** chưa chạy (môi trường phát triển không có Docker); chưa có
+  `docs/baseline/server-container.json`. Emulation trên host (venv như builder + `app/`, model read-only) đạt các
+  script của gate; chỉ là chẩn đoán. [container-gate.vi.md](container-gate.vi.md).
 - **Baseline offline (Gipformer, CPU):** RTF/WER cho fp32/int8 × beam/greedy, số thread; mặc định `GIPFORMER_NUM_THREADS=4`,
   `GIPFORMER_QUEUE_MAX_BUFFERED_SECONDS=600` suy ra từ đó. `docs/baseline/offline.json`, [baseline.vi.md](baseline.vi.md) §4.
 - **Server smoke (local CPU, Gipformer):** mọi format + Realtime, khớp hash baseline; `vi_long` WER 4.0%.
@@ -45,7 +45,6 @@ Pre-release: tag `v0.1.0-rc.1`.
 - Realtime phát `conversation.item.added` (GA) thay vì `conversation.item.created` (beta).
 - Base model `google/embeddinggemma-2` không bị gate trên Hub tại thời điểm staging; không cần `HF_TOKEN`.
 - Không dùng `LiveSession` của reference: Realtime chỉ infer khi commit, qua cùng splitter/joiner với REST.
-- Thêm profile `cu128` (torch 2.11.0) cho Blackwell vì PyTorch không có wheel 2.14.1 cho CUDA 12.8; `cu126` giữ nguyên.
 
 ## 5. Definition of done
 

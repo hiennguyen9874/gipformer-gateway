@@ -8,7 +8,7 @@ Cách chạy: [README](../README.md). Payload: [api-contract.vi.md](api-contract
 
 - Không port model sang GGUF/C++, không dùng vLLM/Triton/Redis/Celery.
 - REST, SSE và Realtime WebSocket dùng chung một engine, mỗi giao thức có adapter riêng.
-- Một container = một process = một model instance = một GPU.
+- Một container = một process = một recognizer = một worker thread, chạy trên CPU.
 - Phạm vi: *OpenAI Audio Transcriptions và Realtime transcription trong phạm vi công bố*. QUAN là ASR tiếng Việt;
   dịch, TTS, chat hay Realtime hội thoại cần engine khác, không thuộc gateway này.
 
@@ -85,8 +85,9 @@ xử lý FIFO qua cùng `split`/`run_chunks`/`Joiner` như REST. Gửi có giớ
 
 ## 5. Đóng gói
 
-- Image multi-stage: builder dùng `uv sync --frozen --no-dev --extra <cu126|cu128>`; runtime Ubuntu 24.04 (pin
-  digest) + FFmpeg 6.1.1 (pin apt), chỉ copy `app/` và venv.
+- Image multi-stage, chỉ CPU: builder dùng `uv sync --frozen --no-dev` (sherpa-onnx kèm onnxruntime; không torch,
+  CUDA hay GPU runtime); runtime Ubuntu 24.04 (pin digest) + FFmpeg 6.1.1 (pin apt), chỉ copy `app/` và venv.
+  Compose không reserve GPU.
 - Non-root UID 10001, rootfs read-only, tmpfs `/tmp`, model mount read-only, API key qua Docker secret.
   `HF_HUB_OFFLINE=1`; image chạy được với `--network none`.
 - `HEALTHCHECK` trên `/health`; `stop_grace_period: 70s` đủ cho Uvicorn 30 s + drain 30 s + dừng worker 5 s.

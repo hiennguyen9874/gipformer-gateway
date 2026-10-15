@@ -28,7 +28,6 @@ baseline (docs/baseline.vi.md §4: RTF 0.04 at fp32, beam 4, 4 threads), not fro
   hung-worker watchdog restart.
 - [ ] Set limits from the measurements, record a decision table (hardware, image digest, config, max tested load,
   selected limit) and a rollback digest.
-- [ ] cu126 GPU container gate on a compatible GPU (A100/H100); so far only cu128 passed on GPU.
 
 ```bash
 uv run --extra cu128 scripts/benchmark.py --engine gpu --hardware '<gpu>-exclusive-cu128' \

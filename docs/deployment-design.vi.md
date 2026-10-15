@@ -20,7 +20,7 @@ OpenAI SDK / curl / WebSocket client
                  |
      (HTTPS do hạ tầng của người triển khai)
                  |
-   Docker container: Uvicorn, 1 worker, port 18000
+   Docker container: Uvicorn, 1 worker, port 18001
    ├─ auth Bearer + request id + OpenAI error envelope          app/main.py, app/errors.py
    ├─ REST / SSE / verbose_json / srt / vtt                     app/transcription.py, app/formats.py
    ├─ Realtime transcription (explicit commit)                  app/realtime.py

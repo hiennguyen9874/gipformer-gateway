@@ -34,11 +34,11 @@ ENV PATH=/srv/.venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     GIPFORMER_MODELS_DIR=/models HF_HUB_OFFLINE=1 HOME=/tmp
 USER 10001:10001
 WORKDIR /srv
-EXPOSE 18000
+EXPOSE 18001
 # Liveness only (/health): 503 when the worker hangs or failed to load. Docker does not restart an unhealthy
 # container by itself; see README "Recovery".
 HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 \
-    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18000/health', timeout=4)"]
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18001/health', timeout=4)"]
 # WebSocket stack set explicitly (`auto` silently disables /v1/realtime without the lib); 2 MiB per client message.
-CMD ["uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0", "--port", "18000", "--workers", "1", \
+CMD ["uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0", "--port", "18001", "--workers", "1", \
      "--no-access-log", "--timeout-graceful-shutdown", "30", "--ws", "websockets-sansio", "--ws-max-size", "2097152"]

@@ -43,17 +43,17 @@ sudo chown 10001 secrets/gipformer_api_keys && sudo chmod 0400 secrets/gipformer
 docker compose up -d --build
 
 # 4. Chờ sẵn sàng (load + warm-up)
-curl -s 127.0.0.1:18000/ready                                   # {"status":"ready"}
+curl -s 127.0.0.1:18001/ready                                   # {"status":"ready"}
 
 # 5. Thử nhanh với file mẫu có sẵn trong repo (tests/fixtures/vi_a.wav, 8.9 s, FLEURS, CC BY 4.0)
-curl -s 127.0.0.1:18000/v1/audio/transcriptions \
+curl -s 127.0.0.1:18001/v1/audio/transcriptions \
     -H "Authorization: Bearer $(sudo head -1 secrets/gipformer_api_keys)" \
     -F model=gipformer1.5-68M-rnnt -F file=@tests/fixtures/vi_a.wav
 # {"text":"CÁC SẢN PHẨM THỦ CÔNG CÓ THỂ ĐƯỢC COI LÀ ĐỒ CỔ ..."}
 
 # 6. Smoke test (tùy chọn): mọi format + Realtime, so với baseline
 OPENAI_API_KEY=$(sudo cat secrets/gipformer_api_keys | head -1) \
-    uv run scripts/smoke_server.py --base-url http://127.0.0.1:18000
+    uv run scripts/smoke_server.py --base-url http://127.0.0.1:18001
 ```
 
 Image (`gipformer-gateway:r1`): Ubuntu 24.04 (pin digest), Python 3.12.14, FFmpeg 6.1.1, user `10001`, chỉ
@@ -62,7 +62,7 @@ chứa `app/` và venv. Không có model, `HF_TOKEN` hay API key trong image; se
 
 - model mount `./models:/models:ro`, key qua Docker secret `/run/secrets/gipformer_api_keys`;
 - rootfs read-only, tmpfs `/tmp` 512 MiB (spool upload), `HF_HUB_OFFLINE=1`;
-- port chỉ bind `127.0.0.1:18000`; `restart: unless-stopped`; `stop_grace_period: 70s`.
+- port chỉ bind `127.0.0.1:18001`; `restart: unless-stopped`; `stop_grace_period: 70s`.
 
 **Một container = một recognizer = một worker thread**, luôn một Uvicorn worker. Mở rộng: chạy nhiều container
 (mỗi container một port host) sau load balancer; WebSocket cần sticky routing.
@@ -75,12 +75,12 @@ HTTPS của bạn với: SSE không buffer, hỗ trợ WebSocket upgrade, read t
 
 ```bash
 KEY=$(sudo cat secrets/gipformer_api_keys | head -1)
-curl -s 127.0.0.1:18000/v1/models -H "Authorization: Bearer $KEY"
-curl -s 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
+curl -s 127.0.0.1:18001/v1/models -H "Authorization: Bearer $KEY"
+curl -s 127.0.0.1:18001/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
     -F model=gipformer1.5-68M-rnnt -F file=@tests/fixtures/vi_a.wav
-curl -sN 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
+curl -sN 127.0.0.1:18001/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
     -F model=gipformer1.5-68M-rnnt -F stream=true -F file=@tests/fixtures/vi_a.wav
-curl -s 127.0.0.1:18000/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
+curl -s 127.0.0.1:18001/v1/audio/transcriptions -H "Authorization: Bearer $KEY" \
     -F model=gipformer1.5-68M-rnnt -F response_format=srt -F file=@tests/fixtures/vi_a.wav   # text, vtt, verbose_json
 ```
 
@@ -89,7 +89,7 @@ OpenAI Python SDK (đã kiểm thử `openai==3.31.0`; JS `openai@7.33.0`):
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="http://127.0.0.1:18000/v1", api_key="<API key>")
+client = OpenAI(base_url="http://127.0.0.1:18001/v1", api_key="<API key>")
 with open("audio.mp3", "rb") as f:
     print(client.audio.transcriptions.create(file=f, model="gipformer1.5-68M-rnnt").text)
 with open("audio.mp3", "rb") as f:

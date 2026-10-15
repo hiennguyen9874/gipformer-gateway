@@ -1,7 +1,7 @@
 # Commands
 
 The runtime is CPU only (sherpa-onnx), so there are no `--extra` profiles: plain `uv sync` / `uv run`. The host is
-shared: pick a free `<port>` (8000 is taken; the container binds 18000).
+shared: pick a free `<port>` (8000 is taken; the container binds 18001).
 
 ## Setup
 

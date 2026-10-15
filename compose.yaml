@@ -27,7 +27,7 @@ services:
     stop_grace_period: 70s
     restart: unless-stopped
     ports:
-      - "127.0.0.1:18000:18000"
+      - "127.0.0.1:18001:18001"
 
 secrets:
   gipformer_api_keys:

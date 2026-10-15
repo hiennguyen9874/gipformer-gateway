@@ -413,7 +413,7 @@ def positive(raw: str) -> float:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--base-url", default="http://127.0.0.1:18000")
+    ap.add_argument("--base-url", default="http://127.0.0.1:18001")
     ap.add_argument(
         "--ca", type=Path, help="trusted CA PEM for HTTPS/WSS (verification is never disabled)"
     )

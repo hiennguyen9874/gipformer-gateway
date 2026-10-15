@@ -2,7 +2,7 @@
 verbose_json/srt/vtt on the fixtures, transcripts compared with the offline baseline, timings -> metadata-only JSON
 report (counts, timings, WER and SHA256 of transcripts; no text).
 
-    OPENAI_API_KEY=<gateway key> uv run scripts/smoke_server.py --base-url http://127.0.0.1:18000 \
+    OPENAI_API_KEY=<gateway key> uv run scripts/smoke_server.py --base-url http://127.0.0.1:18001 \
         --out docs/baseline/server.json
 
 Runs with `uv run` from the host against a container port as well (or with the image's venv). Checks (exit 1 if one
@@ -273,7 +273,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--base-url", default="http://127.0.0.1:18000")
+    ap.add_argument("--base-url", default="http://127.0.0.1:18001")
     ap.add_argument(
         "--api-key-env",
         default="OPENAI_API_KEY",

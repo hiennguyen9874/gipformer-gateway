@@ -32,7 +32,7 @@ baseline (docs/baseline.vi.md §4: RTF 0.04 at fp32, beam 4, 4 threads), not fro
 
 ```bash
 uv run scripts/benchmark.py --engine cpu --hardware '<cpu>-<cores>c-exclusive' \
-  --base-url http://127.0.0.1:18000 --clients 1,2,4,8,16,32 --requests-per-client 100 \
+  --base-url http://127.0.0.1:18001 --clients 1,2,4,8,16,32 --requests-per-client 100 \
   --workload mixed --phase warm --server-pid <host pid> --out docs/baseline/capacity-mixed-warm.json
 ```
 

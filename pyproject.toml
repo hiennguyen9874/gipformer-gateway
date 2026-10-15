@@ -6,6 +6,9 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     # Inference code pinned to an exact commit (docs/baseline.vi.md, assets/manifest.json).
     "quan-transcribe @ git+https://github.com/qnguyen3/QUAN-Transcribe@88ddcd2130a3c355d081bc002439f29e5e849060",
+    # Pinned together with the model in assets/manifest.json (tests/unit/test_manifests.py).
+    "sherpa-onnx==1.13.8",
+    "sherpa-onnx-core==1.13.8",
     "transformers==5.19.0",
     "huggingface_hub",
     "safetensors",

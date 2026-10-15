@@ -55,8 +55,9 @@ Read the section for each area you touch before editing it. File roles: [code-ma
 
 ## Pins, dependencies, image
 
-- Change a model pin only in `assets/manifest.json`, then run `scripts/stage_models.py --update-manifest`. The QUAN
-  code commit in `pyproject.toml` must equal the manifest (`tests/unit/test_manifests.py`).
+- Change a model pin only in `assets/manifest.json`, then run `scripts/stage_models.py --update-manifest`. The
+  `sherpa-onnx` version in `pyproject.toml` and `uv.lock` must equal the manifest's `code` pin
+  (`tests/unit/test_manifests.py`).
 - CUDA profiles are mutually exclusive extras with identical model/code pins: cu126 = torch 2.14.1, cu128 = torch
   2.11.0 (the latest published cu128 wheel). Profile selectors: Docker `--build-arg TORCH_CUDA=cu128`, Compose
   `GIPFORMER_BUILD_CUDA=cu128`, tests `--container-cuda=cu128`.

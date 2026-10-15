@@ -1,88 +1,51 @@
 {
   "code": {
-    "quan-transcribe": {
-      "repo": "https://github.com/qnguyen3/QUAN-Transcribe",
-      "commit": "88ddcd2130a3c355d081bc002439f29e5e849060"
+    "sherpa-onnx": {
+      "version": "1.13.8"
     }
   },
   "models": {
-    "quan-transcribe-1.0": {
-      "repo_id": "qnguyen3/QUAN-Transcribe-1.0",
-      "revision": "a08726d9fffeb5f16fc1ab05eecc8ad0b86af5a0",
-      "dir": "quan-transcribe-1.0",
-      "license": "gemma",
+    "gipformer1.5-68M-rnnt": {
+      "repo_id": "g-group-ai-lab/gipformer1.5-68M-rnnt",
+      "revision": "dd9227dcd8705c13f33bdbe59728d546ab94480f",
+      "dir": "gipformer1.5-68M-rnnt",
+      "license": "mit",
       "files": {
         "README.md": {
-          "size": 4370,
-          "sha256": "167491c21443dd78db597f623cb240f4ebdb3340f6d911abf14b73fd2027f45b"
+          "size": 7077,
+          "sha256": "187f8b7717e37f869aa1bb75d25d5e09b2d220178d8e171f1461e88326fe92f5"
         },
         "config.json": {
-          "size": 448,
-          "sha256": "51a57cad56f5d704006ec66ab599980bf4b3baf5316b8512a1c31adda8798613"
+          "size": 577,
+          "sha256": "c14c8b1b7f54c329eb7a96f0729f4c4ae3687b91b65a4816b7386e34fc6192c2"
         },
-        "units.json": {
-          "size": 104055,
-          "sha256": "6e22b7f5bb3a944e05d6e5cab9756fe6769cbd0d6c33d87d51e8fadd702ef7dc"
+        "decoder.int8.onnx": {
+          "size": 1308690,
+          "sha256": "e0a156b5454722a524230f9e35d5d928cfcdd3723437b418e5bd5e04f1c3a101"
         },
-        "model.safetensors": {
-          "size": 406965336,
-          "sha256": "75b8b46ba64b4734efa82669d22a647b335e245a3f1d64926571b9505a265b37"
+        "decoder.onnx": {
+          "size": 5165084,
+          "sha256": "ea584ee86d6f74191f934f8b950013adcb2c33483785aa8b1b44fff3a7b30069"
         },
-        "lm/lm_config.json": {
-          "size": 188,
-          "sha256": "6bd543b3e00328b22d927ad06082d3d0bae21f3710a8f83e5c3e6796cd5fc579"
+        "encoder.int8.onnx": {
+          "size": 70876359,
+          "sha256": "b528768939c7711a889be81a718ea7f2ee50d0d2d384d53f399e15b44bd9408c"
         },
-        "lm/unigrams.txt": {
-          "size": 1461603,
-          "sha256": "e11dd0d210c799d7a3492e941c7d8c7e9a3b823ddace636931f5db98978fb228"
+        "encoder.onnx": {
+          "size": 261057847,
+          "sha256": "96b3c83c9c39afc4421f8fd2914d26b53ae837e56788a7bd5aece61580937c36"
         },
-        "lm/vi_4gram.bin": {
-          "size": 90928457,
-          "sha256": "2657f51956dd985c6723f33e8f77847376764c2385450730a45b92974b7d91ee"
-        }
-      }
-    },
-    "embeddinggemma-2": {
-      "repo_id": "google/embeddinggemma-2",
-      "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
-      "dir": "embeddinggemma-2",
-      "license": "gemma",
-      "files": {
-        "README.md": {
-          "size": 21730,
-          "sha256": "b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037"
+        "joiner.int8.onnx": {
+          "size": 1033417,
+          "sha256": "12636559d135315f002a1e1b477077d415e888477378db0fd450aee5b21ac551"
         },
-        "config.json": {
-          "size": 4455,
-          "sha256": "b8f1e9931b57fbc054acdb445c41765d55b0074c58d145fa82839941ad1b5bb3"
+        "joiner.onnx": {
+          "size": 4104465,
+          "sha256": "d146a1cff4a0060d7031e5eb91295773661bc52c356c952dd1e2759e60ffa94d"
         },
-        "model.safetensors": {
-          "size": 1488915288,
-          "sha256": "197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79"
-        },
-        "preprocessor_config.json": {
-          "size": 511,
-          "sha256": "ea2ae257e901064abdd98dceb19f2b0da06af600bed15e0f99f5c85c37ee9d78"
-        },
-        "processor_config.json": {
-          "size": 1788,
-          "sha256": "168f6a08522f3ce5dea596d94d003af2fd691742d4f41fe1f9d8cce76bfbf69c"
-        },
-        "tokenizer.json": {
-          "size": 32170510,
-          "sha256": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4"
-        },
-        "tokenizer.model": {
-          "size": 4689013,
-          "sha256": "e594c8a90eb08d8bda498ff4747977dc827ae0c3c56b5c0d41a605a22d02ef03"
-        },
-        "tokenizer_config.json": {
-          "size": 1599,
-          "sha256": "17bd5d6e9364ca49a534e1502076593317c298d4a663623091ed45388f004874"
-        },
-        "chat_template.jinja": {
-          "size": 1016,
-          "sha256": "4b852efc0b9960283e735363331e6f325b33bc74bdbaa076f595bc4e9b94d85e"
+        "tokens.txt": {
+          "size": 25847,
+          "sha256": "f536d03c2e95ebd2930cf0abec88e823bd17d3c1933da7ae6a82db3b80605e15"
         }
       }
     }

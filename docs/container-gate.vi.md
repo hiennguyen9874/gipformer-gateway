@@ -6,13 +6,23 @@ Gate phải đạt trước khi phát hành một image: `tests/container/test_i
 
 | Image | Runtime | Kết quả | Bằng chứng |
 |---|---|---|---|
-| `gipformer-gateway` (CPU) | sherpa-onnx (pin trong `uv.lock`), không torch/CUDA | **Chưa đạt: chưa chạy** (môi trường phát triển không có Docker) | `docs/baseline/server-container.json` (chưa có) |
+| `gipformer-gateway` (CPU) | sherpa-onnx (pin trong `uv.lock`), không torch/CUDA | **Gate Docker đạt trên working tree hiện tại: 6 passed, không skip**; chưa là bằng chứng phát hành từ cây sạch | Report cục bộ: `/tmp/gipformer-server-container.json` (`source_dirty: true`) |
 
-Kiểm tra thay thế đã chạy (chỉ chẩn đoán, **không thay gate**, không commit report): venv dựng như builder
+Kiểm tra triển khai hiện tại: `docker compose up -d --no-build` chạy image `gipformer-gateway:r1`,
+`/ready` trả 200, Docker báo healthy; UID `10001:10001`, rootfs read-only, không có GPU device requests.
+Smoke trên service thật tại `http://127.0.0.1:18001` đạt mọi format và Realtime trên 5 fixtures.
+Key nằm trong `secrets/gipformer_api_keys` (gitignored, UID 10001, mode 0400); không ghi giá trị vào report.
+
+Suite `tests/unit tests/scheduler tests/audio tests/contract`: 443 passed, 1 skipped, 1 failed.
+Test lỗi `test_client_that_stops_reading_is_dropped` không quan sát được `send_timeout` trong 30 s;
+chạy riêng vẫn lỗi. Không coi suite này đã đạt; cần điều tra riêng trước khi phát hành.
+Chạy lại gate từ cây sạch trước khi commit report phát hành.
+
+Kiểm tra thay thế trước đây (chỉ chẩn đoán, **không thay gate**, không commit report): venv dựng như builder
 (`uv sync --frozen --no-dev`, Python 3.12.14, ~166 MB, không có `torch`/`transformers`) + chỉ `app/`, model copy
 read-only, key qua file, `HF_HUB_OFFLINE=1`, chạy trên host không có network namespace riêng. Các script của gate
 (`smoke_server.py`, auth/lỗi/overload/isolation, SIGTERM khi đang stream → `done` + `drained: true`, restart → ready)
-đều đạt, key không xuất hiện trong log. Gate thật vẫn cần chạy trên host có Docker.
+đều đạt, key không xuất hiện trong log. Gate Docker thật nay đã chạy như kết quả ở bảng trên.
 
 ## 2. Chạy gate
 
